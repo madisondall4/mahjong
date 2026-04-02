@@ -1,0 +1,164 @@
+import React, { useState } from 'react';
+import MahjongTile from './MahjongTile';
+
+const STEP_LABELS = {
+  // round 1
+  '1-0': { dir: 'RIGHT →', desc: 'Pass 3 tiles to the right' },
+  '1-1': { dir: '← ACROSS →', desc: 'Pass 3 tiles across' },
+  '1-2': { dir: '← LEFT', desc: 'Pass 3 tiles to the left (may blind pass up to 3)' },
+  // round 2
+  '2-0': { dir: '← LEFT', desc: 'Pass 3 tiles to the left' },
+  '2-1': { dir: '← ACROSS →', desc: 'Pass 3 tiles across' },
+  '2-2': { dir: 'RIGHT →', desc: 'Pass 3 tiles to the right (may blind pass up to 3)' },
+};
+
+/**
+ * Charleston tile selection UI
+ * @param {Object[]} hand - player's current hand
+ * @param {Object[]} flowers - player's flowers
+ * @param {Object[]} receivedTiles - tiles received in this pass (to show)
+ * @param {number} charlestonRound - 1 or 2
+ * @param {number} charlestonStep - 0, 1, or 2
+ * @param {function} onPass - (selectedUids: number[]) => void
+ * @param {boolean} waitingForAI - AI is processing
+ * @param {Object[]} incomingTiles - tiles just received (null if first pass)
+ */
+export default function CharlestonUI({
+  hand = [],
+  flowers = [],
+  charlestonRound = 1,
+  charlestonStep = 0,
+  onPass,
+  waitingForAI = false,
+  incomingTiles = null,
+}) {
+  const [selected, setSelected] = useState(new Set());
+  const label = STEP_LABELS[`${charlestonRound}-${charlestonStep}`] || { dir: '', desc: '' };
+  const canBlindPass = (charlestonRound === 1 && charlestonStep === 2) || (charlestonRound === 2 && charlestonStep === 2);
+
+  function toggleTile(uid) {
+    setSelected(prev => {
+      const next = new Set(prev);
+      if (next.has(uid)) {
+        next.delete(uid);
+      } else if (next.size < 3) {
+        next.add(uid);
+      }
+      return next;
+    });
+  }
+
+  function handlePass() {
+    if (selected.size !== 3) return;
+    onPass([...selected]);
+    setSelected(new Set());
+  }
+
+  return (
+    <div style={{
+      display: 'flex', flexDirection: 'column', gap: 16, padding: 16, flex: 1,
+    }}>
+      {/* Header */}
+      <div style={{ textAlign: 'center' }}>
+        <div style={{ fontSize: 11, color: 'rgba(247,242,232,0.5)', fontFamily: 'Nunito', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+          Charleston Round {charlestonRound}
+        </div>
+        <div style={{ fontSize: 22, fontFamily: 'Playfair Display, serif', color: '#e8c96a', fontWeight: 700, marginTop: 2 }}>
+          {label.dir}
+        </div>
+        <div style={{ fontSize: 13, color: 'rgba(247,242,232,0.7)', fontFamily: 'Nunito', marginTop: 4 }}>
+          {label.desc}
+        </div>
+      </div>
+
+      {/* Incoming tiles */}
+      {incomingTiles && incomingTiles.length > 0 && (
+        <div style={{
+          background: 'rgba(201,168,76,0.08)',
+          border: '1px solid rgba(201,168,76,0.2)',
+          borderRadius: 10,
+          padding: '10px 14px',
+        }}>
+          <div style={{ fontSize: 11, color: '#c9a84c', fontFamily: 'Nunito', fontWeight: 700, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            ↓ Tiles received:
+          </div>
+          <div style={{ display: 'flex', gap: 6 }}>
+            {incomingTiles.map(t => (
+              <MahjongTile key={t.uid} tile={t} size="md" animateIn/>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Selection counter */}
+      <div style={{ textAlign: 'center', fontSize: 13, fontFamily: 'Nunito', color: selected.size === 3 ? '#27ae60' : 'rgba(247,242,232,0.6)' }}>
+        Selected: <strong>{selected.size}</strong>/3
+        {canBlindPass && (
+          <span style={{ color: 'rgba(247,242,232,0.4)', marginLeft: 8, fontSize: 11 }}>
+            (blind pass allowed)
+          </span>
+        )}
+      </div>
+
+      {/* Hand tiles */}
+      <div style={{
+        display: 'flex', flexWrap: 'wrap', gap: 6, justifyContent: 'center',
+        padding: '8px 0', flex: 1, alignContent: 'flex-start',
+      }}>
+        {hand.map(tile => (
+          <div
+            key={tile.uid}
+            style={{
+              transform: selected.has(tile.uid) ? 'translateY(-10px)' : 'translateY(0)',
+              transition: 'transform 0.15s ease',
+            }}
+          >
+            <MahjongTile
+              tile={tile}
+              size="md"
+              selected={selected.has(tile.uid)}
+              onClick={() => toggleTile(tile.uid)}
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* Flowers display */}
+      {flowers.length > 0 && (
+        <div style={{ display: 'flex', gap: 4, justifyContent: 'center', alignItems: 'center' }}>
+          <span style={{ fontSize: 11, color: '#c9a84c', fontFamily: 'Nunito' }}>Flowers:</span>
+          {flowers.map(f => <MahjongTile key={f.uid} tile={f} size="sm"/>)}
+        </div>
+      )}
+
+      {/* Pass button */}
+      {waitingForAI ? (
+        <div style={{ textAlign: 'center', fontSize: 13, color: '#c9a84c', fontFamily: 'Nunito', animation: 'pulse 1s ease-in-out infinite' }}>
+          AI players are choosing tiles...
+        </div>
+      ) : (
+        <button
+          onClick={handlePass}
+          disabled={selected.size !== 3}
+          style={{
+            padding: '14px 0',
+            borderRadius: 12,
+            border: 'none',
+            background: selected.size === 3
+              ? 'linear-gradient(135deg, #c9a84c, #e8c96a)'
+              : 'rgba(201,168,76,0.15)',
+            color: selected.size === 3 ? '#0d1f17' : 'rgba(247,242,232,0.3)',
+            fontSize: 15,
+            fontWeight: 800,
+            fontFamily: 'Playfair Display, serif',
+            cursor: selected.size === 3 ? 'pointer' : 'not-allowed',
+            transition: 'all 0.2s ease',
+            letterSpacing: '0.04em',
+          }}
+        >
+          Pass {selected.size === 3 ? '3 Tiles' : `(${selected.size}/3 selected)`}
+        </button>
+      )}
+    </div>
+  );
+}
