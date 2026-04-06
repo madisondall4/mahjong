@@ -1,7 +1,7 @@
 import React from 'react';
 import MahjongTile from './MahjongTile';
 
-const FAKE_TILE = { uid: -1, suit: 'bam', value: 1, label: '1B', id: 'bam-1', color: '#2d6a4f' };
+const FAKE_TILE = { uid: -1, suit: 'bam', value: 1, label: '1B', id: 'bam-1', color: '#3DDBA7' };
 
 /**
  * Opponent seat - compact face-down display
@@ -22,15 +22,14 @@ export default function OpponentSeat({ player, position = 'top', isThinking = fa
     gap: 4,
     padding: '6px 8px',
     borderRadius: 8,
-    background: isCurrentTurn ? 'rgba(201,168,76,0.12)' : 'rgba(13,31,23,0.5)',
-    border: isCurrentTurn ? '1px solid rgba(201,168,76,0.5)' : '1px solid rgba(201,168,76,0.1)',
+    background: isCurrentTurn ? 'rgba(61,219,167,0.1)' : 'rgba(42,33,64,0.6)',
+    border: isCurrentTurn ? '1px solid rgba(61,219,167,0.5)' : '1px solid rgba(255,79,163,0.1)',
     transition: 'all 0.3s ease',
-    boxShadow: isThinking ? '0 0 20px rgba(201,168,76,0.4)' : 'none',
+    boxShadow: isThinking ? '0 0 20px rgba(79,203,255,0.4)' : 'none',
     animation: isThinking ? 'pulseGlow 1.5s ease-in-out infinite' : 'none',
     minWidth: position === 'top' ? 120 : 60,
   };
 
-  // Arrange tiles based on position
   const isVertical = position === 'left' || position === 'right';
 
   return (
@@ -40,7 +39,7 @@ export default function OpponentSeat({ player, position = 'top', isThinking = fa
         fontSize: 11,
         fontFamily: 'Nunito, sans-serif',
         fontWeight: 700,
-        color: isCurrentTurn ? '#e8c96a' : '#c9a84c',
+        color: isCurrentTurn ? '#3DDBA7' : 'rgba(255,255,255,0.6)',
         textTransform: 'uppercase',
         letterSpacing: '0.06em',
         display: 'flex',
@@ -50,13 +49,13 @@ export default function OpponentSeat({ player, position = 'top', isThinking = fa
         {isThinking && (
           <span style={{ animation: 'pulse 1s infinite' }}>
             <svg width="8" height="8" viewBox="0 0 8 8">
-              <circle cx="4" cy="4" r="3" fill="#c9a84c"/>
+              <circle cx="4" cy="4" r="3" fill="#4FCBFF"/>
             </svg>
           </span>
         )}
         {player.name}
         {isCurrentTurn && !isThinking && (
-          <svg width="6" height="8" viewBox="0 0 6 8" fill="#e8c96a">
+          <svg width="6" height="8" viewBox="0 0 6 8" fill="#3DDBA7">
             <polygon points="0,0 6,4 0,8"/>
           </svg>
         )}
@@ -85,13 +84,13 @@ export default function OpponentSeat({ player, position = 'top', isThinking = fa
           <div style={{
             width: 28, height: 36,
             borderRadius: 3,
-            background: 'rgba(201,168,76,0.15)',
-            border: '1px dashed rgba(201,168,76,0.3)',
+            background: 'rgba(61,219,167,0.1)',
+            border: '1px dashed rgba(61,219,167,0.3)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             fontSize: 9,
-            color: '#c9a84c',
+            color: '#3DDBA7',
             fontFamily: 'Nunito',
             fontWeight: 700,
           }}>
@@ -105,12 +104,12 @@ export default function OpponentSeat({ player, position = 'top', isThinking = fa
         display: 'flex',
         gap: 8,
         fontSize: 10,
-        color: 'rgba(247,242,232,0.6)',
+        color: 'rgba(255,255,255,0.5)',
         fontFamily: 'Nunito',
       }}>
         <span>{tileCount} tiles</span>
         {player.flowers.length > 0 && (
-          <span style={{ color: '#e07b39' }}>🌸×{player.flowers.length}</span>
+          <span style={{ color: '#FF7A45' }}>🌸×{player.flowers.length}</span>
         )}
       </div>
     </div>

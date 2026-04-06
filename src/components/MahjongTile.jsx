@@ -5,44 +5,85 @@ import { SUITS } from '../data/tiles.js';
 
 function BamSymbol({ value, size }) {
   const s = size === 'lg' ? 32 : size === 'md' ? 22 : 14;
+
   if (value === 1) {
+    // Stylized peacock/bird silhouette
     return (
       <svg width={s} height={s} viewBox="0 0 32 32">
-        <rect x="14" y="2" width="4" height="28" rx="2" fill="#2d6a4f"/>
-        <ellipse cx="16" cy="8" rx="5" ry="3" fill="#27ae60"/>
-        <ellipse cx="16" cy="16" rx="6" ry="3.5" fill="#27ae60"/>
-        <ellipse cx="16" cy="24" rx="5" ry="3" fill="#27ae60"/>
+        {/* Body */}
+        <ellipse cx="16" cy="20" rx="6" ry="5" fill="#2A2140"/>
+        {/* Head */}
+        <circle cx="22" cy="13" r="3.5" fill="#2A2140"/>
+        {/* Beak */}
+        <polygon points="25,12 29,13 25,14" fill="#3DDBA7"/>
+        {/* Eye */}
+        <circle cx="23" cy="12.5" r="1" fill="white"/>
+        {/* Tail fan */}
+        <ellipse cx="10" cy="18" rx="5" ry="3" transform="rotate(-30,10,18)" fill="#3DDBA7" opacity="0.85"/>
+        <ellipse cx="9" cy="22" rx="5" ry="2.5" transform="rotate(10,9,22)" fill="#3DDBA7" opacity="0.7"/>
+        <ellipse cx="11" cy="14" rx="4.5" ry="2.5" transform="rotate(-60,11,14)" fill="#3DDBA7" opacity="0.6"/>
       </svg>
     );
   }
-  const stalks = [];
-  const spacing = 32 / (value + 1);
-  for (let i = 0; i < value; i++) {
-    const x = spacing * (i + 1);
-    stalks.push(
-      <g key={i}>
-        <rect x={x - 1.5} y="4" width="3" height="24" rx="1.5" fill="#2d6a4f"/>
-        <ellipse cx={x} cy={10} rx="4" ry="2.5" fill="#27ae60"/>
-        <ellipse cx={x} cy="20" rx="4" ry="2.5" fill="#27ae60"/>
+
+  // Segmented bamboo stalks
+  function Stalk({ x, segments }) {
+    const segH = 6;
+    const segW = 5;
+    const gap = 1;
+    const totalH = segments * (segH + gap) - gap;
+    const startY = (32 - totalH) / 2;
+    return (
+      <g>
+        {Array.from({ length: segments }).map((_, i) => {
+          const y = startY + i * (segH + gap);
+          return (
+            <g key={i}>
+              <rect x={x - segW / 2} y={y} width={segW} height={segH} rx="2.5" fill="#3DDBA7"/>
+              {i < segments - 1 && (
+                <rect x={x - segW / 2 - 0.5} y={y + segH} width={segW + 1} height={gap} rx="0.5" fill="#2A2140" opacity="0.6"/>
+              )}
+            </g>
+          );
+        })}
       </g>
     );
   }
-  return <svg width={s} height={s} viewBox="0 0 32 32">{stalks}</svg>;
+
+  const layouts = {
+    2: [{ x: 12, segs: 4 }, { x: 20, segs: 4 }],
+    3: [{ x: 9,  segs: 4 }, { x: 16, segs: 4 }, { x: 23, segs: 4 }],
+    4: [{ x: 12, segs: 5 }, { x: 20, segs: 5 }],
+    5: [{ x: 9,  segs: 4 }, { x: 16, segs: 5 }, { x: 23, segs: 4 }],
+    6: [{ x: 9,  segs: 5 }, { x: 16, segs: 5 }, { x: 23, segs: 5 }],
+    7: [{ x: 9,  segs: 5 }, { x: 16, segs: 6 }, { x: 23, segs: 5 }],
+    8: [{ x: 9,  segs: 6 }, { x: 16, segs: 6 }, { x: 23, segs: 6 }],
+    9: [{ x: 8,  segs: 5 }, { x: 14, segs: 6 }, { x: 20, segs: 5 }, { x: 26, segs: 4 }],
+  };
+
+  const stalks = layouts[value] || layouts[2];
+  return (
+    <svg width={s} height={s} viewBox="0 0 32 32">
+      {stalks.map((st, i) => <Stalk key={i} x={st.x} segments={st.segs}/>)}
+    </svg>
+  );
 }
 
 function CrakSymbol({ value, size }) {
   const s = size === 'lg' ? 32 : size === 'md' ? 22 : 14;
+  const chars = ['一','二','三','四','五','六','七','八','九'];
+  const ch = chars[value - 1] || String(value);
+  const numSize = size === 'sm' ? '13' : '19';
+  const wanSize = size === 'sm' ? '7' : '10';
+  const numY = size === 'sm' ? '14' : '17';
+  const wanY = size === 'sm' ? '22' : '27';
   return (
     <svg width={s} height={s} viewBox="0 0 32 32">
-      <text
-        x="16" y="26"
-        textAnchor="middle"
-        fontSize={value > 9 ? '18' : '24'}
-        fontWeight="700"
-        fontFamily="serif"
-        fill="#c0392b"
-      >
-        {value}
+      <text x="16" y={numY} textAnchor="middle" fontSize={numSize} fontWeight="700" fontFamily="serif" fill="#FF4FA3">
+        {ch}
+      </text>
+      <text x="16" y={wanY} textAnchor="middle" fontSize={wanSize} fontWeight="600" fontFamily="serif" fill="#FF4FA3">
+        萬
       </text>
     </svg>
   );
@@ -61,33 +102,70 @@ function DotSymbol({ value, size }) {
     8: [[9, 8], [16, 8], [23, 8], [9, 16], [23, 16], [9, 24], [16, 24], [23, 24]],
     9: [[9, 8], [16, 8], [23, 8], [9, 16], [16, 16], [23, 16], [9, 24], [16, 24], [23, 24]],
   };
+  const isOdd = value % 2 === 1;
+  const outerColor = isOdd ? '#4FCBFF' : '#2A2140';
   const dots = (dotPositions[value] || []).map(([cx, cy], i) => (
-    <circle key={i} cx={cx} cy={cy} r="4" fill="#1a5276" stroke="#1a3a5c" strokeWidth="0.5"/>
+    <g key={i}>
+      <circle cx={cx} cy={cy} r="4" fill={outerColor}/>
+      <circle cx={cx} cy={cy} r="2" fill="white"/>
+    </g>
   ));
   return <svg width={s} height={s} viewBox="0 0 32 32">{dots}</svg>;
 }
 
 function WindSymbol({ value, size }) {
   const s = size === 'lg' ? 32 : size === 'md' ? 22 : 14;
-  const abbr = { East: 'E', South: 'S', West: 'W', North: 'N' };
+  const chars = { East: '東', South: '南', West: '西', North: '北' };
+  const abbr = { East: 'EAST', South: 'SOUTH', West: 'WEST', North: 'NORTH' };
+  const chSize = size === 'sm' ? '14' : '20';
+  const chY = size === 'sm' ? '15' : '19';
+  const labelSize = size === 'sm' ? '5' : '7';
+  const labelY = size === 'sm' ? '22' : '28';
   return (
     <svg width={s} height={s} viewBox="0 0 32 32">
-      <text x="16" y="24" textAnchor="middle" fontSize="22" fontWeight="700" fontFamily="serif" fill="#c9a84c">
-        {abbr[value] || value}
+      <text x="16" y={chY} textAnchor="middle" fontSize={chSize} fontWeight="700" fontFamily="serif" fill="#2A2140">
+        {chars[value] || value}
       </text>
+      {size !== 'sm' && (
+        <text x="16" y={labelY} textAnchor="middle" fontSize={labelSize} fontWeight="600" fontFamily="sans-serif" fill="#FF4FA3">
+          {abbr[value] || value}
+        </text>
+      )}
     </svg>
   );
 }
 
 function DragonSymbol({ value, size }) {
   const s = size === 'lg' ? 32 : size === 'md' ? 22 : 14;
-  const colors = { Red: '#c0392b', Green: '#27ae60', White: '#d4cfc4' };
-  const labels = { Red: 'R', Green: 'G', White: '白' };
+
+  if (value === 'White') {
+    // Blank soap tile look — just a rounded rect outline
+    return (
+      <svg width={s} height={s} viewBox="0 0 32 32">
+        <rect x="6" y="6" width="20" height="20" rx="4" fill="none" stroke="#2A2140" strokeWidth="2"/>
+        <text x="16" y="21" textAnchor="middle" fontSize="10" fontWeight="600" fontFamily="serif" fill="#2A2140">白</text>
+      </svg>
+    );
+  }
+
+  if (value === 'Red') {
+    return (
+      <svg width={s} height={s} viewBox="0 0 32 32">
+        {/* Diamond border */}
+        <polygon points="16,3 29,16 16,29 3,16" fill="none" stroke="#FF4FA3" strokeWidth="1.5"/>
+        <text x="16" y="21" textAnchor="middle" fontSize="15" fontWeight="700" fontFamily="serif" fill="#FF4FA3">
+          中
+        </text>
+      </svg>
+    );
+  }
+
+  // Green dragon — 發
   return (
     <svg width={s} height={s} viewBox="0 0 32 32">
-      <polygon points="16,4 28,28 4,28" fill={colors[value]} opacity="0.9"/>
-      <text x="16" y="26" textAnchor="middle" fontSize="11" fontWeight="700" fontFamily="serif" fill="white">
-        {labels[value]}
+      <polygon points="16,3 29,16 16,29 3,16" fill="none" stroke="#3DDBA7" strokeWidth="1.5"/>
+      <text x="16" y="21" textAnchor="middle" fontSize="15" fontWeight="700" fontFamily="serif" fill="#3DDBA7">
+        發
       </text>
     </svg>
   );
@@ -95,37 +173,56 @@ function DragonSymbol({ value, size }) {
 
 function FlowerSymbol({ value, size }) {
   const s = size === 'lg' ? 32 : size === 'md' ? 22 : 14;
-  const petalColors = ['#e74c3c', '#e67e22', '#9b59b6', '#3498db'];
-  const color = petalColors[(value - 1) % 4];
+  const colors = ['#FF4FA3', '#FF7A45', '#3DDBA7', '#4FCBFF'];
+  const color = colors[(value - 1) % 4];
+
+  // Outer ring: 8 petals
+  const outerPetals = Array.from({ length: 8 }).map((_, i) => {
+    const deg = i * 45;
+    const rad = (deg * Math.PI) / 180;
+    const cx = 16 + Math.cos(rad) * 7;
+    const cy = 16 + Math.sin(rad) * 7;
+    return <ellipse key={`o${i}`} cx={cx} cy={cy} rx="3.5" ry="5" transform={`rotate(${deg},${cx},${cy})`} fill={color} opacity="0.9"/>;
+  });
+
+  // Inner ring: 6 petals, lighter
+  const innerPetals = Array.from({ length: 6 }).map((_, i) => {
+    const deg = i * 60 + 22;
+    const rad = (deg * Math.PI) / 180;
+    const cx = 16 + Math.cos(rad) * 4;
+    const cy = 16 + Math.sin(rad) * 4;
+    return <ellipse key={`i${i}`} cx={cx} cy={cy} rx="2.5" ry="3.5" transform={`rotate(${deg},${cx},${cy})`} fill={color} opacity="0.6"/>;
+  });
+
   return (
     <svg width={s} height={s} viewBox="0 0 32 32">
-      {[0, 60, 120, 180, 240, 300].map((deg, i) => {
-        const rad = (deg * Math.PI) / 180;
-        const cx = 16 + Math.cos(rad) * 7;
-        const cy = 16 + Math.sin(rad) * 7;
-        return <ellipse key={i} cx={cx} cy={cy} rx="4" ry="5.5"
-          transform={`rotate(${deg}, ${cx}, ${cy})`} fill={color} opacity="0.85"/>;
-      })}
-      <circle cx="16" cy="16" r="4" fill="#f9ca24"/>
-      <text x="16" y="20" textAnchor="middle" fontSize="7" fontWeight="700" fill="#333">{value}</text>
+      {outerPetals}
+      {innerPetals}
+      <circle cx="16" cy="16" r="3" fill="white"/>
+      <text x="16" y="19.5" textAnchor="middle" fontSize="5.5" fontWeight="700" fill="#2A2140">{value}</text>
     </svg>
   );
 }
 
 function JokerSymbol({ size }) {
   const s = size === 'lg' ? 32 : size === 'md' ? 22 : 14;
+  // Peony: overlapping ellipses in pink/orange
+  const petalAngles = [0, 45, 90, 135, 180, 225, 270, 315];
   return (
     <svg width={s} height={s} viewBox="0 0 32 32">
-      <defs>
-        <linearGradient id="rainbowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#e74c3c"/>
-          <stop offset="33%" stopColor="#f39c12"/>
-          <stop offset="66%" stopColor="#27ae60"/>
-          <stop offset="100%" stopColor="#9b59b6"/>
-        </linearGradient>
-      </defs>
-      <polygon points="16,2 20,12 30,12 22,18 25,28 16,22 7,28 10,18 2,12 12,12"
-        fill="url(#rainbowGrad)" stroke="#c9a84c" strokeWidth="1"/>
+      {/* Peony petals */}
+      {petalAngles.map((deg, i) => {
+        const rad = (deg * Math.PI) / 180;
+        const cx = 19 + Math.cos(rad) * 5;
+        const cy = 22 + Math.sin(rad) * 4;
+        const c = i % 2 === 0 ? '#FF4FA3' : '#FF7A45';
+        return <ellipse key={i} cx={cx} cy={cy} rx="4" ry="5.5" transform={`rotate(${deg},${cx},${cy})`} fill={c} opacity="0.85"/>;
+      })}
+      <circle cx="19" cy="22" r="3" fill="white"/>
+      {/* JOKER label */}
+      <text x="16" y="10" textAnchor="middle" fontSize="7" fontWeight="800" fontFamily="sans-serif" fill="#FF4FA3">
+        JOKER
+      </text>
     </svg>
   );
 }
@@ -144,16 +241,16 @@ function TileBack({ size }) {
       className="rounded-sm flex items-center justify-center"
       style={{
         width: w, height: h,
-        background: 'linear-gradient(135deg, #1a3a2a 0%, #0d1f17 50%, #1a3a2a 100%)',
-        border: '1px solid #2d6a4f',
+        background: 'linear-gradient(135deg, #2A2140 0%, #1e1830 50%, #2A2140 100%)',
+        border: '1px solid #FF4FA340',
         boxShadow: '1px 1px 3px rgba(0,0,0,0.4)',
       }}
     >
       <div style={{
         width: w - 8, height: h - 8,
-        border: '1px solid rgba(201,168,76,0.3)',
+        border: '1px solid rgba(255,79,163,0.25)',
         borderRadius: 2,
-        backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(201,168,76,0.05) 3px, rgba(201,168,76,0.05) 6px)',
+        backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(255,79,163,0.04) 3px, rgba(255,79,163,0.04) 6px)',
       }}/>
     </div>
   );
@@ -167,7 +264,7 @@ function TileBack({ size }) {
  * @param {'sm'|'md'|'lg'} props.size - tile size
  * @param {boolean} props.faceDown - render tile back
  * @param {boolean} props.selected - tile is selected (rises up)
- * @param {boolean} props.winning - tile is part of winning hand (gold glow)
+ * @param {boolean} props.winning - tile is part of winning hand (mint glow)
  * @param {boolean} props.disabled - reduced opacity
  * @param {function} props.onClick - click handler
  * @param {boolean} props.animateIn - play deal animation
@@ -212,10 +309,6 @@ export default function MahjongTile({
     }
   }
 
-  const bgClass = tile.suit === SUITS.JOKER
-    ? 'linear-gradient(145deg, #fff8f0 0%, #fdf0e8 100%)'
-    : 'linear-gradient(145deg, #fdfaf3 0%, #f7f2e8 40%, #ede5d0 100%)';
-
   const suitLabel = {
     [SUITS.BAM]: 'B',
     [SUITS.CRAK]: 'C',
@@ -226,10 +319,17 @@ export default function MahjongTile({
     [SUITS.JOKER]: '',
   }[tile.suit] || '';
 
+  const suitLabelColor = {
+    [SUITS.BAM]: '#3DDBA7',
+    [SUITS.CRAK]: '#FF4FA3',
+    [SUITS.DOT]: '#4FCBFF',
+    [SUITS.FLOWER]: '#FF7A45',
+  }[tile.suit] || '#2A2140';
+
   const tileStyle = {
     width: d.w,
     height: d.h,
-    background: bgClass,
+    background: 'linear-gradient(145deg, #ffffff 0%, #fff5fb 60%, #faeef5 100%)',
     borderRadius: 4,
     padding: d.pad,
     display: 'flex',
@@ -245,11 +345,11 @@ export default function MahjongTile({
     WebkitUserSelect: 'none',
     ...(selected ? {
       transform: 'translateY(-14px) scale(1.06)',
-      boxShadow: '2px 2px 0 #c8b89a, 3px 3px 0 #b8a88a, 4px 4px 8px rgba(0,0,0,0.3), 0 0 20px rgba(201,168,76,0.7)',
+      boxShadow: '2px 2px 0 #f0d8e8, 3px 3px 0 #e0c4d8, 4px 4px 8px rgba(0,0,0,0.2), 0 0 20px rgba(255,79,163,0.7)',
     } : winning ? {
-      boxShadow: '0 0 16px rgba(201,168,76,0.8), 0 0 4px rgba(201,168,76,1)',
+      boxShadow: '0 0 16px rgba(61,219,167,0.8), 0 0 4px rgba(61,219,167,1)',
     } : {
-      boxShadow: '2px 2px 0 #c8b89a, 3px 3px 0 #b8a88a, 4px 4px 6px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.9)',
+      boxShadow: '2px 2px 0 #f0d8e8, 3px 3px 0 #e0c4d8, 4px 4px 6px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.9)',
     }),
     ...style,
   };
@@ -265,7 +365,7 @@ export default function MahjongTile({
         <div style={{
           position: 'absolute', top: 2, left: 3,
           fontSize: d.textSize, fontWeight: '700',
-          color: tile.color, fontFamily: 'Nunito, sans-serif',
+          color: suitLabelColor, fontFamily: 'Nunito, sans-serif',
           lineHeight: 1,
         }}>
           {tile.value}{suitLabel}
@@ -280,7 +380,7 @@ export default function MahjongTile({
       {/* Suit label bottom (sm only) */}
       {size === 'sm' && (
         <div style={{
-          fontSize: '7px', fontWeight: '700', color: tile.color,
+          fontSize: '7px', fontWeight: '700', color: suitLabelColor,
           fontFamily: 'Nunito, sans-serif', lineHeight: 1, marginTop: 1,
         }}>
           {tile.suit === SUITS.JOKER ? 'JKR' :

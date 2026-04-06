@@ -17,7 +17,6 @@ export default function CharlestonScreen({
   const player = gameState.players[0];
   const { charleston } = gameState;
 
-  // When incomingTiles changes (after a pass completes), show them briefly
   useEffect(() => {
     if (gameState.lastIncomingTiles && gameState.lastIncomingTiles.length > 0) {
       setIncomingTiles(gameState.lastIncomingTiles);
@@ -33,24 +32,24 @@ export default function CharlestonScreen({
       <div style={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         padding: '10px 16px',
-        background: 'rgba(13,31,23,0.7)',
-        borderBottom: '1px solid rgba(201,168,76,0.15)',
+        background: 'rgba(42,33,64,0.85)',
+        borderBottom: '1px solid rgba(255,79,163,0.2)',
         flexShrink: 0,
       }}>
         <div>
-          <div style={{ fontSize: 13, fontFamily: 'Playfair Display, serif', color: '#e8c96a', fontWeight: 700 }}>
+          <div style={{ fontSize: 13, fontFamily: 'Playfair Display, serif', color: '#FF4FA3', fontWeight: 700 }}>
             Charleston
           </div>
-          <div style={{ fontSize: 10, color: 'rgba(247,242,232,0.5)', fontFamily: 'Nunito' }}>
+          <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', fontFamily: 'Nunito' }}>
             Step {charleston.step + 1}/3 · Round {charleston.round}/2
           </div>
         </div>
         <button
           onClick={() => setCardOpen(true)}
           style={{
-            background: 'rgba(201,168,76,0.15)', border: '1px solid rgba(201,168,76,0.3)',
+            background: 'rgba(79,203,255,0.15)', border: '1px solid rgba(79,203,255,0.35)',
             borderRadius: 8, padding: '6px 12px',
-            color: '#c9a84c', fontSize: 11, fontFamily: 'Nunito', fontWeight: 700,
+            color: '#4FCBFF', fontSize: 11, fontFamily: 'Nunito', fontWeight: 700,
             cursor: 'pointer',
           }}
         >
@@ -62,22 +61,22 @@ export default function CharlestonScreen({
       {charleston.round === 2 && charleston.step === 0 && (
         <div style={{
           padding: '8px 16px',
-          background: 'rgba(201,168,76,0.07)',
-          borderBottom: '1px solid rgba(201,168,76,0.1)',
+          background: 'rgba(255,122,69,0.07)',
+          borderBottom: '1px solid rgba(255,122,69,0.15)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           flexShrink: 0,
         }}>
-          <span style={{ fontSize: 12, color: 'rgba(247,242,232,0.7)', fontFamily: 'Nunito' }}>
+          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', fontFamily: 'Nunito' }}>
             Optional 2nd Charleston
           </span>
           <button
             onClick={onSkipSecondCharleston}
             style={{
-              background: 'rgba(192,57,43,0.2)', border: '1px solid rgba(192,57,43,0.4)',
+              background: 'rgba(255,122,69,0.2)', border: '1px solid rgba(255,122,69,0.4)',
               borderRadius: 6, padding: '4px 10px',
-              color: '#c0392b', fontSize: 11, fontFamily: 'Nunito', fontWeight: 700,
+              color: '#FF7A45', fontSize: 11, fontFamily: 'Nunito', fontWeight: 700,
               cursor: 'pointer',
             }}
           >
@@ -91,14 +90,14 @@ export default function CharlestonScreen({
         <div style={{
           position: 'absolute', top: 60, left: '50%', transform: 'translateX(-50%)',
           zIndex: 10,
-          background: 'rgba(13,31,23,0.95)',
-          border: '1px solid rgba(201,168,76,0.4)',
+          background: 'rgba(42,33,64,0.97)',
+          border: '1px solid rgba(61,219,167,0.5)',
           borderRadius: 10,
           padding: '8px 16px',
           animation: 'fadeInUp 0.3s ease-out',
           textAlign: 'center',
           fontSize: 12,
-          color: '#c9a84c',
+          color: '#3DDBA7',
           fontFamily: 'Nunito',
           fontWeight: 700,
         }}>

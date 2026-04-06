@@ -1,25 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { SUITS } from '../data/tiles.js';
 
 const DEMO_TILES = [
-  { suit: SUITS.BAM, value: 1, color: '#2d6a4f' },
-  { suit: SUITS.CRAK, value: 7, color: '#c0392b' },
-  { suit: SUITS.DOT, value: 5, color: '#1a5276' },
-  { suit: SUITS.WIND, value: 'East', color: '#c9a84c' },
-  { suit: SUITS.DRAGON, value: 'Red', color: '#c0392b' },
-  { suit: SUITS.JOKER, value: 'joker', color: '#9b59b6' },
+  { suit: SUITS.BAM, value: 1, color: '#3DDBA7' },
+  { suit: SUITS.CRAK, value: 7, color: '#FF4FA3' },
+  { suit: SUITS.DOT, value: 5, color: '#4FCBFF' },
+  { suit: SUITS.WIND, value: 'East', color: '#2A2140' },
+  { suit: SUITS.DRAGON, value: 'Red', color: '#FF4FA3' },
+  { suit: SUITS.JOKER, value: 'joker', color: '#FF7A45' },
 ];
 
 function FloatingTile({ tile, delay, x, y, size }) {
   const s = size || 44;
   const colors = {
-    [SUITS.BAM]: '#2d6a4f',
-    [SUITS.CRAK]: '#c0392b',
-    [SUITS.DOT]: '#1a5276',
-    [SUITS.WIND]: '#c9a84c',
-    [SUITS.DRAGON]: '#c0392b',
-    [SUITS.JOKER]: '#9b59b6',
-    [SUITS.FLOWER]: '#e07b39',
+    [SUITS.BAM]: '#3DDBA7',
+    [SUITS.CRAK]: '#FF4FA3',
+    [SUITS.DOT]: '#4FCBFF',
+    [SUITS.WIND]: '#2A2140',
+    [SUITS.DRAGON]: '#FF4FA3',
+    [SUITS.JOKER]: '#FF7A45',
+    [SUITS.FLOWER]: '#FF7A45',
   };
   const labels = {
     [SUITS.BAM]: `${tile.value}B`,
@@ -38,19 +38,18 @@ function FloatingTile({ tile, delay, x, y, size }) {
       top: `${y}%`,
       width: s,
       height: s * 1.3,
-      background: 'linear-gradient(145deg, #fdfaf3 0%, #f7f2e8 40%, #ede5d0 100%)',
+      background: 'linear-gradient(145deg, #ffffff 0%, #fff5fb 60%, #faeef5 100%)',
       borderRadius: 5,
-      boxShadow: '2px 2px 0 #c8b89a, 3px 3px 5px rgba(0,0,0,0.3)',
+      boxShadow: '2px 2px 0 #f0d8e8, 3px 3px 5px rgba(0,0,0,0.15)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       fontSize: s * 0.28,
       fontWeight: 800,
-      color: colors[tile.suit] || '#333',
+      color: colors[tile.suit] || '#2A2140',
       fontFamily: 'Nunito, sans-serif',
       animation: `floatTile 4s ease-in-out ${delay}ms infinite alternate`,
-      opacity: 0.25,
-      transform: `rotate(${(Math.random() - 0.5) * 20}deg)`,
+      opacity: 0.35,
     }}>
       {labels[tile.suit]}
     </div>
@@ -72,7 +71,7 @@ export default function HomeScreen({ onNewGame }) {
   const [showRules, setShowRules] = useState(false);
 
   return (
-    <div className="felt-texture" style={{
+    <div style={{
       height: '100%',
       position: 'relative',
       display: 'flex',
@@ -80,6 +79,7 @@ export default function HomeScreen({ onNewGame }) {
       alignItems: 'center',
       justifyContent: 'center',
       overflow: 'hidden',
+      background: '#FFF6EE',
     }}>
       <style>{`
         @keyframes floatTile {
@@ -90,6 +90,10 @@ export default function HomeScreen({ onNewGame }) {
           from { opacity: 0; transform: translateY(30px); }
           to { opacity: 1; transform: translateY(0); }
         }
+        @keyframes pinkShimmer {
+          0% { background-position: 0% center; }
+          100% { background-position: 200% center; }
+        }
       `}</style>
 
       {/* Background floating tiles */}
@@ -97,12 +101,12 @@ export default function HomeScreen({ onNewGame }) {
         <FloatingTile key={i} tile={t} delay={t.delay} x={t.x} y={t.y}/>
       ))}
 
-      {/* Wood border frame */}
+      {/* Decorative border frame */}
       <div style={{
         position: 'absolute', inset: 10,
         border: '6px solid transparent',
         borderRadius: 16,
-        background: 'linear-gradient(#1a4731, #1a4731) padding-box, linear-gradient(135deg, #8B6914, #c9a84c, #8B6914) border-box',
+        background: 'linear-gradient(#FFF6EE, #FFF6EE) padding-box, linear-gradient(135deg, #FF4FA3, #FF7A45, #FF4FA3) border-box',
         pointerEvents: 'none',
       }}/>
 
@@ -119,9 +123,11 @@ export default function HomeScreen({ onNewGame }) {
             fontFamily: 'Playfair Display, serif',
             fontSize: 32,
             fontWeight: 700,
-            color: '#e8c96a',
+            background: 'linear-gradient(135deg, #FF4FA3, #FF7A45)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
             lineHeight: 1.1,
-            textShadow: '0 2px 8px rgba(0,0,0,0.5)',
           }}>
             American<br/>Mahjong
           </h1>
@@ -129,7 +135,7 @@ export default function HomeScreen({ onNewGame }) {
             margin: '8px 0 0',
             fontFamily: 'Nunito, sans-serif',
             fontSize: 13,
-            color: 'rgba(247,242,232,0.6)',
+            color: 'rgba(42,33,64,0.5)',
             letterSpacing: '0.08em',
             textTransform: 'uppercase',
           }}>
@@ -139,15 +145,13 @@ export default function HomeScreen({ onNewGame }) {
 
         {/* Decorative divider */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', maxWidth: 280 }}>
-          <div style={{ flex: 1, height: 1, background: 'linear-gradient(to right, transparent, rgba(201,168,76,0.4))' }}/>
-          <span style={{ color: '#c9a84c', fontSize: 16 }}>✦</span>
-          <div style={{ flex: 1, height: 1, background: 'linear-gradient(to left, transparent, rgba(201,168,76,0.4))' }}/>
+          <div style={{ flex: 1, height: 1, background: 'linear-gradient(to right, transparent, rgba(255,79,163,0.3))' }}/>
+          <span style={{ color: '#FF4FA3', fontSize: 16 }}>✦</span>
+          <div style={{ flex: 1, height: 1, background: 'linear-gradient(to left, transparent, rgba(255,79,163,0.3))' }}/>
         </div>
 
         {/* Game info */}
-        <div style={{
-          display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center',
-        }}>
+        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}>
           {[
             { icon: '🎮', text: '1 vs 3 AI' },
             { icon: '🃏', text: '24 Hands' },
@@ -155,12 +159,12 @@ export default function HomeScreen({ onNewGame }) {
           ].map(({ icon, text }) => (
             <div key={text} style={{
               display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
-              background: 'rgba(13,31,23,0.6)', borderRadius: 10,
-              padding: '8px 14px', border: '1px solid rgba(201,168,76,0.15)',
+              background: 'rgba(42,33,64,0.06)', borderRadius: 10,
+              padding: '8px 14px', border: '1px solid rgba(255,79,163,0.15)',
               minWidth: 70,
             }}>
               <span style={{ fontSize: 20 }}>{icon}</span>
-              <span style={{ fontSize: 11, color: 'rgba(247,242,232,0.7)', fontFamily: 'Nunito', fontWeight: 600 }}>{text}</span>
+              <span style={{ fontSize: 11, color: 'rgba(42,33,64,0.65)', fontFamily: 'Nunito', fontWeight: 600 }}>{text}</span>
             </div>
           ))}
         </div>
@@ -173,16 +177,16 @@ export default function HomeScreen({ onNewGame }) {
             padding: '16px 0',
             borderRadius: 14,
             border: 'none',
-            background: 'linear-gradient(135deg, #c9a84c 0%, #e8c96a 50%, #c9a84c 100%)',
+            background: 'linear-gradient(135deg, #FF4FA3 0%, #FF7A45 50%, #FF4FA3 100%)',
             backgroundSize: '200% auto',
-            color: '#0d1f17',
+            color: 'white',
             fontSize: 18,
             fontWeight: 800,
             fontFamily: 'Playfair Display, serif',
             cursor: 'pointer',
-            boxShadow: '0 4px 20px rgba(201,168,76,0.4), 0 2px 0 #8B6914',
+            boxShadow: '0 4px 20px rgba(255,79,163,0.4), 0 2px 0 #cc3a7e',
             letterSpacing: '0.04em',
-            animation: 'shimmer 2s linear infinite',
+            animation: 'pinkShimmer 2s linear infinite',
           }}
         >
           New Game
@@ -192,9 +196,9 @@ export default function HomeScreen({ onNewGame }) {
         <button
           onClick={() => setShowRules(v => !v)}
           style={{
-            background: 'none', border: '1px solid rgba(201,168,76,0.25)',
+            background: 'none', border: '1px solid rgba(255,79,163,0.25)',
             borderRadius: 8, padding: '8px 20px',
-            color: 'rgba(247,242,232,0.6)', fontSize: 13,
+            color: 'rgba(42,33,64,0.55)', fontSize: 13,
             fontFamily: 'Nunito', cursor: 'pointer',
           }}
         >
@@ -203,11 +207,11 @@ export default function HomeScreen({ onNewGame }) {
 
         {showRules && (
           <div style={{
-            background: 'rgba(13,31,23,0.9)', border: '1px solid rgba(201,168,76,0.2)',
+            background: 'rgba(42,33,64,0.06)', border: '1px solid rgba(255,79,163,0.15)',
             borderRadius: 12, padding: 16, maxWidth: 320, fontSize: 12,
-            color: 'rgba(247,242,232,0.8)', fontFamily: 'Nunito', lineHeight: 1.6,
+            color: 'rgba(42,33,64,0.75)', fontFamily: 'Nunito', lineHeight: 1.6,
           }}>
-            <p style={{ margin: '0 0 8px', color: '#e8c96a', fontWeight: 700, fontFamily: 'Playfair Display, serif', fontSize: 14 }}>American Mahjong Rules</p>
+            <p style={{ margin: '0 0 8px', color: '#FF4FA3', fontWeight: 700, fontFamily: 'Playfair Display, serif', fontSize: 14 }}>American Mahjong Rules</p>
             <ul style={{ margin: 0, paddingLeft: 16 }}>
               <li>Tap a tile to select it, tap again to discard</li>
               <li>Charleston: pass 3 tiles in each direction</li>
@@ -223,7 +227,7 @@ export default function HomeScreen({ onNewGame }) {
       {/* Version */}
       <div style={{
         position: 'absolute', bottom: 16,
-        fontSize: 10, color: 'rgba(247,242,232,0.25)',
+        fontSize: 10, color: 'rgba(42,33,64,0.25)',
         fontFamily: 'Nunito',
       }}>
         American Mahjong v1.0
