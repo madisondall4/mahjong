@@ -58,7 +58,7 @@ export default function DiscardPool({ discards = [], lastDiscard = null, onCallM
             alignItems: 'center',
             justifyContent: 'center',
             fontSize: 11,
-            color: 'rgba(247,242,232,0.3)',
+            color: 'rgba(255,255,255,0.3)',
             fontFamily: 'Nunito',
             fontStyle: 'italic',
           }}>
@@ -72,8 +72,8 @@ export default function DiscardPool({ discards = [], lastDiscard = null, onCallM
         <button
           onClick={onCallMahjong}
           style={{
-            background: 'linear-gradient(135deg, #c9a84c, #e8c96a)',
-            color: '#0d1f17',
+            background: 'linear-gradient(135deg, #FF4FA3, #FF7A45)',
+            color: 'white',
             border: 'none',
             borderRadius: 20,
             padding: '8px 20px',
@@ -81,7 +81,7 @@ export default function DiscardPool({ discards = [], lastDiscard = null, onCallM
             fontWeight: 800,
             fontFamily: 'Playfair Display, serif',
             cursor: 'pointer',
-            boxShadow: '0 4px 12px rgba(201,168,76,0.5)',
+            boxShadow: '0 4px 12px rgba(255,79,163,0.4)',
             animation: 'pulseGlow 1s ease-in-out infinite',
             letterSpacing: '0.05em',
           }}
