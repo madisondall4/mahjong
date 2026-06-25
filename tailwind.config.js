@@ -7,18 +7,14 @@ export default {
   theme: {
     extend: {
       colors: {
-        baize: '#1a4731',
-        'baize-light': '#2d6a4f',
-        'tile-face': '#f7f2e8',
-        'tile-shadow': '#c8b89a',
-        gold: '#c9a84c',
-        'gold-light': '#e8c96a',
-        'red-dragon': '#c0392b',
-        'green-dragon': '#27ae60',
-        'bam-green': '#2d6a4f',
-        'crak-red': '#c0392b',
-        'dot-blue': '#1a5276',
-        'ui-dark': '#0d1f17',
+        bg: '#F4F1E4',
+        'accent-pink': '#5E8C3E',
+        'accent-orange': '#E2A03F',
+        'accent-blue': '#7FB3A4',
+        'accent-mint': '#A4D65E',
+        plum: '#2B3A2A',
+        'tile-face': '#ffffff',
+        'tile-shadow': '#dce8cc',
       },
       fontFamily: {
         display: ['Playfair Display', 'serif'],
@@ -51,8 +47,8 @@ export default {
           '100%': { backgroundPosition: '200% center' },
         },
         pulseGlow: {
-          '0%, 100%': { boxShadow: '0 0 5px rgba(201, 168, 76, 0.3)' },
-          '50%': { boxShadow: '0 0 20px rgba(201, 168, 76, 0.8)' },
+          '0%, 100%': { boxShadow: '0 0 5px rgba(94,140,62,0.3)' },
+          '50%': { boxShadow: '0 0 20px rgba(94,140,62,0.8)' },
         },
         flipIn: {
           '0%': { transform: 'rotateY(-90deg)', opacity: '0' },

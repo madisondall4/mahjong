@@ -60,13 +60,13 @@ export default function CharlestonUI({
     }}>
       {/* Header */}
       <div style={{ textAlign: 'center' }}>
-        <div style={{ fontSize: 11, color: 'rgba(247,242,232,0.5)', fontFamily: 'Nunito', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', fontFamily: 'Nunito', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
           Charleston Round {charlestonRound}
         </div>
-        <div style={{ fontSize: 22, fontFamily: 'Playfair Display, serif', color: '#e8c96a', fontWeight: 700, marginTop: 2 }}>
+        <div style={{ fontSize: 22, fontFamily: 'Playfair Display, serif', color: '#5E8C3E', fontWeight: 700, marginTop: 2 }}>
           {label.dir}
         </div>
-        <div style={{ fontSize: 13, color: 'rgba(247,242,232,0.7)', fontFamily: 'Nunito', marginTop: 4 }}>
+        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', fontFamily: 'Nunito', marginTop: 4 }}>
           {label.desc}
         </div>
       </div>
@@ -74,12 +74,12 @@ export default function CharlestonUI({
       {/* Incoming tiles */}
       {incomingTiles && incomingTiles.length > 0 && (
         <div style={{
-          background: 'rgba(201,168,76,0.08)',
-          border: '1px solid rgba(201,168,76,0.2)',
+          background: 'rgba(94,140,62,0.08)',
+          border: '1px solid rgba(94,140,62,0.2)',
           borderRadius: 10,
           padding: '10px 14px',
         }}>
-          <div style={{ fontSize: 11, color: '#c9a84c', fontFamily: 'Nunito', fontWeight: 700, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <div style={{ fontSize: 11, color: '#A4D65E', fontFamily: 'Nunito', fontWeight: 700, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             ↓ Tiles received:
           </div>
           <div style={{ display: 'flex', gap: 6 }}>
@@ -91,10 +91,10 @@ export default function CharlestonUI({
       )}
 
       {/* Selection counter */}
-      <div style={{ textAlign: 'center', fontSize: 13, fontFamily: 'Nunito', color: selected.size === 3 ? '#27ae60' : 'rgba(247,242,232,0.6)' }}>
+      <div style={{ textAlign: 'center', fontSize: 13, fontFamily: 'Nunito', color: selected.size === 3 ? '#A4D65E' : 'rgba(255,255,255,0.6)' }}>
         Selected: <strong>{selected.size}</strong>/3
         {canBlindPass && (
-          <span style={{ color: 'rgba(247,242,232,0.4)', marginLeft: 8, fontSize: 11 }}>
+          <span style={{ color: 'rgba(255,255,255,0.4)', marginLeft: 8, fontSize: 11 }}>
             (blind pass allowed)
           </span>
         )}
@@ -126,14 +126,14 @@ export default function CharlestonUI({
       {/* Flowers display */}
       {flowers.length > 0 && (
         <div style={{ display: 'flex', gap: 4, justifyContent: 'center', alignItems: 'center' }}>
-          <span style={{ fontSize: 11, color: '#c9a84c', fontFamily: 'Nunito' }}>Flowers:</span>
+          <span style={{ fontSize: 11, color: '#E2A03F', fontFamily: 'Nunito' }}>Flowers:</span>
           {flowers.map(f => <MahjongTile key={f.uid} tile={f} size="sm"/>)}
         </div>
       )}
 
       {/* Pass button */}
       {waitingForAI ? (
-        <div style={{ textAlign: 'center', fontSize: 13, color: '#c9a84c', fontFamily: 'Nunito', animation: 'pulse 1s ease-in-out infinite' }}>
+        <div style={{ textAlign: 'center', fontSize: 13, color: '#7FB3A4', fontFamily: 'Nunito', animation: 'pulse 1s ease-in-out infinite' }}>
           AI players are choosing tiles...
         </div>
       ) : (
@@ -145,15 +145,16 @@ export default function CharlestonUI({
             borderRadius: 12,
             border: 'none',
             background: selected.size === 3
-              ? 'linear-gradient(135deg, #c9a84c, #e8c96a)'
-              : 'rgba(201,168,76,0.15)',
-            color: selected.size === 3 ? '#0d1f17' : 'rgba(247,242,232,0.3)',
+              ? 'linear-gradient(135deg, #5E8C3E, #E2A03F)'
+              : 'rgba(94,140,62,0.12)',
+            color: selected.size === 3 ? 'white' : 'rgba(255,255,255,0.3)',
             fontSize: 15,
             fontWeight: 800,
             fontFamily: 'Playfair Display, serif',
             cursor: selected.size === 3 ? 'pointer' : 'not-allowed',
             transition: 'all 0.2s ease',
             letterSpacing: '0.04em',
+            boxShadow: selected.size === 3 ? '0 4px 16px rgba(94,140,62,0.35)' : 'none',
           }}
         >
           Pass {selected.size === 3 ? '3 Tiles' : `(${selected.size}/3 selected)`}

@@ -26,7 +26,6 @@ export default function GameTable({
   const canCall = gameState.canHumanCallMahjong || false;
   const thinkingPlayer = gameState.thinkingPlayer;
 
-  // Check if human can declare mahjong on their own draw
   useEffect(() => {
     if (isHumanTurn && gameState.humanCanDeclare) {
       setShowMahjongBtn(true);
@@ -38,20 +37,12 @@ export default function GameTable({
   function handleTileClick(tile) {
     if (!isHumanTurn) return;
     if (selectedUid === tile.uid) {
-      // Discard the selected tile
       onDiscard(tile.uid);
       setSelectedUid(null);
     } else {
       setSelectedUid(tile.uid);
     }
   }
-
-  // Seat layout: human=bottom, South=right, West=top, North=left
-  const seats = [
-    { playerIdx: 2, position: 'top', label: 'West' },
-    { playerIdx: 3, position: 'left', label: 'North' },
-    { playerIdx: 1, position: 'right', label: 'South' },
-  ];
 
   return (
     <div className="felt-texture" style={{
@@ -61,12 +52,12 @@ export default function GameTable({
       overflow: 'hidden',
       position: 'relative',
     }}>
-      {/* Wood border */}
+      {/* Pink-to-orange border */}
       <div style={{
         position: 'absolute', inset: 0,
         border: '8px solid transparent',
         borderRadius: 0,
-        background: 'linear-gradient(#1a4731, #1a4731) padding-box, linear-gradient(135deg, #8B6914 0%, #c9a84c 30%, #8B6914 50%, #c9a84c 70%, #8B6914 100%) border-box',
+        background: 'linear-gradient(#2B3A2A, #2B3A2A) padding-box, linear-gradient(135deg, #5E8C3E 0%, #E2A03F 30%, #5E8C3E 50%, #E2A03F 70%, #5E8C3E 100%) border-box',
         pointerEvents: 'none',
         zIndex: 1,
       }}/>
@@ -76,15 +67,15 @@ export default function GameTable({
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         padding: '8px 16px 6px',
         zIndex: 2, flexShrink: 0,
-        background: 'rgba(13,31,23,0.5)',
+        background: 'rgba(43,58,42,0.6)',
       }}>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <WallCounter remaining={wallRemaining} total={160}/>
           <div style={{
-            fontSize: 11, color: isHumanTurn ? '#e8c96a' : 'rgba(247,242,232,0.5)',
+            fontSize: 11, color: isHumanTurn ? '#5E8C3E' : 'rgba(255,255,255,0.5)',
             fontFamily: 'Nunito', fontWeight: 700,
-            padding: '4px 8px', background: isHumanTurn ? 'rgba(201,168,76,0.12)' : 'transparent',
-            borderRadius: 6, border: isHumanTurn ? '1px solid rgba(201,168,76,0.3)' : '1px solid transparent',
+            padding: '4px 8px', background: isHumanTurn ? 'rgba(94,140,62,0.12)' : 'transparent',
+            borderRadius: 6, border: isHumanTurn ? '1px solid rgba(94,140,62,0.35)' : '1px solid transparent',
             transition: 'all 0.3s',
           }}>
             {isHumanTurn ? '► Your Turn' : `${gameState.players[currentPlayer]?.name}'s Turn`}
@@ -96,12 +87,13 @@ export default function GameTable({
             <button
               onClick={() => onDeclareMahjong?.()}
               style={{
-                background: 'linear-gradient(135deg, #c9a84c, #e8c96a)',
+                background: 'linear-gradient(135deg, #5E8C3E, #E2A03F)',
                 border: 'none', borderRadius: 8,
                 padding: '6px 12px',
-                color: '#0d1f17', fontSize: 12, fontWeight: 800,
+                color: 'white', fontSize: 12, fontWeight: 800,
                 fontFamily: 'Playfair Display, serif', cursor: 'pointer',
                 animation: 'pulseGlow 1s ease-in-out infinite',
+                boxShadow: '0 0 12px rgba(94,140,62,0.5)',
               }}
             >
               Mahjong!
@@ -110,9 +102,9 @@ export default function GameTable({
           <button
             onClick={() => setCardOpen(true)}
             style={{
-              background: 'rgba(201,168,76,0.12)', border: '1px solid rgba(201,168,76,0.3)',
+              background: 'rgba(127,179,164,0.12)', border: '1px solid rgba(127,179,164,0.3)',
               borderRadius: 8, padding: '6px 10px',
-              color: '#c9a84c', fontSize: 11, fontFamily: 'Nunito', fontWeight: 700,
+              color: '#7FB3A4', fontSize: 11, fontFamily: 'Nunito', fontWeight: 700,
               cursor: 'pointer',
             }}
           >
@@ -152,9 +144,9 @@ export default function GameTable({
         {/* Center: discard pool */}
         <div style={{
           flex: 1,
-          background: 'rgba(13,31,23,0.35)',
+          background: 'rgba(43,58,42,0.4)',
           borderRadius: 8,
-          border: '1px solid rgba(201,168,76,0.08)',
+          border: '1px solid rgba(94,140,62,0.08)',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
@@ -185,15 +177,15 @@ export default function GameTable({
           display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 6,
           padding: '2px 0', zIndex: 2, flexShrink: 0,
         }}>
-          <span style={{ fontSize: 10, color: 'rgba(247,242,232,0.5)', fontFamily: 'Nunito' }}>Drew:</span>
+          <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', fontFamily: 'Nunito' }}>Drew:</span>
           <MahjongTile tile={gameState.lastDrawnTile} size="sm" animateIn/>
         </div>
       )}
 
       {/* Human player hand */}
       <div style={{
-        background: 'rgba(13,31,23,0.6)',
-        borderTop: '1px solid rgba(201,168,76,0.15)',
+        background: 'rgba(43,58,42,0.7)',
+        borderTop: '1px solid rgba(94,140,62,0.2)',
         zIndex: 2, flexShrink: 0,
         paddingBottom: 'env(safe-area-inset-bottom, 8px)',
       }}>
@@ -205,7 +197,7 @@ export default function GameTable({
           canDiscard={isHumanTurn && humanPlayer.hand.length > 13}
         />
         {selectedUid !== null && (
-          <div style={{ textAlign: 'center', fontSize: 11, color: 'rgba(247,242,232,0.5)', fontFamily: 'Nunito', paddingBottom: 4 }}>
+          <div style={{ textAlign: 'center', fontSize: 11, color: 'rgba(255,255,255,0.5)', fontFamily: 'Nunito', paddingBottom: 4 }}>
             Tap again to discard · tap another to swap
           </div>
         )}

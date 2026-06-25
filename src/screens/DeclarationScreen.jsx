@@ -34,8 +34,8 @@ export default function DeclarationScreen({ gameState, onContinue }) {
         <div style={{
           position: 'absolute', inset: 0,
           background: isHumanWin
-            ? 'radial-gradient(ellipse at center, rgba(201,168,76,0.35) 0%, transparent 65%)'
-            : 'radial-gradient(ellipse at center, rgba(192,57,43,0.2) 0%, transparent 65%)',
+            ? 'radial-gradient(ellipse at center, rgba(94,140,62,0.35) 0%, transparent 65%)'
+            : 'radial-gradient(ellipse at center, rgba(127,179,164,0.15) 0%, transparent 65%)',
           animation: 'burstFade 1.5s ease-out forwards',
           pointerEvents: 'none',
           zIndex: 0,
@@ -51,7 +51,7 @@ export default function DeclarationScreen({ gameState, onContinue }) {
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
               width: 6, height: 6,
-              background: '#e8c96a',
+              background: i % 2 === 0 ? '#5E8C3E' : '#E2A03F',
               borderRadius: '50%',
               animation: `floatSparkle ${1 + Math.random() * 2}s ease-out ${Math.random() * 1000}ms forwards`,
               opacity: 0,
@@ -85,15 +85,15 @@ export default function DeclarationScreen({ gameState, onContinue }) {
             fontFamily: 'Playfair Display, serif',
             fontSize: isHumanWin ? 34 : 26,
             fontWeight: 700,
-            color: isHumanWin ? '#e8c96a' : '#f7f2e8',
-            textShadow: isHumanWin ? '0 0 30px rgba(201,168,76,0.5)' : 'none',
+            color: isHumanWin ? '#5E8C3E' : 'rgba(255,255,255,0.92)',
+            textShadow: isHumanWin ? '0 0 30px rgba(94,140,62,0.5)' : 'none',
             lineHeight: 1.1,
           }}>
             {isHumanWin ? 'Mahjong!' : `${winnerPlayer.name}\nDeclares Mahjong`}
           </h1>
           {winningHand && (
             <div style={{
-              fontSize: 16, color: '#c9a84c', fontFamily: 'Playfair Display, serif',
+              fontSize: 16, color: '#5E8C3E', fontFamily: 'Playfair Display, serif',
               marginTop: 4,
             }}>
               {winningHand.pattern}
@@ -104,13 +104,13 @@ export default function DeclarationScreen({ gameState, onContinue }) {
         {/* Winning hand tiles */}
         {isHumanWin && winnerPlayer.hand.length > 0 && (
           <div style={{
-            background: 'rgba(13,31,23,0.7)',
-            border: '1px solid rgba(201,168,76,0.3)',
+            background: 'rgba(43,58,42,0.7)',
+            border: '1px solid rgba(94,140,62,0.25)',
             borderRadius: 12,
             padding: '12px 14px',
             width: '100%',
           }}>
-            <div style={{ fontSize: 11, color: '#c9a84c', fontFamily: 'Nunito', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>
+            <div style={{ fontSize: 11, color: '#5E8C3E', fontFamily: 'Nunito', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>
               Winning Hand
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, justifyContent: 'center' }}>
@@ -123,11 +123,11 @@ export default function DeclarationScreen({ gameState, onContinue }) {
             </div>
             {winningHand && (
               <div style={{ marginTop: 10, textAlign: 'center' }}>
-                <span style={{ fontSize: 22, fontWeight: 800, color: '#e8c96a', fontFamily: 'Playfair Display, serif' }}>
+                <span style={{ fontSize: 22, fontWeight: 800, color: '#5E8C3E', fontFamily: 'Playfair Display, serif' }}>
                   {winningHand.points} points
                 </span>
                 {winningHand.closed && (
-                  <span style={{ marginLeft: 8, fontSize: 11, color: '#c9a84c', fontFamily: 'Nunito', fontWeight: 700 }}>
+                  <span style={{ marginLeft: 8, fontSize: 11, color: 'rgba(255,255,255,0.6)', fontFamily: 'Nunito', fontWeight: 700 }}>
                     (CLOSED)
                   </span>
                 )}
@@ -144,13 +144,14 @@ export default function DeclarationScreen({ gameState, onContinue }) {
             padding: '14px 0',
             borderRadius: 12,
             border: 'none',
-            background: 'linear-gradient(135deg, #c9a84c, #e8c96a)',
-            color: '#0d1f17',
+            background: 'linear-gradient(135deg, #5E8C3E, #E2A03F)',
+            color: 'white',
             fontSize: 16,
             fontWeight: 800,
             fontFamily: 'Playfair Display, serif',
             cursor: 'pointer',
             letterSpacing: '0.04em',
+            boxShadow: '0 4px 16px rgba(94,140,62,0.35)',
           }}
         >
           See Scores
