@@ -46,7 +46,7 @@ export const TILE_DEFINITIONS = [
     suit: SUITS.DOT,
     value: i + 1,
     label: `${i + 1}D`,
-    color: '#7FB3A4',
+    color: '#4FCBFF', // circles suit — blue
     count: 4,
   })),
   // Winds
@@ -64,7 +64,7 @@ export const TILE_DEFINITIONS = [
     suit: SUITS.DRAGON,
     value: d,
     label: d[0] === 'W' ? 'Soap' : `${d[0]}D`,
-    color: d === 'Red' ? '#5E8C3E' : d === 'Green' ? '#A4D65E' : '#2B3A2A',
+    color: d === 'Red' ? '#FF4FA3' : d === 'Green' ? '#5E8C3E' : '#4FCBFF',
     count: 4,
   })),
   // Flowers 1-4
@@ -82,7 +82,7 @@ export const TILE_DEFINITIONS = [
     suit: SUITS.JOKER,
     value: 'joker',
     label: 'JKR',
-    color: '#5E8C3E',
+    color: '#FF4FA3',
     count: 8,
   },
 ];
