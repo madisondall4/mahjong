@@ -32,12 +32,12 @@ export default function CharlestonScreen({
       <div style={{
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         padding: '10px 16px',
-        background: 'rgba(42,33,64,0.85)',
-        borderBottom: '1px solid rgba(255,79,163,0.2)',
+        background: 'rgba(43,58,42,0.85)',
+        borderBottom: '1px solid rgba(94,140,62,0.2)',
         flexShrink: 0,
       }}>
         <div>
-          <div style={{ fontSize: 13, fontFamily: 'Playfair Display, serif', color: '#FF4FA3', fontWeight: 700 }}>
+          <div style={{ fontSize: 13, fontFamily: 'Playfair Display, serif', color: '#5E8C3E', fontWeight: 700 }}>
             Charleston
           </div>
           <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)', fontFamily: 'Nunito' }}>
@@ -47,9 +47,9 @@ export default function CharlestonScreen({
         <button
           onClick={() => setCardOpen(true)}
           style={{
-            background: 'rgba(79,203,255,0.15)', border: '1px solid rgba(79,203,255,0.35)',
+            background: 'rgba(127,179,164,0.15)', border: '1px solid rgba(127,179,164,0.35)',
             borderRadius: 8, padding: '6px 12px',
-            color: '#4FCBFF', fontSize: 11, fontFamily: 'Nunito', fontWeight: 700,
+            color: '#7FB3A4', fontSize: 11, fontFamily: 'Nunito', fontWeight: 700,
             cursor: 'pointer',
           }}
         >
@@ -61,8 +61,8 @@ export default function CharlestonScreen({
       {charleston.round === 2 && charleston.step === 0 && (
         <div style={{
           padding: '8px 16px',
-          background: 'rgba(255,122,69,0.07)',
-          borderBottom: '1px solid rgba(255,122,69,0.15)',
+          background: 'rgba(226,160,63,0.07)',
+          borderBottom: '1px solid rgba(226,160,63,0.15)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -74,9 +74,9 @@ export default function CharlestonScreen({
           <button
             onClick={onSkipSecondCharleston}
             style={{
-              background: 'rgba(255,122,69,0.2)', border: '1px solid rgba(255,122,69,0.4)',
+              background: 'rgba(226,160,63,0.2)', border: '1px solid rgba(226,160,63,0.4)',
               borderRadius: 6, padding: '4px 10px',
-              color: '#FF7A45', fontSize: 11, fontFamily: 'Nunito', fontWeight: 700,
+              color: '#E2A03F', fontSize: 11, fontFamily: 'Nunito', fontWeight: 700,
               cursor: 'pointer',
             }}
           >
@@ -90,14 +90,14 @@ export default function CharlestonScreen({
         <div style={{
           position: 'absolute', top: 60, left: '50%', transform: 'translateX(-50%)',
           zIndex: 10,
-          background: 'rgba(42,33,64,0.97)',
-          border: '1px solid rgba(61,219,167,0.5)',
+          background: 'rgba(43,58,42,0.97)',
+          border: '1px solid rgba(164,214,94,0.5)',
           borderRadius: 10,
           padding: '8px 16px',
           animation: 'fadeInUp 0.3s ease-out',
           textAlign: 'center',
           fontSize: 12,
-          color: '#3DDBA7',
+          color: '#A4D65E',
           fontFamily: 'Nunito',
           fontWeight: 700,
         }}>

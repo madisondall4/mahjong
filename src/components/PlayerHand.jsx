@@ -18,7 +18,7 @@ export default function PlayerHand({ tiles = [], selectedUids = new Set(), onTil
       {/* Flowers above hand */}
       {flowers.length > 0 && (
         <div className="flex items-center gap-1 px-3 mb-1">
-          <span style={{ fontSize: 10, color: '#FF7A45', fontFamily: 'Nunito', fontWeight: 600 }}>Flowers:</span>
+          <span style={{ fontSize: 10, color: '#E2A03F', fontFamily: 'Nunito', fontWeight: 600 }}>Flowers:</span>
           {flowers.map((f, i) => (
             <MahjongTile key={f.uid} tile={f} size="sm"/>
           ))}

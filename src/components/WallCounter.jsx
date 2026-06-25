@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function WallCounter({ remaining, total = 160 }) {
   const pct = total > 0 ? remaining / total : 0;
-  const color = pct > 0.5 ? '#3DDBA7' : pct > 0.25 ? '#FF7A45' : '#FF4FA3';
+  const color = pct > 0.5 ? '#A4D65E' : pct > 0.25 ? '#E2A03F' : '#5E8C3E';
 
   return (
     <div style={{
@@ -11,13 +11,13 @@ export default function WallCounter({ remaining, total = 160 }) {
       alignItems: 'center',
       gap: 3,
       padding: '4px 10px',
-      background: 'rgba(42,33,64,0.7)',
+      background: 'rgba(43,58,42,0.7)',
       borderRadius: 8,
-      border: '1px solid rgba(79,203,255,0.2)',
+      border: '1px solid rgba(127,179,164,0.2)',
     }}>
       <div style={{
         fontSize: 10,
-        color: '#4FCBFF',
+        color: '#7FB3A4',
         fontFamily: 'Nunito',
         textTransform: 'uppercase',
         letterSpacing: '0.06em',

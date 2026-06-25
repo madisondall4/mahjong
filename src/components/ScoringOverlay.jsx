@@ -23,8 +23,8 @@ export default function ScoringOverlay({ winResult, playerNames, onPlayAgain, vi
       padding: 16,
     }}>
       <div style={{
-        background: '#2A2140',
-        border: '2px solid rgba(255,79,163,0.45)',
+        background: '#2B3A2A',
+        border: '2px solid rgba(94,140,62,0.45)',
         borderRadius: 16,
         padding: 24,
         width: '100%',
@@ -32,13 +32,13 @@ export default function ScoringOverlay({ winResult, playerNames, onPlayAgain, vi
         display: 'flex',
         flexDirection: 'column',
         gap: 16,
-        boxShadow: '0 0 60px rgba(255,79,163,0.2)',
+        boxShadow: '0 0 60px rgba(94,140,62,0.2)',
       }}>
         {isWallExhausted ? (
           <>
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 36 }}>🀄</div>
-              <h2 style={{ margin: '8px 0 4px', fontFamily: 'Playfair Display, serif', color: '#FF4FA3', fontSize: 22 }}>
+              <h2 style={{ margin: '8px 0 4px', fontFamily: 'Playfair Display, serif', color: '#5E8C3E', fontSize: 22 }}>
                 Draw — Wall Exhausted
               </h2>
               <p style={{ margin: 0, fontSize: 13, color: 'rgba(255,255,255,0.6)', fontFamily: 'Nunito' }}>
@@ -49,14 +49,14 @@ export default function ScoringOverlay({ winResult, playerNames, onPlayAgain, vi
         ) : (
           <>
             {/* Winner */}
-            <div style={{ textAlign: 'center', borderBottom: '1px solid rgba(255,79,163,0.15)', paddingBottom: 14 }}>
+            <div style={{ textAlign: 'center', borderBottom: '1px solid rgba(94,140,62,0.15)', paddingBottom: 14 }}>
               <div style={{ fontSize: 32 }}>🏆</div>
-              <h2 style={{ margin: '6px 0 2px', fontFamily: 'Playfair Display, serif', fontSize: 24, color: '#FF4FA3' }}>
+              <h2 style={{ margin: '6px 0 2px', fontFamily: 'Playfair Display, serif', fontSize: 24, color: '#5E8C3E' }}>
                 {winnerIdx === 0 ? 'You Win!' : `${winnerName} Wins!`}
               </h2>
               {hand && (
                 <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.9)', fontFamily: 'Playfair Display, serif', marginTop: 2 }}>
-                  {hand.name} — <span style={{ color: '#FF4FA3', fontWeight: 700 }}>{hand.points} pts</span>
+                  {hand.name} — <span style={{ color: '#5E8C3E', fontWeight: 700 }}>{hand.points} pts</span>
                 </div>
               )}
               <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', fontFamily: 'Nunito', marginTop: 4 }}>
@@ -76,14 +76,14 @@ export default function ScoringOverlay({ winResult, playerNames, onPlayAgain, vi
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     padding: '6px 10px',
-                    background: 'rgba(255,79,163,0.06)',
+                    background: 'rgba(94,140,62,0.06)',
                     borderRadius: 6,
-                    border: '1px solid rgba(255,79,163,0.12)',
+                    border: '1px solid rgba(94,140,62,0.12)',
                   }}>
                     <span style={{ fontSize: 13, fontFamily: 'Nunito', color: 'rgba(255,255,255,0.85)' }}>
                       {playerNames[p.from]} → {playerNames[p.to]}
                     </span>
-                    <span style={{ fontSize: 14, fontWeight: 700, color: '#FF4FA3', fontFamily: 'Playfair Display, serif' }}>
+                    <span style={{ fontSize: 14, fontWeight: 700, color: '#5E8C3E', fontFamily: 'Playfair Display, serif' }}>
                       {p.amount} pts
                     </span>
                   </div>
@@ -105,10 +105,10 @@ export default function ScoringOverlay({ winResult, playerNames, onPlayAgain, vi
               alignItems: 'center',
               padding: '4px 0',
             }}>
-              <span style={{ fontSize: 13, fontFamily: 'Nunito', color: i === winnerIdx && !isWallExhausted ? '#FF4FA3' : 'rgba(255,255,255,0.85)', fontWeight: i === winnerIdx && !isWallExhausted ? 700 : 400 }}>
+              <span style={{ fontSize: 13, fontFamily: 'Nunito', color: i === winnerIdx && !isWallExhausted ? '#5E8C3E' : 'rgba(255,255,255,0.85)', fontWeight: i === winnerIdx && !isWallExhausted ? 700 : 400 }}>
                 {playerNames[i]} {i === 0 ? '(You)' : ''}
               </span>
-              <span style={{ fontSize: 15, fontWeight: 700, color: s >= 0 ? '#3DDBA7' : '#FF7A45', fontFamily: 'Playfair Display, serif' }}>
+              <span style={{ fontSize: 15, fontWeight: 700, color: s >= 0 ? '#A4D65E' : '#E2A03F', fontFamily: 'Playfair Display, serif' }}>
                 {s >= 0 ? '+' : ''}{s}
               </span>
             </div>
@@ -122,7 +122,7 @@ export default function ScoringOverlay({ winResult, playerNames, onPlayAgain, vi
             padding: '14px 0',
             borderRadius: 12,
             border: 'none',
-            background: 'linear-gradient(135deg, #FF4FA3, #FF7A45)',
+            background: 'linear-gradient(135deg, #5E8C3E, #E2A03F)',
             color: 'white',
             fontSize: 16,
             fontWeight: 800,
@@ -130,7 +130,7 @@ export default function ScoringOverlay({ winResult, playerNames, onPlayAgain, vi
             cursor: 'pointer',
             letterSpacing: '0.04em',
             marginTop: 4,
-            boxShadow: '0 4px 16px rgba(255,79,163,0.35)',
+            boxShadow: '0 4px 16px rgba(94,140,62,0.35)',
           }}
         >
           Play Again

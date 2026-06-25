@@ -2,24 +2,24 @@ import React, { useState } from 'react';
 import { SUITS } from '../data/tiles.js';
 
 const DEMO_TILES = [
-  { suit: SUITS.BAM, value: 1, color: '#3DDBA7' },
-  { suit: SUITS.CRAK, value: 7, color: '#FF4FA3' },
-  { suit: SUITS.DOT, value: 5, color: '#4FCBFF' },
-  { suit: SUITS.WIND, value: 'East', color: '#2A2140' },
-  { suit: SUITS.DRAGON, value: 'Red', color: '#FF4FA3' },
-  { suit: SUITS.JOKER, value: 'joker', color: '#FF7A45' },
+  { suit: SUITS.BAM, value: 1, color: '#A4D65E' },
+  { suit: SUITS.CRAK, value: 7, color: '#5E8C3E' },
+  { suit: SUITS.DOT, value: 5, color: '#7FB3A4' },
+  { suit: SUITS.WIND, value: 'East', color: '#2B3A2A' },
+  { suit: SUITS.DRAGON, value: 'Red', color: '#5E8C3E' },
+  { suit: SUITS.JOKER, value: 'joker', color: '#E2A03F' },
 ];
 
 function FloatingTile({ tile, delay, x, y, size }) {
   const s = size || 44;
   const colors = {
-    [SUITS.BAM]: '#3DDBA7',
-    [SUITS.CRAK]: '#FF4FA3',
-    [SUITS.DOT]: '#4FCBFF',
-    [SUITS.WIND]: '#2A2140',
-    [SUITS.DRAGON]: '#FF4FA3',
-    [SUITS.JOKER]: '#FF7A45',
-    [SUITS.FLOWER]: '#FF7A45',
+    [SUITS.BAM]: '#A4D65E',
+    [SUITS.CRAK]: '#5E8C3E',
+    [SUITS.DOT]: '#7FB3A4',
+    [SUITS.WIND]: '#2B3A2A',
+    [SUITS.DRAGON]: '#5E8C3E',
+    [SUITS.JOKER]: '#E2A03F',
+    [SUITS.FLOWER]: '#E2A03F',
   };
   const labels = {
     [SUITS.BAM]: `${tile.value}B`,
@@ -38,15 +38,15 @@ function FloatingTile({ tile, delay, x, y, size }) {
       top: `${y}%`,
       width: s,
       height: s * 1.3,
-      background: 'linear-gradient(145deg, #ffffff 0%, #fff5fb 60%, #faeef5 100%)',
+      background: 'linear-gradient(145deg, #ffffff 0%, #fbfdf6 60%, #f2f7ea 100%)',
       borderRadius: 5,
-      boxShadow: '2px 2px 0 #f0d8e8, 3px 3px 5px rgba(0,0,0,0.15)',
+      boxShadow: '2px 2px 0 #dce8cc, 3px 3px 5px rgba(0,0,0,0.15)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       fontSize: s * 0.28,
       fontWeight: 800,
-      color: colors[tile.suit] || '#2A2140',
+      color: colors[tile.suit] || '#2B3A2A',
       fontFamily: 'Nunito, sans-serif',
       animation: `floatTile 4s ease-in-out ${delay}ms infinite alternate`,
       opacity: 0.35,
@@ -79,7 +79,7 @@ export default function HomeScreen({ onNewGame }) {
       alignItems: 'center',
       justifyContent: 'center',
       overflow: 'hidden',
-      background: '#FFF6EE',
+      background: '#F4F1E4',
     }}>
       <style>{`
         @keyframes floatTile {
@@ -106,7 +106,7 @@ export default function HomeScreen({ onNewGame }) {
         position: 'absolute', inset: 10,
         border: '6px solid transparent',
         borderRadius: 16,
-        background: 'linear-gradient(#FFF6EE, #FFF6EE) padding-box, linear-gradient(135deg, #FF4FA3, #FF7A45, #FF4FA3) border-box',
+        background: 'linear-gradient(#F4F1E4, #F4F1E4) padding-box, linear-gradient(135deg, #5E8C3E, #E2A03F, #5E8C3E) border-box',
         pointerEvents: 'none',
       }}/>
 
@@ -123,7 +123,7 @@ export default function HomeScreen({ onNewGame }) {
             fontFamily: 'Playfair Display, serif',
             fontSize: 32,
             fontWeight: 700,
-            background: 'linear-gradient(135deg, #FF4FA3, #FF7A45)',
+            background: 'linear-gradient(135deg, #5E8C3E, #E2A03F)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
@@ -135,7 +135,7 @@ export default function HomeScreen({ onNewGame }) {
             margin: '8px 0 0',
             fontFamily: 'Nunito, sans-serif',
             fontSize: 13,
-            color: 'rgba(42,33,64,0.5)',
+            color: 'rgba(43,58,42,0.5)',
             letterSpacing: '0.08em',
             textTransform: 'uppercase',
           }}>
@@ -145,9 +145,9 @@ export default function HomeScreen({ onNewGame }) {
 
         {/* Decorative divider */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', maxWidth: 280 }}>
-          <div style={{ flex: 1, height: 1, background: 'linear-gradient(to right, transparent, rgba(255,79,163,0.3))' }}/>
-          <span style={{ color: '#FF4FA3', fontSize: 16 }}>✦</span>
-          <div style={{ flex: 1, height: 1, background: 'linear-gradient(to left, transparent, rgba(255,79,163,0.3))' }}/>
+          <div style={{ flex: 1, height: 1, background: 'linear-gradient(to right, transparent, rgba(94,140,62,0.3))' }}/>
+          <span style={{ color: '#5E8C3E', fontSize: 16 }}>✦</span>
+          <div style={{ flex: 1, height: 1, background: 'linear-gradient(to left, transparent, rgba(94,140,62,0.3))' }}/>
         </div>
 
         {/* Game info */}
@@ -159,12 +159,12 @@ export default function HomeScreen({ onNewGame }) {
           ].map(({ icon, text }) => (
             <div key={text} style={{
               display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
-              background: 'rgba(42,33,64,0.06)', borderRadius: 10,
-              padding: '8px 14px', border: '1px solid rgba(255,79,163,0.15)',
+              background: 'rgba(43,58,42,0.06)', borderRadius: 10,
+              padding: '8px 14px', border: '1px solid rgba(94,140,62,0.15)',
               minWidth: 70,
             }}>
               <span style={{ fontSize: 20 }}>{icon}</span>
-              <span style={{ fontSize: 11, color: 'rgba(42,33,64,0.65)', fontFamily: 'Nunito', fontWeight: 600 }}>{text}</span>
+              <span style={{ fontSize: 11, color: 'rgba(43,58,42,0.65)', fontFamily: 'Nunito', fontWeight: 600 }}>{text}</span>
             </div>
           ))}
         </div>
@@ -177,14 +177,14 @@ export default function HomeScreen({ onNewGame }) {
             padding: '16px 0',
             borderRadius: 14,
             border: 'none',
-            background: 'linear-gradient(135deg, #FF4FA3 0%, #FF7A45 50%, #FF4FA3 100%)',
+            background: 'linear-gradient(135deg, #5E8C3E 0%, #E2A03F 50%, #5E8C3E 100%)',
             backgroundSize: '200% auto',
             color: 'white',
             fontSize: 18,
             fontWeight: 800,
             fontFamily: 'Playfair Display, serif',
             cursor: 'pointer',
-            boxShadow: '0 4px 20px rgba(255,79,163,0.4), 0 2px 0 #cc3a7e',
+            boxShadow: '0 4px 20px rgba(94,140,62,0.4), 0 2px 0 #cc3a7e',
             letterSpacing: '0.04em',
             animation: 'pinkShimmer 2s linear infinite',
           }}
@@ -196,9 +196,9 @@ export default function HomeScreen({ onNewGame }) {
         <button
           onClick={() => setShowRules(v => !v)}
           style={{
-            background: 'none', border: '1px solid rgba(255,79,163,0.25)',
+            background: 'none', border: '1px solid rgba(94,140,62,0.25)',
             borderRadius: 8, padding: '8px 20px',
-            color: 'rgba(42,33,64,0.55)', fontSize: 13,
+            color: 'rgba(43,58,42,0.55)', fontSize: 13,
             fontFamily: 'Nunito', cursor: 'pointer',
           }}
         >
@@ -207,11 +207,11 @@ export default function HomeScreen({ onNewGame }) {
 
         {showRules && (
           <div style={{
-            background: 'rgba(42,33,64,0.06)', border: '1px solid rgba(255,79,163,0.15)',
+            background: 'rgba(43,58,42,0.06)', border: '1px solid rgba(94,140,62,0.15)',
             borderRadius: 12, padding: 16, maxWidth: 320, fontSize: 12,
-            color: 'rgba(42,33,64,0.75)', fontFamily: 'Nunito', lineHeight: 1.6,
+            color: 'rgba(43,58,42,0.75)', fontFamily: 'Nunito', lineHeight: 1.6,
           }}>
-            <p style={{ margin: '0 0 8px', color: '#FF4FA3', fontWeight: 700, fontFamily: 'Playfair Display, serif', fontSize: 14 }}>American Mahjong Rules</p>
+            <p style={{ margin: '0 0 8px', color: '#5E8C3E', fontWeight: 700, fontFamily: 'Playfair Display, serif', fontSize: 14 }}>American Mahjong Rules</p>
             <ul style={{ margin: 0, paddingLeft: 16 }}>
               <li>Tap a tile to select it, tap again to discard</li>
               <li>Charleston: pass 3 tiles in each direction</li>
@@ -227,7 +227,7 @@ export default function HomeScreen({ onNewGame }) {
       {/* Version */}
       <div style={{
         position: 'absolute', bottom: 16,
-        fontSize: 10, color: 'rgba(42,33,64,0.25)',
+        fontSize: 10, color: 'rgba(43,58,42,0.25)',
         fontFamily: 'Nunito',
       }}>
         American Mahjong v1.0

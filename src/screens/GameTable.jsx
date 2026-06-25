@@ -57,7 +57,7 @@ export default function GameTable({
         position: 'absolute', inset: 0,
         border: '8px solid transparent',
         borderRadius: 0,
-        background: 'linear-gradient(#2A2140, #2A2140) padding-box, linear-gradient(135deg, #FF4FA3 0%, #FF7A45 30%, #FF4FA3 50%, #FF7A45 70%, #FF4FA3 100%) border-box',
+        background: 'linear-gradient(#2B3A2A, #2B3A2A) padding-box, linear-gradient(135deg, #5E8C3E 0%, #E2A03F 30%, #5E8C3E 50%, #E2A03F 70%, #5E8C3E 100%) border-box',
         pointerEvents: 'none',
         zIndex: 1,
       }}/>
@@ -67,15 +67,15 @@ export default function GameTable({
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         padding: '8px 16px 6px',
         zIndex: 2, flexShrink: 0,
-        background: 'rgba(42,33,64,0.6)',
+        background: 'rgba(43,58,42,0.6)',
       }}>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <WallCounter remaining={wallRemaining} total={160}/>
           <div style={{
-            fontSize: 11, color: isHumanTurn ? '#FF4FA3' : 'rgba(255,255,255,0.5)',
+            fontSize: 11, color: isHumanTurn ? '#5E8C3E' : 'rgba(255,255,255,0.5)',
             fontFamily: 'Nunito', fontWeight: 700,
-            padding: '4px 8px', background: isHumanTurn ? 'rgba(255,79,163,0.12)' : 'transparent',
-            borderRadius: 6, border: isHumanTurn ? '1px solid rgba(255,79,163,0.35)' : '1px solid transparent',
+            padding: '4px 8px', background: isHumanTurn ? 'rgba(94,140,62,0.12)' : 'transparent',
+            borderRadius: 6, border: isHumanTurn ? '1px solid rgba(94,140,62,0.35)' : '1px solid transparent',
             transition: 'all 0.3s',
           }}>
             {isHumanTurn ? '► Your Turn' : `${gameState.players[currentPlayer]?.name}'s Turn`}
@@ -87,13 +87,13 @@ export default function GameTable({
             <button
               onClick={() => onDeclareMahjong?.()}
               style={{
-                background: 'linear-gradient(135deg, #FF4FA3, #FF7A45)',
+                background: 'linear-gradient(135deg, #5E8C3E, #E2A03F)',
                 border: 'none', borderRadius: 8,
                 padding: '6px 12px',
                 color: 'white', fontSize: 12, fontWeight: 800,
                 fontFamily: 'Playfair Display, serif', cursor: 'pointer',
                 animation: 'pulseGlow 1s ease-in-out infinite',
-                boxShadow: '0 0 12px rgba(255,79,163,0.5)',
+                boxShadow: '0 0 12px rgba(94,140,62,0.5)',
               }}
             >
               Mahjong!
@@ -102,9 +102,9 @@ export default function GameTable({
           <button
             onClick={() => setCardOpen(true)}
             style={{
-              background: 'rgba(79,203,255,0.12)', border: '1px solid rgba(79,203,255,0.3)',
+              background: 'rgba(127,179,164,0.12)', border: '1px solid rgba(127,179,164,0.3)',
               borderRadius: 8, padding: '6px 10px',
-              color: '#4FCBFF', fontSize: 11, fontFamily: 'Nunito', fontWeight: 700,
+              color: '#7FB3A4', fontSize: 11, fontFamily: 'Nunito', fontWeight: 700,
               cursor: 'pointer',
             }}
           >
@@ -144,9 +144,9 @@ export default function GameTable({
         {/* Center: discard pool */}
         <div style={{
           flex: 1,
-          background: 'rgba(42,33,64,0.4)',
+          background: 'rgba(43,58,42,0.4)',
           borderRadius: 8,
-          border: '1px solid rgba(255,79,163,0.08)',
+          border: '1px solid rgba(94,140,62,0.08)',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
@@ -184,8 +184,8 @@ export default function GameTable({
 
       {/* Human player hand */}
       <div style={{
-        background: 'rgba(42,33,64,0.7)',
-        borderTop: '1px solid rgba(255,79,163,0.2)',
+        background: 'rgba(43,58,42,0.7)',
+        borderTop: '1px solid rgba(94,140,62,0.2)',
         zIndex: 2, flexShrink: 0,
         paddingBottom: 'env(safe-area-inset-bottom, 8px)',
       }}>

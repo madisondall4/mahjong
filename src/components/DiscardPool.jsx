@@ -72,7 +72,7 @@ export default function DiscardPool({ discards = [], lastDiscard = null, onCallM
         <button
           onClick={onCallMahjong}
           style={{
-            background: 'linear-gradient(135deg, #FF4FA3, #FF7A45)',
+            background: 'linear-gradient(135deg, #5E8C3E, #E2A03F)',
             color: 'white',
             border: 'none',
             borderRadius: 20,
@@ -81,7 +81,7 @@ export default function DiscardPool({ discards = [], lastDiscard = null, onCallM
             fontWeight: 800,
             fontFamily: 'Playfair Display, serif',
             cursor: 'pointer',
-            boxShadow: '0 4px 12px rgba(255,79,163,0.4)',
+            boxShadow: '0 4px 12px rgba(94,140,62,0.4)',
             animation: 'pulseGlow 1s ease-in-out infinite',
             letterSpacing: '0.05em',
           }}
