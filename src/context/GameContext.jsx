@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useReducer } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useRef } from 'react';
 import { createInitialState } from '../logic/gameEngine.js';
+import { saveGame } from '../utils/persistence.js';
 
 const GameContext = createContext(null);
 
@@ -22,6 +23,24 @@ function gameReducer(state, action) {
 
 export function GameProvider({ children }) {
   const [state, dispatch] = useReducer(gameReducer, createInitialState());
+  const stateRef = useRef(state);
+  stateRef.current = state;
+
+  useEffect(() => {
+    if (state.phase !== 'home') {
+      saveGame(state);
+    }
+  }, [state]);
+
+  useEffect(() => {
+    function onBeforeUnload() {
+      if (stateRef.current.phase !== 'home') {
+        saveGame(stateRef.current);
+      }
+    }
+    window.addEventListener('beforeunload', onBeforeUnload);
+    return () => window.removeEventListener('beforeunload', onBeforeUnload);
+  }, []);
 
   function setState(newState) {
     dispatch({ type: 'SET_STATE', state: newState });

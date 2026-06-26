@@ -67,7 +67,24 @@ const BG_TILES = [
   { suit: SUITS.DOT, value: 8, x: 40, y: 5, delay: 400 },
 ];
 
-export default function HomeScreen({ onNewGame }) {
+function formatTimeAgo(ts) {
+  const diff = Date.now() - ts;
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  return `${Math.floor(hrs / 24)}d ago`;
+}
+
+const PHASE_LABELS = {
+  charleston: 'Charleston',
+  playing: 'In Play',
+  declaration: 'Declaration',
+  summary: 'Scoring',
+};
+
+export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo }) {
   const [showRules, setShowRules] = useState(false);
 
   return (
@@ -169,21 +186,56 @@ export default function HomeScreen({ onNewGame }) {
           ))}
         </div>
 
+        {/* Resume Game button */}
+        {onResumeGame && savedGameInfo && (
+          <button
+            onClick={onResumeGame}
+            style={{
+              width: '100%', maxWidth: 280,
+              padding: '16px 0',
+              borderRadius: 999,
+              border: 'none',
+              background: '#5F7D4F',
+              color: 'white',
+              fontSize: 17,
+              fontWeight: 700,
+              fontFamily: 'Playfair Display, serif',
+              cursor: 'pointer',
+              boxShadow: '0 8px 20px rgba(60,82,54,0.28)',
+              letterSpacing: '0.03em',
+              position: 'relative',
+            }}
+          >
+            Resume Game
+            <span style={{
+              display: 'block',
+              fontSize: 10,
+              fontFamily: 'Nunito, sans-serif',
+              fontWeight: 600,
+              opacity: 0.75,
+              marginTop: 2,
+              letterSpacing: '0.06em',
+            }}>
+              Round {savedGameInfo.roundNumber} · {PHASE_LABELS[savedGameInfo.phase] || savedGameInfo.phase} · {formatTimeAgo(savedGameInfo.timestamp)}
+            </span>
+          </button>
+        )}
+
         {/* New Game button */}
         <button
           onClick={onNewGame}
           style={{
             width: '100%', maxWidth: 280,
-            padding: '16px 0',
+            padding: onResumeGame ? '12px 0' : '16px 0',
             borderRadius: 999,
-            border: 'none',
-            background: '#5F7D4F',
-            color: 'white',
-            fontSize: 17,
+            border: onResumeGame ? '1.5px solid rgba(95,125,79,0.35)' : 'none',
+            background: onResumeGame ? 'transparent' : '#5F7D4F',
+            color: onResumeGame ? '#5F7D4F' : 'white',
+            fontSize: onResumeGame ? 15 : 17,
             fontWeight: 700,
             fontFamily: 'Playfair Display, serif',
             cursor: 'pointer',
-            boxShadow: '0 8px 20px rgba(60,82,54,0.28)',
+            boxShadow: onResumeGame ? 'none' : '0 8px 20px rgba(60,82,54,0.28)',
             letterSpacing: '0.03em',
           }}
         >

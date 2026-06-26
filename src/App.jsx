@@ -15,6 +15,7 @@ import {
   skipSecondCharleston,
   isWallExhausted,
 } from './logic/gameEngine.js';
+import { loadGame, clearSavedGame, getSavedGameInfo } from './utils/persistence.js';
 import {
   chooseTilesForCharleston,
   chooseTileToDiscard,
@@ -174,8 +175,17 @@ function AppInner() {
     if (aiTimerRef.current) clearTimeout(aiTimerRef.current);
     lastAiKey.current = null;
     lastHumanDrawKey.current = null;
+    clearSavedGame();
     const newState = dealTiles(state);
     setState(newState);
+  }
+
+  function handleResumeGame() {
+    const saved = loadGame();
+    if (!saved) return;
+    lastAiKey.current = null;
+    lastHumanDrawKey.current = null;
+    setState(saved);
   }
 
   function handleCharlestonPass(humanUids) {
@@ -295,11 +305,8 @@ function AppInner() {
     if (aiTimerRef.current) clearTimeout(aiTimerRef.current);
     lastAiKey.current = null;
     lastHumanDrawKey.current = null;
+    clearSavedGame();
     reset();
-    setTimeout(() => {
-      const s = { ...state, phase: 'home' };
-      setState(s);
-    }, 0);
   }
 
   // ── Routing ────────────────────────────────────────────────────────────────
@@ -318,7 +325,14 @@ function AppInner() {
   };
 
   if (state.phase === 'home') {
-    return <HomeScreen onNewGame={handleNewGame}/>;
+    const savedInfo = getSavedGameInfo();
+    return (
+      <HomeScreen
+        onNewGame={handleNewGame}
+        onResumeGame={savedInfo ? handleResumeGame : null}
+        savedGameInfo={savedInfo}
+      />
+    );
   }
 
   if (state.phase === 'charleston') {
