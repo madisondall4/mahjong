@@ -100,11 +100,24 @@ export default function CharlestonUI({
         )}
       </div>
 
-      {/* Hand tiles */}
+      {/* Hand tiles + flowers together */}
       <div style={{
         display: 'flex', flexWrap: 'wrap', gap: 6, justifyContent: 'center',
         padding: '8px 0', flex: 1, alignContent: 'flex-start',
       }}>
+        {flowers.map(f => (
+          <div key={f.uid} style={{ opacity: 0.85 }}>
+            <MahjongTile tile={f} size="md"/>
+          </div>
+        ))}
+        {flowers.length > 0 && hand.length > 0 && (
+          <div style={{
+            width: 2, alignSelf: 'stretch',
+            marginTop: 4, marginBottom: 4,
+            borderRadius: 1,
+            background: 'rgba(201,94,131,0.25)',
+          }}/>
+        )}
         {hand.map(tile => (
           <div
             key={tile.uid}
@@ -122,14 +135,6 @@ export default function CharlestonUI({
           </div>
         ))}
       </div>
-
-      {/* Flowers display */}
-      {flowers.length > 0 && (
-        <div style={{ display: 'flex', gap: 4, justifyContent: 'center', alignItems: 'center' }}>
-          <span style={{ fontSize: 11, color: '#C95E83', fontFamily: 'Nunito' }}>Flowers:</span>
-          {flowers.map(f => <MahjongTile key={f.uid} tile={f} size="sm"/>)}
-        </div>
-      )}
 
       {/* Pass button */}
       {waitingForAI ? (

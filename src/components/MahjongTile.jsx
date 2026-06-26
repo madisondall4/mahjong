@@ -147,72 +147,127 @@ function WindSymbol({ value, size }) {
   );
 }
 
+function DragonPaths({ color }) {
+  return (
+    <g>
+      <path d="M14,28 C10,28 8,26 9,23 C10,20 13,21 12,23 C11,25 9,24 10,23"
+        fill="none" stroke={color} strokeWidth="1.4" strokeLinecap="round"/>
+      <path d="M14,28 C16,26 20,25 19,21 C18,17 13,18 14,14 C15,10 19,9 20,7"
+        fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round"/>
+      <path d="M18,23 C19,22 19,21 18,20" fill="none" stroke={color} strokeWidth="0.7" opacity="0.6"/>
+      <path d="M15,19 C16,18 16,17 15,16" fill="none" stroke={color} strokeWidth="0.7" opacity="0.6"/>
+      <path d="M16,15 C17,14 17,13 16,12" fill="none" stroke={color} strokeWidth="0.7" opacity="0.6"/>
+      <ellipse cx="20" cy="6" rx="4" ry="3" fill={color}/>
+      <circle cx="21.5" cy="5.5" r="0.9" fill="white"/>
+      <circle cx="21.8" cy="5.5" r="0.45" fill="#1a1a1a"/>
+      <path d="M24,5.5 L27,4.5 L27,6 L24,6.5" fill={color}/>
+      <path d="M27,4.5 L28.5,3.5" fill="none" stroke={color} strokeWidth="0.8" strokeLinecap="round"/>
+      <path d="M19,4 C18,2 20,1 21,2" fill="none" stroke={color} strokeWidth="1" strokeLinecap="round"/>
+      <path d="M17,5 C15,4 14,5 15,7" fill="none" stroke={color} strokeWidth="0.8" opacity="0.7"/>
+      <path d="M18,7 C16,7 15,8 16,9" fill="none" stroke={color} strokeWidth="0.8" opacity="0.7"/>
+      <path d="M18,13 C20,14 21,15 20,16 L21,16.5" fill="none" stroke={color} strokeWidth="1" strokeLinecap="round"/>
+      <path d="M16,22 C18,23 19,24 18,25 L19,25.5" fill="none" stroke={color} strokeWidth="1" strokeLinecap="round"/>
+      <path d="M16,24 C15,23 15,22 16,21" fill="none" stroke={color} strokeWidth="0.6" opacity="0.5"/>
+    </g>
+  );
+}
+
 function DragonSymbol({ value, size }) {
   const s = size === 'lg' ? 36 : size === 'md' ? 28 : 18;
+  const colors = { Red: '#C5302B', Green: '#2E7D43', White: '#5A6E7A' };
+  const color = colors[value] || '#2C3E50';
 
   if (value === 'White') {
-    // White dragon (soap) — classic double blue frame, 白 character.
     return (
       <svg width={s} height={s} viewBox="0 0 32 32">
-        <rect x="5" y="5" width="22" height="22" rx="4" fill="none" stroke="#1E6FA8" strokeWidth="2"/>
-        <rect x="8" y="8" width="16" height="16" rx="2.5" fill="none" stroke="#1E6FA8" strokeWidth="1" opacity="0.6"/>
-        <text x="16" y="21" textAnchor="middle" fontSize="11" fontWeight="700" fontFamily="serif" fill="#1E6FA8">白</text>
+        <rect x="4" y="4" width="24" height="24" rx="3" fill="none" stroke="#1E6FA8" strokeWidth="1.8"/>
+        <rect x="7" y="7" width="18" height="18" rx="2" fill="none" stroke="#1E6FA8" strokeWidth="0.8" opacity="0.5"/>
+        <g transform="translate(16,16) scale(0.7) translate(-16,-16)">
+          <DragonPaths color="#7A8FA0"/>
+        </g>
       </svg>
     );
   }
 
-  if (value === 'Red') {
-    // Red dragon — 中 in red/pink with a red diamond.
-    return (
-      <svg width={s} height={s} viewBox="0 0 32 32">
-        <polygon points="16,3 29,16 16,29 3,16" fill="none" stroke="#C5302B" strokeWidth="1.5"/>
-        <text x="16" y="21" textAnchor="middle" fontSize="15" fontWeight="700" fontFamily="serif" fill="#C5302B">
-          中
-        </text>
-      </svg>
-    );
-  }
-
-  // Green dragon — 發 in green.
   return (
     <svg width={s} height={s} viewBox="0 0 32 32">
-      <polygon points="16,3 29,16 16,29 3,16" fill="none" stroke="#2E7D43" strokeWidth="1.5"/>
-      <text x="16" y="21" textAnchor="middle" fontSize="15" fontWeight="700" fontFamily="serif" fill="#2E7D43">
-        發
-      </text>
+      <DragonPaths color={color}/>
     </svg>
   );
 }
 
 function FlowerSymbol({ value, size }) {
   const s = size === 'lg' ? 36 : size === 'md' ? 28 : 18;
-  const colors = ['#C95E83', '#1E6FA8', '#D98A3D', '#2E7D43'];
-  const color = colors[(value - 1) % 4];
 
-  // Outer ring: 8 petals
-  const outerPetals = Array.from({ length: 8 }).map((_, i) => {
-    const deg = i * 45;
-    const rad = (deg * Math.PI) / 180;
-    const cx = 16 + Math.cos(rad) * 7;
-    const cy = 16 + Math.sin(rad) * 7;
-    return <ellipse key={`o${i}`} cx={cx} cy={cy} rx="3.5" ry="5" transform={`rotate(${deg},${cx},${cy})`} fill={color} opacity="0.9"/>;
-  });
+  if (value === 1) {
+    // Tulip — pink
+    return (
+      <svg width={s} height={s} viewBox="0 0 32 32">
+        <path d="M16,24 L16,14" stroke="#2E7D43" strokeWidth="1.5"/>
+        <path d="M13,20 C11,18 12,16 14,17" stroke="#2E7D43" strokeWidth="1" fill="none"/>
+        <path d="M19,21 C21,19 20,17 18,18" stroke="#2E7D43" strokeWidth="1" fill="none"/>
+        <path d="M12,14 C12,8 16,5 16,5 C16,5 20,8 20,14 C20,16 18,16 16,15 C14,16 12,16 12,14Z" fill="#C95E83"/>
+        <path d="M14,13 C14,9 16,7 16,7 C16,7 18,9 18,13 C18,14.5 17,14.5 16,14 C15,14.5 14,14.5 14,13Z" fill="#E87AA4" opacity="0.7"/>
+      </svg>
+    );
+  }
 
-  // Inner ring: 6 petals, lighter
-  const innerPetals = Array.from({ length: 6 }).map((_, i) => {
-    const deg = i * 60 + 22;
-    const rad = (deg * Math.PI) / 180;
-    const cx = 16 + Math.cos(rad) * 4;
-    const cy = 16 + Math.sin(rad) * 4;
-    return <ellipse key={`i${i}`} cx={cx} cy={cy} rx="2.5" ry="3.5" transform={`rotate(${deg},${cx},${cy})`} fill={color} opacity="0.6"/>;
-  });
+  if (value === 2) {
+    // Chrysanthemum — blue
+    return (
+      <svg width={s} height={s} viewBox="0 0 32 32">
+        <path d="M16,26 L16,16" stroke="#2E7D43" strokeWidth="1.5"/>
+        <path d="M14,22 C12,20 11,18 13,19" stroke="#2E7D43" strokeWidth="0.8" fill="none"/>
+        {[0,30,60,90,120,150,180,210,240,270,300,330].map(deg => {
+          const rad = (deg * Math.PI) / 180;
+          const cx = 16 + Math.cos(rad) * 5.5;
+          const cy = 13 + Math.sin(rad) * 5.5;
+          return <ellipse key={deg} cx={cx} cy={cy} rx="1.8" ry="4.2"
+            transform={`rotate(${deg},${cx},${cy})`} fill="#1E6FA8" opacity="0.85"/>;
+        })}
+        {[15,75,135,195,255,315].map(deg => {
+          const rad = (deg * Math.PI) / 180;
+          const cx = 16 + Math.cos(rad) * 3;
+          const cy = 13 + Math.sin(rad) * 3;
+          return <ellipse key={deg} cx={cx} cy={cy} rx="1.3" ry="3"
+            transform={`rotate(${deg},${cx},${cy})`} fill="#4A9FD4" opacity="0.7"/>;
+        })}
+        <circle cx="16" cy="13" r="2" fill="#D98A3D"/>
+      </svg>
+    );
+  }
 
+  if (value === 3) {
+    // Orchid — orange/amber
+    return (
+      <svg width={s} height={s} viewBox="0 0 32 32">
+        <path d="M16,27 C16,27 15,20 16,16" stroke="#2E7D43" strokeWidth="1.5"/>
+        <path d="M12,25 C10,22 11,19 14,18" stroke="#2E7D43" strokeWidth="1" fill="none"/>
+        <path d="M20,24 C22,21 21,18 18,17" stroke="#2E7D43" strokeWidth="1" fill="none"/>
+        <ellipse cx="16" cy="10" rx="3" ry="5" fill="#D98A3D" opacity="0.85"/>
+        <ellipse cx="11" cy="12" rx="2.5" ry="4" transform="rotate(-30,11,12)" fill="#D98A3D" opacity="0.8"/>
+        <ellipse cx="21" cy="12" rx="2.5" ry="4" transform="rotate(30,21,12)" fill="#D98A3D" opacity="0.8"/>
+        <ellipse cx="13" cy="16" rx="2" ry="3" transform="rotate(-15,13,16)" fill="#E8A54D" opacity="0.6"/>
+        <ellipse cx="19" cy="16" rx="2" ry="3" transform="rotate(15,19,16)" fill="#E8A54D" opacity="0.6"/>
+        <circle cx="16" cy="12" r="1.8" fill="#C5302B"/>
+        <circle cx="16" cy="12" r="0.8" fill="#D98A3D"/>
+      </svg>
+    );
+  }
+
+  // value === 4: Lotus — green
   return (
     <svg width={s} height={s} viewBox="0 0 32 32">
-      {outerPetals}
-      {innerPetals}
-      <circle cx="16" cy="16" r="3" fill="white"/>
-      <text x="16" y="19.5" textAnchor="middle" fontSize="5.5" fontWeight="700" fill="#2C3E50">{value}</text>
+      <path d="M16,27 L16,18" stroke="#2E7D43" strokeWidth="1.5"/>
+      <ellipse cx="16" cy="14" rx="3.5" ry="6" fill="#2E7D43" opacity="0.85"/>
+      <ellipse cx="11" cy="15" rx="3" ry="5" transform="rotate(-20,11,15)" fill="#2E7D43" opacity="0.7"/>
+      <ellipse cx="21" cy="15" rx="3" ry="5" transform="rotate(20,21,15)" fill="#2E7D43" opacity="0.7"/>
+      <ellipse cx="8" cy="17" rx="2.5" ry="4" transform="rotate(-40,8,17)" fill="#5FA04F" opacity="0.5"/>
+      <ellipse cx="24" cy="17" rx="2.5" ry="4" transform="rotate(40,24,17)" fill="#5FA04F" opacity="0.5"/>
+      <ellipse cx="16" cy="13" rx="2" ry="4" fill="#C95E83"/>
+      <ellipse cx="14" cy="14" rx="1.5" ry="3" transform="rotate(-10,14,14)" fill="#C95E83" opacity="0.7"/>
+      <ellipse cx="18" cy="14" rx="1.5" ry="3" transform="rotate(10,18,14)" fill="#C95E83" opacity="0.7"/>
+      <circle cx="16" cy="12" r="1.2" fill="#D98A3D"/>
     </svg>
   );
 }

@@ -1,31 +1,12 @@
 import React, { useRef } from 'react';
 import MahjongTile from './MahjongTile';
 
-/**
- * The human player's hand - horizontal scroll row pinned to bottom.
- * @param {Object[]} tiles - array of tile objects
- * @param {Set<number>} selectedUids - set of selected tile uids
- * @param {function} onTileClick - (tile) => void
- * @param {boolean} canDiscard - whether player can discard
- * @param {boolean} animateIn - deal animation
- * @param {Object[]} flowers - player's flower tiles
- */
 export default function PlayerHand({ tiles = [], selectedUids = new Set(), onTileClick, canDiscard = false, animateIn = false, flowers = [] }) {
   const scrollRef = useRef(null);
 
   return (
     <div className="relative">
-      {/* Flowers above hand */}
-      {flowers.length > 0 && (
-        <div className="flex items-center gap-1 px-3 mb-1">
-          <span style={{ fontSize: 10, color: '#C95E83', fontFamily: 'Nunito', fontWeight: 600 }}>Flowers:</span>
-          {flowers.map((f, i) => (
-            <MahjongTile key={f.uid} tile={f} size="sm"/>
-          ))}
-        </div>
-      )}
-
-      {/* Hand row */}
+      {/* Hand row — flowers + tiles together */}
       <div
         ref={scrollRef}
         className="no-scrollbar"
@@ -42,6 +23,32 @@ export default function PlayerHand({ tiles = [], selectedUids = new Set(), onTil
           minHeight: 112,
         }}
       >
+        {/* Flowers shown inline at same size, not selectable */}
+        {flowers.map((f, idx) => (
+          <div key={f.uid} style={{ flexShrink: 0, opacity: 0.85 }}>
+            <MahjongTile
+              tile={f}
+              size="lg"
+              animateIn={animateIn}
+              animDelay={idx * 50}
+            />
+          </div>
+        ))}
+
+        {/* Divider between flowers and hand */}
+        {flowers.length > 0 && tiles.length > 0 && (
+          <div style={{
+            width: 2,
+            alignSelf: 'stretch',
+            marginTop: 8,
+            marginBottom: 8,
+            borderRadius: 1,
+            background: 'rgba(201,94,131,0.25)',
+            flexShrink: 0,
+          }}/>
+        )}
+
+        {/* Hand tiles */}
         {tiles.map((tile, idx) => (
           <div
             key={tile.uid}
@@ -56,7 +63,7 @@ export default function PlayerHand({ tiles = [], selectedUids = new Set(), onTil
               selected={selectedUids.has(tile.uid)}
               onClick={canDiscard || onTileClick ? () => onTileClick?.(tile) : undefined}
               animateIn={animateIn}
-              animDelay={idx * 50}
+              animDelay={(flowers.length + idx) * 50}
             />
           </div>
         ))}
