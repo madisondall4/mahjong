@@ -32,22 +32,32 @@ function BamSymbol({ value, size }) {
     );
   }
 
-  // 2–9 Bam render exactly `value` bamboo sticks in a countable grid.
+  // 2–9 Bam render exactly `value` segmented bamboo stalks in a countable grid.
   function Stick({ cx, cy, h, color }) {
-    const w = 4;
+    const w = 4.2;
     const x = cx - w / 2;
     const y = cy - h / 2;
+    const n1 = y + h * 0.34;
+    const n2 = y + h * 0.67;
     return (
       <g>
+        {/* stalk */}
         <rect x={x} y={y} width={w} height={h} rx={w / 2} fill={color}/>
-        <line x1={x} y1={y + h * 0.34} x2={x + w} y2={y + h * 0.34} stroke="#2C3E50" strokeWidth="0.6" opacity="0.45"/>
-        <line x1={x} y1={y + h * 0.66} x2={x + w} y2={y + h * 0.66} stroke="#2C3E50" strokeWidth="0.6" opacity="0.45"/>
+        {/* node rings (slightly wider than the stalk for the bamboo joint look) */}
+        <rect x={x - 0.5} y={n1 - 0.7} width={w + 1} height={1.4} rx={0.7} fill={color}/>
+        <rect x={x - 0.5} y={n2 - 0.7} width={w + 1} height={1.4} rx={0.7} fill={color}/>
+        {/* shading line between nodes */}
+        <line x1={cx} y1={y + 1} x2={cx} y2={n1 - 1} stroke="#1B5E32" strokeWidth="0.5" opacity="0.45"/>
+        <line x1={cx} y1={n1 + 1} x2={cx} y2={n2 - 1} stroke="#1B5E32" strokeWidth="0.5" opacity="0.45"/>
+        <line x1={cx} y1={n2 + 1} x2={cx} y2={y + h - 1} stroke="#1B5E32" strokeWidth="0.5" opacity="0.45"/>
+        {/* glossy highlight */}
+        <rect x={x + 0.7} y={y + 1} width={0.9} height={h - 2} rx={0.45} fill="white" opacity="0.4"/>
       </g>
     );
   }
 
   const G = '#2E7D43'; // bamboo green
-  const A = '#C5302B'; // accent stick (traditional red) → pink
+  const A = '#C5302B'; // accent stalk (traditional red)
   // [cx, cy, height, accent?]
   const layouts = {
     2: [[11,16,15],[21,16,15]],
@@ -102,24 +112,32 @@ function DotSymbol({ value, size }) {
     8: [[9, 8], [16, 8], [23, 8], [9, 16], [23, 16], [9, 24], [16, 24], [23, 24]],
     9: [[9, 8], [16, 8], [23, 8], [9, 16], [16, 16], [23, 16], [9, 24], [16, 24], [23, 24]],
   };
-  // 1 Dot is the large ornate circle — concentric green / pink / blue rings.
+  // 1 Dot is the large ornate flower-wheel — green petals, blue ring, red core.
   if (value === 1) {
+    const petals = [0, 45, 90, 135, 180, 225, 270, 315].map(deg => {
+      const rad = (deg * Math.PI) / 180;
+      const px = 16 + Math.cos(rad) * 5.2;
+      const py = 16 + Math.sin(rad) * 5.2;
+      return <circle key={deg} cx={px} cy={py} r="1.5" fill="#2E7D43"/>;
+    });
     return (
       <svg width={s} height={s} viewBox="0 0 32 32">
-        <circle cx="16" cy="16" r="8.5" fill="#2E7D43"/>
-        <circle cx="16" cy="16" r="6.5" fill="white"/>
-        <circle cx="16" cy="16" r="4.8" fill="#C5302B"/>
-        <circle cx="16" cy="16" r="2.9" fill="white"/>
-        <circle cx="16" cy="16" r="1.6" fill="#1E6FA8"/>
+        <circle cx="16" cy="16" r="10" fill="#1E6FA8"/>
+        <circle cx="16" cy="16" r="10" fill="none" stroke="#C5302B" strokeWidth="1"/>
+        <circle cx="16" cy="16" r="8" fill="white"/>
+        {petals}
+        <circle cx="16" cy="16" r="3.4" fill="#C5302B"/>
+        <circle cx="16" cy="16" r="1.5" fill="white"/>
       </svg>
     );
   }
-  // 2–9 Dots: blue rings (the "circles" suit) with pink centers.
+  // 2–9 Dots: ringed "wheel" circles (the circles suit) — blue ring, white gap, red pip.
   const dots = (dotPositions[value] || []).map(([cx, cy], i) => (
     <g key={i}>
-      <circle cx={cx} cy={cy} r="3.6" fill="#1E6FA8"/>
-      <circle cx={cx} cy={cy} r="2.1" fill="white"/>
-      <circle cx={cx} cy={cy} r="0.9" fill="#C5302B"/>
+      <circle cx={cx} cy={cy} r="3.7" fill="#1E6FA8"/>
+      <circle cx={cx} cy={cy} r="2.6" fill="white"/>
+      <circle cx={cx} cy={cy} r="1.7" fill="#1E6FA8"/>
+      <circle cx={cx} cy={cy} r="0.85" fill="#C5302B"/>
     </g>
   ));
   return <svg width={s} height={s} viewBox="0 0 32 32">{dots}</svg>;
@@ -148,26 +166,38 @@ function WindSymbol({ value, size }) {
 }
 
 function DragonPaths({ color }) {
+  // A stylized coiled serpent-dragon read top-down: head & jaws up top,
+  // sinuous spiked body, curled tail at the bottom, chasing a flaming pearl.
   return (
     <g>
-      <path d="M14,28 C10,28 8,26 9,23 C10,20 13,21 12,23 C11,25 9,24 10,23"
-        fill="none" stroke={color} strokeWidth="1.4" strokeLinecap="round"/>
-      <path d="M14,28 C16,26 20,25 19,21 C18,17 13,18 14,14 C15,10 19,9 20,7"
-        fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round"/>
-      <path d="M18,23 C19,22 19,21 18,20" fill="none" stroke={color} strokeWidth="0.7" opacity="0.6"/>
-      <path d="M15,19 C16,18 16,17 15,16" fill="none" stroke={color} strokeWidth="0.7" opacity="0.6"/>
-      <path d="M16,15 C17,14 17,13 16,12" fill="none" stroke={color} strokeWidth="0.7" opacity="0.6"/>
-      <ellipse cx="20" cy="6" rx="4" ry="3" fill={color}/>
-      <circle cx="21.5" cy="5.5" r="0.9" fill="white"/>
-      <circle cx="21.8" cy="5.5" r="0.45" fill="#1a1a1a"/>
-      <path d="M24,5.5 L27,4.5 L27,6 L24,6.5" fill={color}/>
-      <path d="M27,4.5 L28.5,3.5" fill="none" stroke={color} strokeWidth="0.8" strokeLinecap="round"/>
-      <path d="M19,4 C18,2 20,1 21,2" fill="none" stroke={color} strokeWidth="1" strokeLinecap="round"/>
-      <path d="M17,5 C15,4 14,5 15,7" fill="none" stroke={color} strokeWidth="0.8" opacity="0.7"/>
-      <path d="M18,7 C16,7 15,8 16,9" fill="none" stroke={color} strokeWidth="0.8" opacity="0.7"/>
-      <path d="M18,13 C20,14 21,15 20,16 L21,16.5" fill="none" stroke={color} strokeWidth="1" strokeLinecap="round"/>
-      <path d="M16,22 C18,23 19,24 18,25 L19,25.5" fill="none" stroke={color} strokeWidth="1" strokeLinecap="round"/>
-      <path d="M16,24 C15,23 15,22 16,21" fill="none" stroke={color} strokeWidth="0.6" opacity="0.5"/>
+      {/* Sinuous body — thick S-curve from tail (bottom) to neck (top) */}
+      <path d="M11,27 C8,24 12,22 15,23 C18,24 19,20 16,19 C13,18 13,14 16,14 C19,14 20,11 18,9"
+        fill="none" stroke={color} strokeWidth="2.6" strokeLinecap="round"/>
+      {/* Dorsal spikes along the back of the body */}
+      <path d="M13,24 l-1.6,1.2 M16.5,22 l0.4,-1.9 M14,18 l-1.9,-0.3 M16.5,15 l0.3,-1.9"
+        fill="none" stroke={color} strokeWidth="1" strokeLinecap="round"/>
+      {/* Curled tail flare at the bottom */}
+      <path d="M11,27 C9,28 8,26 9.5,25" fill="none" stroke={color} strokeWidth="1.3" strokeLinecap="round"/>
+      {/* Head */}
+      <ellipse cx="18.5" cy="7.5" rx="3.6" ry="2.8" transform="rotate(-24,18.5,7.5)" fill={color}/>
+      {/* Open jaw — two prongs reaching toward the pearl */}
+      <path d="M21,6 L24.5,4.2 M21.2,8 L24.8,7" fill="none" stroke={color} strokeWidth="1.2" strokeLinecap="round"/>
+      {/* Horns swept back over the head */}
+      <path d="M16.5,5.5 C15,3.5 16.5,2.5 17.8,3.2" fill="none" stroke={color} strokeWidth="1" strokeLinecap="round"/>
+      <path d="M15.5,7 C13.5,6 13.5,4.5 15,4.5" fill="none" stroke={color} strokeWidth="0.9" strokeLinecap="round"/>
+      {/* Whisker */}
+      <path d="M20,9.5 C22,10.5 23,9.5 22.5,8.5" fill="none" stroke={color} strokeWidth="0.7" strokeLinecap="round" opacity="0.8"/>
+      {/* Eye */}
+      <circle cx="18.6" cy="6.8" r="0.95" fill="white"/>
+      <circle cx="18.9" cy="6.8" r="0.5" fill="#1a1a1a"/>
+      {/* Clawed legs gripping the body */}
+      <path d="M15,20 l-2.2,0.6 m2.2,-0.6 l-1.4,1.6" fill="none" stroke={color} strokeWidth="0.8" strokeLinecap="round"/>
+      <path d="M16,15 l2.2,-0.4 m-2.2,0.4 l1.6,1.4" fill="none" stroke={color} strokeWidth="0.8" strokeLinecap="round"/>
+      {/* Flaming pearl the dragon chases */}
+      <circle cx="26" cy="6" r="1.7" fill={color} opacity="0.9"/>
+      <path d="M26,3.6 l0.5,-1.4 M27.7,4.7 l1.3,-0.7 M27.7,7.3 l1.3,0.7"
+        fill="none" stroke={color} strokeWidth="0.7" strokeLinecap="round" opacity="0.7"/>
+      <circle cx="26" cy="6" r="0.7" fill="white"/>
     </g>
   );
 }
@@ -178,13 +208,14 @@ function DragonSymbol({ value, size }) {
   const color = colors[value] || '#2C3E50';
 
   if (value === 'White') {
+    // White dragon ("soap") — the classic blue double frame with a bold B.
     return (
       <svg width={s} height={s} viewBox="0 0 32 32">
-        <rect x="4" y="4" width="24" height="24" rx="3" fill="none" stroke="#1E6FA8" strokeWidth="1.8"/>
-        <rect x="7" y="7" width="18" height="18" rx="2" fill="none" stroke="#1E6FA8" strokeWidth="0.8" opacity="0.5"/>
-        <g transform="translate(16,16) scale(0.7) translate(-16,-16)">
-          <DragonPaths color="#7A8FA0"/>
-        </g>
+        <rect x="4.5" y="4.5" width="23" height="23" rx="3.5" fill="none" stroke="#1E6FA8" strokeWidth="2"/>
+        <rect x="7.5" y="7.5" width="17" height="17" rx="2.5" fill="none" stroke="#1E6FA8" strokeWidth="1" opacity="0.55"/>
+        <text x="16" y="22" textAnchor="middle" fontSize="15" fontWeight="800" fontFamily="Georgia, serif" fill="#1E6FA8">
+          B
+        </text>
       </svg>
     );
   }
