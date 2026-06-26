@@ -79,20 +79,24 @@ function BamSymbol({ value, size }) {
   );
 }
 
+// Standard Chinese numerals 1–9 used on the character (萬 / "crak") suit.
+const CRAK_NUMERALS = ['一', '二', '三', '四', '五', '六', '七', '八', '九'];
+const CJK_SERIF = "'Noto Serif SC','Songti SC','SimSun','STSong',serif";
+
 function CrakSymbol({ value, size }) {
   const s = size === 'lg' ? 36 : size === 'md' ? 28 : 18;
-  const chars = ['一','二','三','四','五','六','七','八','九'];
-  const ch = chars[value - 1] || String(value);
-  const numSize = size === 'sm' ? '13' : '19';
-  const wanSize = size === 'sm' ? '7' : '10';
-  const numY = size === 'sm' ? '14' : '17';
-  const wanY = size === 'sm' ? '22' : '27';
+  const ch = CRAK_NUMERALS[value - 1] || String(value);
+  const numSize = size === 'sm' ? '13' : '18';
+  const wanSize = size === 'sm' ? '7' : '11';
+  const numY = size === 'sm' ? '14' : '16';
+  const wanY = size === 'sm' ? '22' : '28';
   return (
     <svg width={s} height={s} viewBox="0 0 32 32">
-      <text x="16" y={numY} textAnchor="middle" fontSize={numSize} fontWeight="700" fontFamily="serif" fill="#2E7D43">
+      {/* numeral in ink (authentic), 萬 below in red */}
+      <text x="16" y={numY} textAnchor="middle" fontSize={numSize} fontWeight="700" fontFamily={CJK_SERIF} fill="#2C3E50">
         {ch}
       </text>
-      <text x="16" y={wanY} textAnchor="middle" fontSize={wanSize} fontWeight="600" fontFamily="serif" fill="#C5302B">
+      <text x="16" y={wanY} textAnchor="middle" fontSize={wanSize} fontWeight="700" fontFamily={CJK_SERIF} fill="#C5302B">
         萬
       </text>
     </svg>
@@ -165,39 +169,58 @@ function WindSymbol({ value, size }) {
   );
 }
 
-function DragonPaths({ color }) {
-  // A stylized coiled serpent-dragon read top-down: head & jaws up top,
-  // sinuous spiked body, curled tail at the bottom, chasing a flaming pearl.
+function DragonPaths({ color, light }) {
+  // Iconic vertical "dragon medallion" pose: profile head crowned with horns at
+  // the top, two clawed front arms spreading outward, a serpentine coiling body
+  // with a dorsal fin, hind leg, and a flame-tipped tail.
   return (
-    <g>
-      {/* Sinuous body — thick S-curve from tail (bottom) to neck (top) */}
-      <path d="M11,27 C8,24 12,22 15,23 C18,24 19,20 16,19 C13,18 13,14 16,14 C19,14 20,11 18,9"
-        fill="none" stroke={color} strokeWidth="2.6" strokeLinecap="round"/>
-      {/* Dorsal spikes along the back of the body */}
-      <path d="M13,24 l-1.6,1.2 M16.5,22 l0.4,-1.9 M14,18 l-1.9,-0.3 M16.5,15 l0.3,-1.9"
-        fill="none" stroke={color} strokeWidth="1" strokeLinecap="round"/>
-      {/* Curled tail flare at the bottom */}
-      <path d="M11,27 C9,28 8,26 9.5,25" fill="none" stroke={color} strokeWidth="1.3" strokeLinecap="round"/>
-      {/* Head */}
-      <ellipse cx="18.5" cy="7.5" rx="3.6" ry="2.8" transform="rotate(-24,18.5,7.5)" fill={color}/>
-      {/* Open jaw — two prongs reaching toward the pearl */}
-      <path d="M21,6 L24.5,4.2 M21.2,8 L24.8,7" fill="none" stroke={color} strokeWidth="1.2" strokeLinecap="round"/>
-      {/* Horns swept back over the head */}
-      <path d="M16.5,5.5 C15,3.5 16.5,2.5 17.8,3.2" fill="none" stroke={color} strokeWidth="1" strokeLinecap="round"/>
-      <path d="M15.5,7 C13.5,6 13.5,4.5 15,4.5" fill="none" stroke={color} strokeWidth="0.9" strokeLinecap="round"/>
-      {/* Whisker */}
-      <path d="M20,9.5 C22,10.5 23,9.5 22.5,8.5" fill="none" stroke={color} strokeWidth="0.7" strokeLinecap="round" opacity="0.8"/>
-      {/* Eye */}
-      <circle cx="18.6" cy="6.8" r="0.95" fill="white"/>
-      <circle cx="18.9" cy="6.8" r="0.5" fill="#1a1a1a"/>
-      {/* Clawed legs gripping the body */}
-      <path d="M15,20 l-2.2,0.6 m2.2,-0.6 l-1.4,1.6" fill="none" stroke={color} strokeWidth="0.8" strokeLinecap="round"/>
-      <path d="M16,15 l2.2,-0.4 m-2.2,0.4 l1.6,1.4" fill="none" stroke={color} strokeWidth="0.8" strokeLinecap="round"/>
-      {/* Flaming pearl the dragon chases */}
-      <circle cx="26" cy="6" r="1.7" fill={color} opacity="0.9"/>
-      <path d="M26,3.6 l0.5,-1.4 M27.7,4.7 l1.3,-0.7 M27.7,7.3 l1.3,0.7"
-        fill="none" stroke={color} strokeWidth="0.7" strokeLinecap="round" opacity="0.7"/>
-      <circle cx="26" cy="6" r="0.7" fill="white"/>
+    <g strokeLinejoin="round" strokeLinecap="round">
+      {/* ── Coiling serpent body (neck → tail) ── */}
+      <path d="M16,9.5 C19.4,12 19.6,16 16.4,18.2 C13.2,20.4 13,23.4 16,25.4 C17.6,26.5 17.2,28 15.4,29"
+        fill="none" stroke={color} strokeWidth="3"/>
+      {/* belly scale ticks */}
+      <path d="M17,11.4 q1.4,1.3 1.5,2.9 M15.6,18.8 q-1.5,1.1 -1.6,2.7 M16.6,25 q1.2,0.9 1.2,2.2"
+        fill="none" stroke={light} strokeWidth="0.6" opacity="0.6"/>
+      {/* dorsal fin spikes along the back of each curve */}
+      <path d="M18.8,11.4 l1.9,-0.7 M19,15 l2,0.3 M13.4,19.2 l-2,-0.4 M13.7,23.6 l-1.8,0.9"
+        fill="none" stroke={color} strokeWidth="1.1"/>
+
+      {/* ── Two front arms spreading outward below the head ── */}
+      <path d="M14.2,9.8 C11,10.2 8.6,11.8 7.4,14" fill="none" stroke={color} strokeWidth="1.7"/>
+      <path d="M7.4,14 l-0.5,1.4 M7.4,14 l1.4,0.5 M7.4,14 l-1.3,0.6" fill="none" stroke={color} strokeWidth="0.85"/>
+      <path d="M17.8,9.8 C21,10.2 23.4,11.8 24.6,14" fill="none" stroke={color} strokeWidth="1.7"/>
+      <path d="M24.6,14 l0.5,1.4 M24.6,14 l-1.4,0.5 M24.6,14 l1.3,0.6" fill="none" stroke={color} strokeWidth="0.85"/>
+
+      {/* ── Hind leg from the lower coil ── */}
+      <path d="M14.6,24.2 C12.2,24.8 10.8,25.8 10.4,27.4" fill="none" stroke={color} strokeWidth="1.4"/>
+      <path d="M10.4,27.4 l-0.4,1.3 M10.4,27.4 l1.3,0.4 M10.4,27.4 l-1.1,0.9" fill="none" stroke={color} strokeWidth="0.75"/>
+
+      {/* ── Flame-tipped tail ── */}
+      <path d="M15.4,29 C13.8,30.4 12.4,29.4 13,27.9 M15.4,29 C16.9,30.5 18.4,29.6 17.7,27.9"
+        fill="none" stroke={color} strokeWidth="0.95"/>
+
+      {/* ── Head (profile, crowned, facing up toward the pearl) ── */}
+      <path d="M13.4,7.2 C13.2,4.2 14.8,2.4 17,2.7 C19.2,3 20.3,5 19.2,6.9 C18.3,8.3 15,8.6 13.4,7.2 Z"
+        fill={color}/>
+      {/* open snout/jaw reaching toward the pearl */}
+      <path d="M19,5 C20.9,4.3 22.3,4.8 22.6,5.9 M19.3,6.7 C20.8,6.7 21.9,7.2 22.1,8"
+        fill="none" stroke={color} strokeWidth="1.1"/>
+      {/* eye */}
+      <circle cx="16" cy="5.2" r="1.15" fill="white"/>
+      <circle cx="16.4" cy="5.2" r="0.55" fill="#1a1a1a"/>
+      {/* two horns sweeping back over the crown */}
+      <path d="M14.6,3.2 C13.4,1.2 14.6,0.5 15.7,1 M13.7,4.2 C11.9,3.1 11.8,1.7 13.1,1.5"
+        fill="none" stroke={color} strokeWidth="1"/>
+      {/* mane tufts flowing down the neck */}
+      <path d="M12.8,7.6 c-1.9,0.4 -2.3,1.9 -1.2,3 M13.4,9.6 c-1.9,0.5 -2.2,2 -1,3"
+        fill="none" stroke={color} strokeWidth="0.85" opacity="0.9"/>
+      {/* whisker */}
+      <path d="M21.8,8 C23.8,9 24.4,10.6 23.3,12" fill="none" stroke={color} strokeWidth="0.7" opacity="0.85"/>
+
+      {/* ── Flaming pearl by the jaws ── */}
+      <path d="M24.8,2.6 C23.6,3.6 23.6,5.1 24.8,6 C26,5.1 26,3.6 24.8,2.6 Z" fill={color} opacity="0.3"/>
+      <circle cx="24.8" cy="4.7" r="1.6" fill={color}/>
+      <circle cx="24.3" cy="4.2" r="0.6" fill="white"/>
     </g>
   );
 }
@@ -205,7 +228,9 @@ function DragonPaths({ color }) {
 function DragonSymbol({ value, size }) {
   const s = size === 'lg' ? 36 : size === 'md' ? 28 : 18;
   const colors = { Red: '#C5302B', Green: '#2E7D43', White: '#5A6E7A' };
+  const lights = { Red: '#F2A39E', Green: '#8FC79E', White: '#C3D0D8' };
   const color = colors[value] || '#2C3E50';
+  const light = lights[value] || '#cccccc';
 
   if (value === 'White') {
     // White dragon ("soap") — the classic blue double frame with a bold B.
@@ -222,83 +247,105 @@ function DragonSymbol({ value, size }) {
 
   return (
     <svg width={s} height={s} viewBox="0 0 32 32">
-      <DragonPaths color={color}/>
+      <DragonPaths color={color} light={light}/>
     </svg>
   );
 }
 
+// The four "flowers" map to the four seasons, each a distinct bloom & color
+// so they read apart instantly: Spring cherry (pink), Summer aster (blue),
+// Autumn chrysanthemum (amber), Winter lily (plum).
+const FLOWER_SEASONS = { 1: 'SPRING', 2: 'SUMMER', 3: 'AUTUMN', 4: 'WINTER' };
+const FLOWER_HUES = { 1: '#C95E83', 2: '#1E6FA8', 3: '#D98A3D', 4: '#8E5BA6' };
+
 function FlowerSymbol({ value, size }) {
   const s = size === 'lg' ? 36 : size === 'md' ? 28 : 18;
+  const cy = 12; // bloom center, leaving room for the season label
 
+  const SeasonLabel = () => size === 'sm' ? null : (
+    <text x="16" y="30" textAnchor="middle" fontSize="4.5" fontWeight="800"
+      fontFamily="Nunito, sans-serif" letterSpacing="0.4" fill={FLOWER_HUES[value]}>
+      {FLOWER_SEASONS[value]}
+    </text>
+  );
+
+  // F1 — Spring cherry blossom (pink): five rounded notched petals + stamens.
   if (value === 1) {
-    // Tulip — pink
+    const petal = `M16,${cy} C12.9,${cy - 1.4} 12.9,${cy - 6.6} 15.1,${cy - 8.8} C15.5,${cy - 7.8} 16.5,${cy - 7.8} 16.9,${cy - 8.8} C19.1,${cy - 6.6} 19.1,${cy - 1.4} 16,${cy} Z`;
     return (
       <svg width={s} height={s} viewBox="0 0 32 32">
-        <path d="M16,24 L16,14" stroke="#2E7D43" strokeWidth="1.5"/>
-        <path d="M13,20 C11,18 12,16 14,17" stroke="#2E7D43" strokeWidth="1" fill="none"/>
-        <path d="M19,21 C21,19 20,17 18,18" stroke="#2E7D43" strokeWidth="1" fill="none"/>
-        <path d="M12,14 C12,8 16,5 16,5 C16,5 20,8 20,14 C20,16 18,16 16,15 C14,16 12,16 12,14Z" fill="#C95E83"/>
-        <path d="M14,13 C14,9 16,7 16,7 C16,7 18,9 18,13 C18,14.5 17,14.5 16,14 C15,14.5 14,14.5 14,13Z" fill="#E87AA4" opacity="0.7"/>
+        {[0, 72, 144, 216, 288].map(deg => (
+          <path key={deg} d={petal} fill="#E87AA4" stroke="#C95E83" strokeWidth="0.4"
+            transform={`rotate(${deg},16,${cy})`}/>
+        ))}
+        <circle cx="16" cy={cy} r="2.3" fill="#F2C14E"/>
+        {[0, 60, 120, 180, 240, 300].map(deg => {
+          const rad = (deg * Math.PI) / 180;
+          return <circle key={deg} cx={16 + Math.cos(rad) * 2.3} cy={cy + Math.sin(rad) * 2.3} r="0.5" fill="#C5302B"/>;
+        })}
+        <SeasonLabel/>
       </svg>
     );
   }
 
+  // F2 — Summer aster / cornflower (blue): two rings of slim petals.
   if (value === 2) {
-    // Chrysanthemum — blue
     return (
       <svg width={s} height={s} viewBox="0 0 32 32">
-        <path d="M16,26 L16,16" stroke="#2E7D43" strokeWidth="1.5"/>
-        <path d="M14,22 C12,20 11,18 13,19" stroke="#2E7D43" strokeWidth="0.8" fill="none"/>
-        {[0,30,60,90,120,150,180,210,240,270,300,330].map(deg => {
-          const rad = (deg * Math.PI) / 180;
-          const cx = 16 + Math.cos(rad) * 5.5;
-          const cy = 13 + Math.sin(rad) * 5.5;
-          return <ellipse key={deg} cx={cx} cy={cy} rx="1.8" ry="4.2"
-            transform={`rotate(${deg},${cx},${cy})`} fill="#1E6FA8" opacity="0.85"/>;
+        {Array.from({ length: 16 }).map((_, i) => {
+          const deg = i * 22.5; const rad = (deg * Math.PI) / 180;
+          const px = 16 + Math.cos(rad) * 6; const py = cy + Math.sin(rad) * 6;
+          return <ellipse key={'o' + i} cx={px} cy={py} rx="1.1" ry="4" transform={`rotate(${deg + 90},${px},${py})`} fill="#1E6FA8"/>;
         })}
-        {[15,75,135,195,255,315].map(deg => {
-          const rad = (deg * Math.PI) / 180;
-          const cx = 16 + Math.cos(rad) * 3;
-          const cy = 13 + Math.sin(rad) * 3;
-          return <ellipse key={deg} cx={cx} cy={cy} rx="1.3" ry="3"
-            transform={`rotate(${deg},${cx},${cy})`} fill="#4A9FD4" opacity="0.7"/>;
+        {Array.from({ length: 10 }).map((_, i) => {
+          const deg = i * 36 + 18; const rad = (deg * Math.PI) / 180;
+          const px = 16 + Math.cos(rad) * 3.3; const py = cy + Math.sin(rad) * 3.3;
+          return <ellipse key={'i' + i} cx={px} cy={py} rx="1" ry="2.6" transform={`rotate(${deg + 90},${px},${py})`} fill="#4A9FD4"/>;
         })}
-        <circle cx="16" cy="13" r="2" fill="#D98A3D"/>
+        <circle cx="16" cy={cy} r="2" fill="#15486E"/>
+        <circle cx="16" cy={cy} r="0.9" fill="#F2C14E"/>
+        <SeasonLabel/>
       </svg>
     );
   }
 
+  // F3 — Autumn chrysanthemum (amber): three dense layers of curved petals.
   if (value === 3) {
-    // Orchid — orange/amber
+    const layer = (n, r, ry, rx, fill, off = 0) => Array.from({ length: n }).map((_, i) => {
+      const deg = i * (360 / n) + off; const rad = (deg * Math.PI) / 180;
+      const px = 16 + Math.cos(rad) * r; const py = cy + Math.sin(rad) * r;
+      return <ellipse key={fill + i} cx={px} cy={py} rx={rx} ry={ry} transform={`rotate(${deg + 90},${px},${py})`} fill={fill}/>;
+    });
     return (
       <svg width={s} height={s} viewBox="0 0 32 32">
-        <path d="M16,27 C16,27 15,20 16,16" stroke="#2E7D43" strokeWidth="1.5"/>
-        <path d="M12,25 C10,22 11,19 14,18" stroke="#2E7D43" strokeWidth="1" fill="none"/>
-        <path d="M20,24 C22,21 21,18 18,17" stroke="#2E7D43" strokeWidth="1" fill="none"/>
-        <ellipse cx="16" cy="10" rx="3" ry="5" fill="#D98A3D" opacity="0.85"/>
-        <ellipse cx="11" cy="12" rx="2.5" ry="4" transform="rotate(-30,11,12)" fill="#D98A3D" opacity="0.8"/>
-        <ellipse cx="21" cy="12" rx="2.5" ry="4" transform="rotate(30,21,12)" fill="#D98A3D" opacity="0.8"/>
-        <ellipse cx="13" cy="16" rx="2" ry="3" transform="rotate(-15,13,16)" fill="#E8A54D" opacity="0.6"/>
-        <ellipse cx="19" cy="16" rx="2" ry="3" transform="rotate(15,19,16)" fill="#E8A54D" opacity="0.6"/>
-        <circle cx="16" cy="12" r="1.8" fill="#C5302B"/>
-        <circle cx="16" cy="12" r="0.8" fill="#D98A3D"/>
+        {layer(12, 6, 4.4, 1.5, '#D98A3D')}
+        {layer(12, 4, 3.2, 1.3, '#E8A54D', 15)}
+        {layer(8, 2, 1.9, 1, '#F2C14E')}
+        <circle cx="16" cy={cy} r="1.5" fill="#B5651D"/>
+        <SeasonLabel/>
       </svg>
     );
   }
 
-  // value === 4: Lotus — green
+  // F4 — Winter lily (plum): six pointed petals + golden stamens.
+  const lilyPetal = `M16,${cy} C14.3,${cy - 3.5} 14.6,${cy - 7.5} 16,${cy - 10} C17.4,${cy - 7.5} 17.7,${cy - 3.5} 16,${cy} Z`;
   return (
     <svg width={s} height={s} viewBox="0 0 32 32">
-      <path d="M16,27 L16,18" stroke="#2E7D43" strokeWidth="1.5"/>
-      <ellipse cx="16" cy="14" rx="3.5" ry="6" fill="#2E7D43" opacity="0.85"/>
-      <ellipse cx="11" cy="15" rx="3" ry="5" transform="rotate(-20,11,15)" fill="#2E7D43" opacity="0.7"/>
-      <ellipse cx="21" cy="15" rx="3" ry="5" transform="rotate(20,21,15)" fill="#2E7D43" opacity="0.7"/>
-      <ellipse cx="8" cy="17" rx="2.5" ry="4" transform="rotate(-40,8,17)" fill="#5FA04F" opacity="0.5"/>
-      <ellipse cx="24" cy="17" rx="2.5" ry="4" transform="rotate(40,24,17)" fill="#5FA04F" opacity="0.5"/>
-      <ellipse cx="16" cy="13" rx="2" ry="4" fill="#C95E83"/>
-      <ellipse cx="14" cy="14" rx="1.5" ry="3" transform="rotate(-10,14,14)" fill="#C95E83" opacity="0.7"/>
-      <ellipse cx="18" cy="14" rx="1.5" ry="3" transform="rotate(10,18,14)" fill="#C95E83" opacity="0.7"/>
-      <circle cx="16" cy="12" r="1.2" fill="#D98A3D"/>
+      {[30, 90, 150, 210, 270, 330].map(deg => (
+        <path key={deg} d={lilyPetal} fill="#A574C0" stroke="#8E5BA6" strokeWidth="0.35"
+          transform={`rotate(${deg},16,${cy})`} opacity="0.95"/>
+      ))}
+      {[0, 72, 144, 216, 288].map(deg => {
+        const rad = (deg * Math.PI) / 180;
+        const ex = 16 + Math.cos(rad - Math.PI / 2) * 2.6;
+        const ey = cy + Math.sin(rad - Math.PI / 2) * 2.6;
+        return <g key={deg}>
+          <line x1="16" y1={cy} x2={ex} y2={ey} stroke="#7E4F9B" strokeWidth="0.45"/>
+          <circle cx={ex} cy={ey} r="0.7" fill="#F2C14E"/>
+        </g>;
+      })}
+      <circle cx="16" cy={cy} r="1.6" fill="#5E3A78"/>
+      <SeasonLabel/>
     </svg>
   );
 }
