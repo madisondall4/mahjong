@@ -7,14 +7,17 @@ export default {
   theme: {
     extend: {
       colors: {
-        bg: '#F4F1E4',
-        'accent-pink': '#5E8C3E',
-        'accent-orange': '#E2A03F',
-        'accent-blue': '#7FB3A4',
-        'accent-mint': '#A4D65E',
-        plum: '#2B3A2A',
+        bg: '#F4EEE2',
+        paper: '#FBF7EF',
+        matcha: '#5F7D4F',
+        'matcha-deep': '#3C5236',
+        rose: '#C95E83',
+        blush: '#F3DEE4',
+        sage: '#9DB58E',
+        sky: '#5E92B3',
+        ink: '#33302A',
         'tile-face': '#ffffff',
-        'tile-shadow': '#dce8cc',
+        'tile-shadow': '#E6DECE',
       },
       fontFamily: {
         display: ['Playfair Display', 'serif'],

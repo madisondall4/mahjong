@@ -18,7 +18,7 @@ export default function PlayerHand({ tiles = [], selectedUids = new Set(), onTil
       {/* Flowers above hand */}
       {flowers.length > 0 && (
         <div className="flex items-center gap-1 px-3 mb-1">
-          <span style={{ fontSize: 10, color: '#E2A03F', fontFamily: 'Nunito', fontWeight: 600 }}>Flowers:</span>
+          <span style={{ fontSize: 10, color: '#C95E83', fontFamily: 'Nunito', fontWeight: 600 }}>Flowers:</span>
           {flowers.map((f, i) => (
             <MahjongTile key={f.uid} tile={f} size="sm"/>
           ))}
@@ -37,9 +37,9 @@ export default function PlayerHand({ tiles = [], selectedUids = new Set(), onTil
           paddingLeft: 12,
           paddingRight: 12,
           display: 'flex',
-          gap: 5,
+          gap: 6,
           alignItems: 'flex-end',
-          minHeight: 88,
+          minHeight: 112,
         }}
       >
         {tiles.map((tile, idx) => (
@@ -52,7 +52,7 @@ export default function PlayerHand({ tiles = [], selectedUids = new Set(), onTil
           >
             <MahjongTile
               tile={tile}
-              size="md"
+              size="lg"
               selected={selectedUids.has(tile.uid)}
               onClick={canDiscard || onTileClick ? () => onTileClick?.(tile) : undefined}
               animateIn={animateIn}
@@ -67,11 +67,11 @@ export default function PlayerHand({ tiles = [], selectedUids = new Set(), onTil
         <div style={{
           textAlign: 'center',
           fontSize: 11,
-          color: 'rgba(255,255,255,0.5)',
+          color: 'rgba(95,125,79,0.7)',
           fontFamily: 'Nunito',
-          fontWeight: 600,
+          fontWeight: 700,
           marginTop: -14,
-          letterSpacing: '0.05em',
+          letterSpacing: '0.08em',
           textTransform: 'uppercase',
         }}>
           Tap a tile to discard

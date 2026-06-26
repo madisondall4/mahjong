@@ -4,7 +4,7 @@ import { SUITS } from '../data/tiles.js';
 // ─── SVG Suit Symbols ───────────────────────────────────────────────────────
 
 function BamSymbol({ value, size }) {
-  const s = size === 'lg' ? 32 : size === 'md' ? 22 : 14;
+  const s = size === 'lg' ? 36 : size === 'md' ? 28 : 18;
 
   if (value === 1) {
     // 1 Bam is traditionally the bird (peacock/sparrow), not bamboo.
@@ -12,22 +12,22 @@ function BamSymbol({ value, size }) {
     return (
       <svg width={s} height={s} viewBox="0 0 32 32">
         {/* Tail fan — peacock feathers */}
-        <ellipse cx="9"  cy="13" rx="4.5" ry="2.3" transform="rotate(-58,9,13)"  fill="#A4D65E"/>
-        <ellipse cx="7.5" cy="19" rx="5"  ry="2.6" transform="rotate(-18,7.5,19)" fill="#4FCBFF"/>
-        <ellipse cx="9"  cy="25" rx="4.5" ry="2.3" transform="rotate(18,9,25)"   fill="#FF4FA3"/>
+        <ellipse cx="9"  cy="13" rx="4.5" ry="2.3" transform="rotate(-58,9,13)"  fill="#2E7D43"/>
+        <ellipse cx="7.5" cy="19" rx="5"  ry="2.6" transform="rotate(-18,7.5,19)" fill="#1E6FA8"/>
+        <ellipse cx="9"  cy="25" rx="4.5" ry="2.3" transform="rotate(18,9,25)"   fill="#C5302B"/>
         {/* Body */}
-        <ellipse cx="17" cy="20" rx="6" ry="5" fill="#4FCBFF"/>
-        <ellipse cx="16" cy="20" rx="3" ry="3.6" fill="#5E8C3E" opacity="0.45"/>
+        <ellipse cx="17" cy="20" rx="6" ry="5" fill="#1E6FA8"/>
+        <ellipse cx="16" cy="20" rx="3" ry="3.6" fill="#2E7D43" opacity="0.45"/>
         {/* Head + crest */}
-        <circle cx="23" cy="13" r="3.4" fill="#4FCBFF"/>
-        <line x1="23" y1="10" x2="23" y2="7" stroke="#FF4FA3" strokeWidth="1.2"/>
-        <circle cx="23" cy="6.4" r="1" fill="#FF4FA3"/>
+        <circle cx="23" cy="13" r="3.4" fill="#1E6FA8"/>
+        <line x1="23" y1="10" x2="23" y2="7" stroke="#C5302B" strokeWidth="1.2"/>
+        <circle cx="23" cy="6.4" r="1" fill="#C5302B"/>
         {/* Beak + eye */}
-        <polygon points="26,12 30,13 26,14.5" fill="#E2A03F"/>
-        <circle cx="24" cy="12.5" r="1" fill="#2B3A2A"/>
+        <polygon points="26,12 30,13 26,14.5" fill="#D98A3D"/>
+        <circle cx="24" cy="12.5" r="1" fill="#2C3E50"/>
         {/* Legs */}
-        <line x1="16" y1="24.5" x2="15" y2="28" stroke="#E2A03F" strokeWidth="1"/>
-        <line x1="19" y1="24.5" x2="20" y2="28" stroke="#E2A03F" strokeWidth="1"/>
+        <line x1="16" y1="24.5" x2="15" y2="28" stroke="#D98A3D" strokeWidth="1"/>
+        <line x1="19" y1="24.5" x2="20" y2="28" stroke="#D98A3D" strokeWidth="1"/>
       </svg>
     );
   }
@@ -40,14 +40,14 @@ function BamSymbol({ value, size }) {
     return (
       <g>
         <rect x={x} y={y} width={w} height={h} rx={w / 2} fill={color}/>
-        <line x1={x} y1={y + h * 0.34} x2={x + w} y2={y + h * 0.34} stroke="#2B3A2A" strokeWidth="0.6" opacity="0.45"/>
-        <line x1={x} y1={y + h * 0.66} x2={x + w} y2={y + h * 0.66} stroke="#2B3A2A" strokeWidth="0.6" opacity="0.45"/>
+        <line x1={x} y1={y + h * 0.34} x2={x + w} y2={y + h * 0.34} stroke="#2C3E50" strokeWidth="0.6" opacity="0.45"/>
+        <line x1={x} y1={y + h * 0.66} x2={x + w} y2={y + h * 0.66} stroke="#2C3E50" strokeWidth="0.6" opacity="0.45"/>
       </g>
     );
   }
 
-  const G = '#A4D65E'; // bamboo green
-  const A = '#FF4FA3'; // accent stick (traditional red) → pink
+  const G = '#2E7D43'; // bamboo green
+  const A = '#C5302B'; // accent stick (traditional red) → pink
   // [cx, cy, height, accent?]
   const layouts = {
     2: [[11,16,15],[21,16,15]],
@@ -70,7 +70,7 @@ function BamSymbol({ value, size }) {
 }
 
 function CrakSymbol({ value, size }) {
-  const s = size === 'lg' ? 32 : size === 'md' ? 22 : 14;
+  const s = size === 'lg' ? 36 : size === 'md' ? 28 : 18;
   const chars = ['一','二','三','四','五','六','七','八','九'];
   const ch = chars[value - 1] || String(value);
   const numSize = size === 'sm' ? '13' : '19';
@@ -79,10 +79,10 @@ function CrakSymbol({ value, size }) {
   const wanY = size === 'sm' ? '22' : '27';
   return (
     <svg width={s} height={s} viewBox="0 0 32 32">
-      <text x="16" y={numY} textAnchor="middle" fontSize={numSize} fontWeight="700" fontFamily="serif" fill="#5E8C3E">
+      <text x="16" y={numY} textAnchor="middle" fontSize={numSize} fontWeight="700" fontFamily="serif" fill="#2E7D43">
         {ch}
       </text>
-      <text x="16" y={wanY} textAnchor="middle" fontSize={wanSize} fontWeight="600" fontFamily="serif" fill="#FF4FA3">
+      <text x="16" y={wanY} textAnchor="middle" fontSize={wanSize} fontWeight="600" fontFamily="serif" fill="#C5302B">
         萬
       </text>
     </svg>
@@ -90,7 +90,7 @@ function CrakSymbol({ value, size }) {
 }
 
 function DotSymbol({ value, size }) {
-  const s = size === 'lg' ? 32 : size === 'md' ? 22 : 14;
+  const s = size === 'lg' ? 36 : size === 'md' ? 28 : 18;
   const dotPositions = {
     1: [[16, 16]],
     2: [[16, 10], [16, 22]],
@@ -106,27 +106,27 @@ function DotSymbol({ value, size }) {
   if (value === 1) {
     return (
       <svg width={s} height={s} viewBox="0 0 32 32">
-        <circle cx="16" cy="16" r="8.5" fill="#A4D65E"/>
+        <circle cx="16" cy="16" r="8.5" fill="#2E7D43"/>
         <circle cx="16" cy="16" r="6.5" fill="white"/>
-        <circle cx="16" cy="16" r="4.8" fill="#FF4FA3"/>
+        <circle cx="16" cy="16" r="4.8" fill="#C5302B"/>
         <circle cx="16" cy="16" r="2.9" fill="white"/>
-        <circle cx="16" cy="16" r="1.6" fill="#4FCBFF"/>
+        <circle cx="16" cy="16" r="1.6" fill="#1E6FA8"/>
       </svg>
     );
   }
   // 2–9 Dots: blue rings (the "circles" suit) with pink centers.
   const dots = (dotPositions[value] || []).map(([cx, cy], i) => (
     <g key={i}>
-      <circle cx={cx} cy={cy} r="3.6" fill="#4FCBFF"/>
+      <circle cx={cx} cy={cy} r="3.6" fill="#1E6FA8"/>
       <circle cx={cx} cy={cy} r="2.1" fill="white"/>
-      <circle cx={cx} cy={cy} r="0.9" fill="#FF4FA3"/>
+      <circle cx={cx} cy={cy} r="0.9" fill="#C5302B"/>
     </g>
   ));
   return <svg width={s} height={s} viewBox="0 0 32 32">{dots}</svg>;
 }
 
 function WindSymbol({ value, size }) {
-  const s = size === 'lg' ? 32 : size === 'md' ? 22 : 14;
+  const s = size === 'lg' ? 36 : size === 'md' ? 28 : 18;
   const chars = { East: '東', South: '南', West: '西', North: '北' };
   const abbr = { East: 'EAST', South: 'SOUTH', West: 'WEST', North: 'NORTH' };
   const chSize = size === 'sm' ? '14' : '20';
@@ -135,11 +135,11 @@ function WindSymbol({ value, size }) {
   const labelY = size === 'sm' ? '22' : '28';
   return (
     <svg width={s} height={s} viewBox="0 0 32 32">
-      <text x="16" y={chY} textAnchor="middle" fontSize={chSize} fontWeight="700" fontFamily="serif" fill="#2B3A2A">
+      <text x="16" y={chY} textAnchor="middle" fontSize={chSize} fontWeight="700" fontFamily="serif" fill="#2C3E50">
         {chars[value] || value}
       </text>
       {size !== 'sm' && (
-        <text x="16" y={labelY} textAnchor="middle" fontSize={labelSize} fontWeight="600" fontFamily="sans-serif" fill="#5E8C3E">
+        <text x="16" y={labelY} textAnchor="middle" fontSize={labelSize} fontWeight="600" fontFamily="sans-serif" fill="#2E7D43">
           {abbr[value] || value}
         </text>
       )}
@@ -148,15 +148,15 @@ function WindSymbol({ value, size }) {
 }
 
 function DragonSymbol({ value, size }) {
-  const s = size === 'lg' ? 32 : size === 'md' ? 22 : 14;
+  const s = size === 'lg' ? 36 : size === 'md' ? 28 : 18;
 
   if (value === 'White') {
     // White dragon (soap) — classic double blue frame, 白 character.
     return (
       <svg width={s} height={s} viewBox="0 0 32 32">
-        <rect x="5" y="5" width="22" height="22" rx="4" fill="none" stroke="#4FCBFF" strokeWidth="2"/>
-        <rect x="8" y="8" width="16" height="16" rx="2.5" fill="none" stroke="#4FCBFF" strokeWidth="1" opacity="0.6"/>
-        <text x="16" y="21" textAnchor="middle" fontSize="11" fontWeight="700" fontFamily="serif" fill="#4FCBFF">白</text>
+        <rect x="5" y="5" width="22" height="22" rx="4" fill="none" stroke="#1E6FA8" strokeWidth="2"/>
+        <rect x="8" y="8" width="16" height="16" rx="2.5" fill="none" stroke="#1E6FA8" strokeWidth="1" opacity="0.6"/>
+        <text x="16" y="21" textAnchor="middle" fontSize="11" fontWeight="700" fontFamily="serif" fill="#1E6FA8">白</text>
       </svg>
     );
   }
@@ -165,8 +165,8 @@ function DragonSymbol({ value, size }) {
     // Red dragon — 中 in red/pink with a red diamond.
     return (
       <svg width={s} height={s} viewBox="0 0 32 32">
-        <polygon points="16,3 29,16 16,29 3,16" fill="none" stroke="#FF4FA3" strokeWidth="1.5"/>
-        <text x="16" y="21" textAnchor="middle" fontSize="15" fontWeight="700" fontFamily="serif" fill="#FF4FA3">
+        <polygon points="16,3 29,16 16,29 3,16" fill="none" stroke="#C5302B" strokeWidth="1.5"/>
+        <text x="16" y="21" textAnchor="middle" fontSize="15" fontWeight="700" fontFamily="serif" fill="#C5302B">
           中
         </text>
       </svg>
@@ -176,8 +176,8 @@ function DragonSymbol({ value, size }) {
   // Green dragon — 發 in green.
   return (
     <svg width={s} height={s} viewBox="0 0 32 32">
-      <polygon points="16,3 29,16 16,29 3,16" fill="none" stroke="#5E8C3E" strokeWidth="1.5"/>
-      <text x="16" y="21" textAnchor="middle" fontSize="15" fontWeight="700" fontFamily="serif" fill="#5E8C3E">
+      <polygon points="16,3 29,16 16,29 3,16" fill="none" stroke="#2E7D43" strokeWidth="1.5"/>
+      <text x="16" y="21" textAnchor="middle" fontSize="15" fontWeight="700" fontFamily="serif" fill="#2E7D43">
         發
       </text>
     </svg>
@@ -185,8 +185,8 @@ function DragonSymbol({ value, size }) {
 }
 
 function FlowerSymbol({ value, size }) {
-  const s = size === 'lg' ? 32 : size === 'md' ? 22 : 14;
-  const colors = ['#FF4FA3', '#4FCBFF', '#E2A03F', '#A4D65E'];
+  const s = size === 'lg' ? 36 : size === 'md' ? 28 : 18;
+  const colors = ['#C95E83', '#1E6FA8', '#D98A3D', '#2E7D43'];
   const color = colors[(value - 1) % 4];
 
   // Outer ring: 8 petals
@@ -212,13 +212,13 @@ function FlowerSymbol({ value, size }) {
       {outerPetals}
       {innerPetals}
       <circle cx="16" cy="16" r="3" fill="white"/>
-      <text x="16" y="19.5" textAnchor="middle" fontSize="5.5" fontWeight="700" fill="#2B3A2A">{value}</text>
+      <text x="16" y="19.5" textAnchor="middle" fontSize="5.5" fontWeight="700" fill="#2C3E50">{value}</text>
     </svg>
   );
 }
 
 function JokerSymbol({ size }) {
-  const s = size === 'lg' ? 32 : size === 'md' ? 22 : 14;
+  const s = size === 'lg' ? 36 : size === 'md' ? 28 : 18;
   // Peony: overlapping ellipses in pink/orange
   const petalAngles = [0, 45, 90, 135, 180, 225, 270, 315];
   return (
@@ -228,12 +228,12 @@ function JokerSymbol({ size }) {
         const rad = (deg * Math.PI) / 180;
         const cx = 19 + Math.cos(rad) * 5;
         const cy = 22 + Math.sin(rad) * 4;
-        const c = ['#FF4FA3', '#4FCBFF', '#E2A03F', '#A4D65E'][i % 4];
+        const c = ['#C95E83', '#1E6FA8', '#D98A3D', '#2E7D43'][i % 4];
         return <ellipse key={i} cx={cx} cy={cy} rx="4" ry="5.5" transform={`rotate(${deg},${cx},${cy})`} fill={c} opacity="0.85"/>;
       })}
       <circle cx="19" cy="22" r="3" fill="white"/>
       {/* JOKER label */}
-      <text x="16" y="10" textAnchor="middle" fontSize="7" fontWeight="800" fontFamily="sans-serif" fill="#FF4FA3">
+      <text x="16" y="10" textAnchor="middle" fontSize="7" fontWeight="800" fontFamily="sans-serif" fill="#C95E83">
         JOKER
       </text>
     </svg>
@@ -244,26 +244,27 @@ function JokerSymbol({ size }) {
 
 function TileBack({ size }) {
   const dims = {
-    sm: { w: 28, h: 36 },
-    md: { w: 40, h: 52 },
-    lg: { w: 56, h: 72 },
+    sm: { w: 32, h: 42 },
+    md: { w: 46, h: 60 },
+    lg: { w: 58, h: 76 },
   };
   const { w, h } = dims[size] || dims.md;
   return (
     <div
-      className="rounded-sm flex items-center justify-center"
+      className="flex items-center justify-center"
       style={{
         width: w, height: h,
-        background: 'linear-gradient(135deg, #2B3A2A 0%, #1e1830 50%, #2B3A2A 100%)',
-        border: '1px solid #5E8C3E40',
-        boxShadow: '1px 1px 3px rgba(0,0,0,0.4)',
+        borderRadius: 7,
+        background: 'linear-gradient(150deg, #4A6340 0%, #34472E 55%, #46603C 100%)',
+        border: '1px solid rgba(251,247,239,0.2)',
+        boxShadow: '0 3px 7px rgba(60,82,54,0.25)',
       }}
     >
       <div style={{
         width: w - 8, height: h - 8,
-        border: '1px solid rgba(94,140,62,0.25)',
-        borderRadius: 2,
-        backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(94,140,62,0.04) 3px, rgba(94,140,62,0.04) 6px)',
+        border: '1px solid rgba(251,247,239,0.22)',
+        borderRadius: 4,
+        backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(251,247,239,0.05) 3px, rgba(251,247,239,0.05) 6px)',
       }}/>
     </div>
   );
@@ -300,9 +301,9 @@ export default function MahjongTile({
   if (faceDown) return <TileBack size={size} />;
 
   const dims = {
-    sm: { w: 28, h: 36, textSize: '8px', numSize: '11px', pad: 2 },
-    md: { w: 40, h: 52, textSize: '10px', numSize: '13px', pad: 3 },
-    lg: { w: 56, h: 72, textSize: '12px', numSize: '16px', pad: 4 },
+    sm: { w: 32, h: 42, textSize: '8px', numSize: '11px', pad: 2 },
+    md: { w: 46, h: 60, textSize: '11px', numSize: '14px', pad: 3 },
+    lg: { w: 58, h: 76, textSize: '12px', numSize: '16px', pad: 4 },
   };
   const d = dims[size] || dims.md;
 
@@ -333,17 +334,17 @@ export default function MahjongTile({
   }[tile.suit] || '';
 
   const suitLabelColor = {
-    [SUITS.BAM]: '#5E8C3E',
-    [SUITS.CRAK]: '#FF4FA3',
-    [SUITS.DOT]: '#4FCBFF',
-    [SUITS.FLOWER]: '#E2A03F',
-  }[tile.suit] || '#2B3A2A';
+    [SUITS.BAM]: '#2E7D43',
+    [SUITS.CRAK]: '#C5302B',
+    [SUITS.DOT]: '#1E6FA8',
+    [SUITS.FLOWER]: '#C95E83',
+  }[tile.suit] || '#2C3E50';
 
   const tileStyle = {
     width: d.w,
     height: d.h,
-    background: 'linear-gradient(145deg, #ffffff 0%, #fbfdf6 60%, #f2f7ea 100%)',
-    borderRadius: 4,
+    background: 'linear-gradient(160deg, #ffffff 0%, #fcfaf5 70%, #f6f1e8 100%)',
+    borderRadius: 7,
     padding: d.pad,
     display: 'flex',
     flexDirection: 'column',
@@ -358,11 +359,11 @@ export default function MahjongTile({
     WebkitUserSelect: 'none',
     ...(selected ? {
       transform: 'translateY(-14px) scale(1.06)',
-      boxShadow: '2px 2px 0 #dce8cc, 3px 3px 0 #c8d8b0, 4px 4px 8px rgba(0,0,0,0.2), 0 0 20px rgba(94,140,62,0.7)',
+      boxShadow: '0 12px 24px rgba(60,82,54,0.28), 0 0 0 2px rgba(95,125,79,0.6)',
     } : winning ? {
-      boxShadow: '0 0 16px rgba(164,214,94,0.8), 0 0 4px rgba(164,214,94,1)',
+      boxShadow: '0 6px 16px rgba(95,125,79,0.45), 0 0 0 2px rgba(95,125,79,0.95)',
     } : {
-      boxShadow: '2px 2px 0 #dce8cc, 3px 3px 0 #c8d8b0, 4px 4px 6px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.9)',
+      boxShadow: '0 4px 10px rgba(60,82,54,0.16), 0 1px 2px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9)',
     }),
     ...style,
   };

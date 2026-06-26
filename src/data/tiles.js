@@ -28,7 +28,7 @@ export const TILE_DEFINITIONS = [
     suit: SUITS.BAM,
     value: i + 1,
     label: `${i + 1}B`,
-    color: '#A4D65E',
+    color: '#2E7D43',
     count: 4,
   })),
   // Craks 1-9
@@ -37,7 +37,7 @@ export const TILE_DEFINITIONS = [
     suit: SUITS.CRAK,
     value: i + 1,
     label: `${i + 1}C`,
-    color: '#5E8C3E',
+    color: '#2E7D43',
     count: 4,
   })),
   // Dots 1-9
@@ -46,7 +46,7 @@ export const TILE_DEFINITIONS = [
     suit: SUITS.DOT,
     value: i + 1,
     label: `${i + 1}D`,
-    color: '#4FCBFF', // circles suit — blue
+    color: '#1E6FA8', // circles suit — blue
     count: 4,
   })),
   // Winds
@@ -55,7 +55,7 @@ export const TILE_DEFINITIONS = [
     suit: SUITS.WIND,
     value: w,
     label: w[0],
-    color: '#2B3A2A',
+    color: '#2C3E50',
     count: 4,
   })),
   // Dragons
@@ -64,7 +64,7 @@ export const TILE_DEFINITIONS = [
     suit: SUITS.DRAGON,
     value: d,
     label: d[0] === 'W' ? 'Soap' : `${d[0]}D`,
-    color: d === 'Red' ? '#FF4FA3' : d === 'Green' ? '#5E8C3E' : '#4FCBFF',
+    color: d === 'Red' ? '#C5302B' : d === 'Green' ? '#2E7D43' : '#1E6FA8',
     count: 4,
   })),
   // Flowers 1-4
@@ -73,7 +73,7 @@ export const TILE_DEFINITIONS = [
     suit: SUITS.FLOWER,
     value: i + 1,
     label: `F${i + 1}`,
-    color: '#E2A03F',
+    color: '#C95E83',
     count: 4,
   })),
   // Jokers
@@ -82,7 +82,7 @@ export const TILE_DEFINITIONS = [
     suit: SUITS.JOKER,
     value: 'joker',
     label: 'JKR',
-    color: '#FF4FA3',
+    color: '#C5302B',
     count: 8,
   },
 ];

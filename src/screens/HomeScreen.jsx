@@ -2,24 +2,24 @@ import React, { useState } from 'react';
 import { SUITS } from '../data/tiles.js';
 
 const DEMO_TILES = [
-  { suit: SUITS.BAM, value: 1, color: '#A4D65E' },
-  { suit: SUITS.CRAK, value: 7, color: '#5E8C3E' },
-  { suit: SUITS.DOT, value: 5, color: '#7FB3A4' },
+  { suit: SUITS.BAM, value: 1, color: '#5F7D4F' },
+  { suit: SUITS.CRAK, value: 7, color: '#5F7D4F' },
+  { suit: SUITS.DOT, value: 5, color: '#5E92B3' },
   { suit: SUITS.WIND, value: 'East', color: '#2B3A2A' },
-  { suit: SUITS.DRAGON, value: 'Red', color: '#5E8C3E' },
-  { suit: SUITS.JOKER, value: 'joker', color: '#E2A03F' },
+  { suit: SUITS.DRAGON, value: 'Red', color: '#5F7D4F' },
+  { suit: SUITS.JOKER, value: 'joker', color: '#C95E83' },
 ];
 
 function FloatingTile({ tile, delay, x, y, size }) {
   const s = size || 44;
   const colors = {
-    [SUITS.BAM]: '#A4D65E',
-    [SUITS.CRAK]: '#5E8C3E',
-    [SUITS.DOT]: '#7FB3A4',
+    [SUITS.BAM]: '#5F7D4F',
+    [SUITS.CRAK]: '#5F7D4F',
+    [SUITS.DOT]: '#5E92B3',
     [SUITS.WIND]: '#2B3A2A',
-    [SUITS.DRAGON]: '#5E8C3E',
-    [SUITS.JOKER]: '#E2A03F',
-    [SUITS.FLOWER]: '#E2A03F',
+    [SUITS.DRAGON]: '#5F7D4F',
+    [SUITS.JOKER]: '#C95E83',
+    [SUITS.FLOWER]: '#C95E83',
   };
   const labels = {
     [SUITS.BAM]: `${tile.value}B`,
@@ -79,7 +79,7 @@ export default function HomeScreen({ onNewGame }) {
       alignItems: 'center',
       justifyContent: 'center',
       overflow: 'hidden',
-      background: '#F4F1E4',
+      background: '#F4EEE2',
     }}>
       <style>{`
         @keyframes floatTile {
@@ -106,7 +106,7 @@ export default function HomeScreen({ onNewGame }) {
         position: 'absolute', inset: 10,
         border: '6px solid transparent',
         borderRadius: 16,
-        background: 'linear-gradient(#F4F1E4, #F4F1E4) padding-box, linear-gradient(135deg, #5E8C3E, #E2A03F, #5E8C3E) border-box',
+        background: 'linear-gradient(#F4EEE2, #F4EEE2) padding-box, linear-gradient(135deg, #5F7D4F, #9DB58E, #5F7D4F) border-box',
         pointerEvents: 'none',
       }}/>
 
@@ -117,37 +117,37 @@ export default function HomeScreen({ onNewGame }) {
       }}>
         {/* Logo area */}
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 52, marginBottom: 4 }}>🀄</div>
+          <div className="eyebrow" style={{ color: '#5F7D4F', marginBottom: 10 }}>
+            Pop &amp; Play
+          </div>
           <h1 style={{
             margin: 0,
             fontFamily: 'Playfair Display, serif',
-            fontSize: 32,
+            fontSize: 46,
             fontWeight: 700,
-            background: 'linear-gradient(135deg, #5E8C3E, #E2A03F)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-            lineHeight: 1.1,
+            color: '#3C5236',
+            lineHeight: 1.02,
           }}>
-            American<br/>Mahjong
+            American<br/>
+            <span style={{ fontStyle: 'italic', fontWeight: 600, color: '#C95E83' }}>Mahjong</span>
           </h1>
           <p style={{
-            margin: '8px 0 0',
+            margin: '12px 0 0',
             fontFamily: 'Nunito, sans-serif',
-            fontSize: 13,
-            color: 'rgba(43,58,42,0.5)',
-            letterSpacing: '0.08em',
+            fontSize: 12.5,
+            color: 'rgba(51,48,42,0.5)',
+            letterSpacing: '0.1em',
             textTransform: 'uppercase',
           }}>
-            Premium Mobile Experience
+            A modern table for a timeless game
           </p>
         </div>
 
         {/* Decorative divider */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', maxWidth: 280 }}>
-          <div style={{ flex: 1, height: 1, background: 'linear-gradient(to right, transparent, rgba(94,140,62,0.3))' }}/>
-          <span style={{ color: '#5E8C3E', fontSize: 16 }}>✦</span>
-          <div style={{ flex: 1, height: 1, background: 'linear-gradient(to left, transparent, rgba(94,140,62,0.3))' }}/>
+          <div style={{ flex: 1, height: 1, background: 'linear-gradient(to right, transparent, rgba(95,125,79,0.3))' }}/>
+          <span style={{ color: '#5F7D4F', fontSize: 16 }}>✦</span>
+          <div style={{ flex: 1, height: 1, background: 'linear-gradient(to left, transparent, rgba(95,125,79,0.3))' }}/>
         </div>
 
         {/* Game info */}
@@ -160,7 +160,7 @@ export default function HomeScreen({ onNewGame }) {
             <div key={text} style={{
               display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
               background: 'rgba(43,58,42,0.06)', borderRadius: 10,
-              padding: '8px 14px', border: '1px solid rgba(94,140,62,0.15)',
+              padding: '8px 14px', border: '1px solid rgba(95,125,79,0.15)',
               minWidth: 70,
             }}>
               <span style={{ fontSize: 20 }}>{icon}</span>
@@ -175,18 +175,16 @@ export default function HomeScreen({ onNewGame }) {
           style={{
             width: '100%', maxWidth: 280,
             padding: '16px 0',
-            borderRadius: 14,
+            borderRadius: 999,
             border: 'none',
-            background: 'linear-gradient(135deg, #5E8C3E 0%, #E2A03F 50%, #5E8C3E 100%)',
-            backgroundSize: '200% auto',
+            background: '#5F7D4F',
             color: 'white',
-            fontSize: 18,
-            fontWeight: 800,
+            fontSize: 17,
+            fontWeight: 700,
             fontFamily: 'Playfair Display, serif',
             cursor: 'pointer',
-            boxShadow: '0 4px 20px rgba(94,140,62,0.4), 0 2px 0 #cc3a7e',
-            letterSpacing: '0.04em',
-            animation: 'pinkShimmer 2s linear infinite',
+            boxShadow: '0 8px 20px rgba(60,82,54,0.28)',
+            letterSpacing: '0.03em',
           }}
         >
           New Game
@@ -196,7 +194,7 @@ export default function HomeScreen({ onNewGame }) {
         <button
           onClick={() => setShowRules(v => !v)}
           style={{
-            background: 'none', border: '1px solid rgba(94,140,62,0.25)',
+            background: 'none', border: '1px solid rgba(95,125,79,0.25)',
             borderRadius: 8, padding: '8px 20px',
             color: 'rgba(43,58,42,0.55)', fontSize: 13,
             fontFamily: 'Nunito', cursor: 'pointer',
@@ -207,11 +205,11 @@ export default function HomeScreen({ onNewGame }) {
 
         {showRules && (
           <div style={{
-            background: 'rgba(43,58,42,0.06)', border: '1px solid rgba(94,140,62,0.15)',
+            background: 'rgba(43,58,42,0.06)', border: '1px solid rgba(95,125,79,0.15)',
             borderRadius: 12, padding: 16, maxWidth: 320, fontSize: 12,
             color: 'rgba(43,58,42,0.75)', fontFamily: 'Nunito', lineHeight: 1.6,
           }}>
-            <p style={{ margin: '0 0 8px', color: '#5E8C3E', fontWeight: 700, fontFamily: 'Playfair Display, serif', fontSize: 14 }}>American Mahjong Rules</p>
+            <p style={{ margin: '0 0 8px', color: '#5F7D4F', fontWeight: 700, fontFamily: 'Playfair Display, serif', fontSize: 14 }}>American Mahjong Rules</p>
             <ul style={{ margin: 0, paddingLeft: 16 }}>
               <li>Tap a tile to select it, tap again to discard</li>
               <li>Charleston: pass 3 tiles in each direction</li>
