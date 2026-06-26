@@ -14,9 +14,9 @@ Status legend: 🔲 Not started · 🟡 In progress · ✅ Done
 
 ## Quick wins (ship first — pure frontend, no backend)
 
-- 🔲 **localStorage save/resume** — persist game state so a refresh doesn't kill
+- ✅ **localStorage save/resume** — persist game state so a refresh doesn't kill
   an in-progress game (prevents the #1 rage-quit). Also unlocks stats below.
-- 🔲 **AI difficulty selector** on the home screen:
+- ✅ **AI difficulty selector** on the home screen:
   - **Chill** — AI makes suboptimal discards, doesn't aggressively call Mahjong.
   - **Spicy** — current heuristics.
   - **Ruthless** — AI tracks discards, blocks your hand, prioritizes
@@ -74,5 +74,8 @@ Status legend: 🔲 Not started · 🟡 In progress · ✅ Done
 - Theme tokens live in `src/theme/presets.js` and `src/styles/globals.css`
   (`:root` custom properties) + `tailwind.config.js`. The full runtime switcher
   is blocked on migrating per-component hardcoded hex values to `var(--…)` refs.
-- AI heuristics live in `src/logic/aiPlayer.js` (no difficulty tiers yet).
-- Game state is in-memory in `src/context/GameContext.jsx` (no persistence yet).
+- AI heuristics live in `src/logic/aiPlayer.js` with three difficulty tiers:
+  chill (random noise, skips 40% mahjong calls), spicy (default balanced),
+  ruthless (tracks discard pile, faster, never skips).
+- Game state persists to localStorage via `src/utils/persistence.js`. Difficulty
+  preference stored separately in `mahjong_difficulty` key.

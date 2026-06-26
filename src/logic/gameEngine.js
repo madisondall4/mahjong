@@ -37,6 +37,7 @@ export function createInitialState() {
     thinkingPlayer: null,
     waitingForAI: false,
     lastIncomingTiles: null,
+    difficulty: 'spicy',
   };
 }
 

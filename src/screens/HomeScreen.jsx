@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { SUITS } from '../data/tiles.js';
+import { getDifficulty, setDifficulty, DIFFICULTIES } from '../utils/persistence.js';
 
 const DEMO_TILES = [
   { suit: SUITS.BAM, value: 1, color: '#5F7D4F' },
@@ -84,8 +85,15 @@ const PHASE_LABELS = {
   summary: 'Scoring',
 };
 
+const DIFF_OPTIONS = [
+  { key: DIFFICULTIES.CHILL, label: 'Chill', desc: 'Relaxed AI, fewer calls' },
+  { key: DIFFICULTIES.SPICY, label: 'Spicy', desc: 'Balanced challenge' },
+  { key: DIFFICULTIES.RUTHLESS, label: 'Ruthless', desc: 'Tracks discards, no mercy' },
+];
+
 export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo }) {
   const [showRules, setShowRules] = useState(false);
+  const [difficulty, setDiff] = useState(getDifficulty);
 
   return (
     <div style={{
@@ -184,6 +192,54 @@ export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo }) {
               <span style={{ fontSize: 11, color: 'rgba(43,58,42,0.65)', fontFamily: 'Nunito', fontWeight: 600 }}>{text}</span>
             </div>
           ))}
+        </div>
+
+        {/* Difficulty selector */}
+        <div style={{ width: '100%', maxWidth: 280 }}>
+          <div style={{
+            fontSize: 10, color: 'rgba(43,58,42,0.5)', fontFamily: 'Nunito',
+            textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6, textAlign: 'center',
+          }}>
+            AI Difficulty
+          </div>
+          <div style={{
+            display: 'flex',
+            background: 'rgba(43,58,42,0.06)',
+            borderRadius: 999,
+            border: '1px solid rgba(95,125,79,0.15)',
+            padding: 3,
+          }}>
+            {DIFF_OPTIONS.map(opt => {
+              const active = difficulty === opt.key;
+              return (
+                <button
+                  key={opt.key}
+                  onClick={() => { setDiff(opt.key); setDifficulty(opt.key); }}
+                  style={{
+                    flex: 1,
+                    padding: '7px 0',
+                    borderRadius: 999,
+                    border: 'none',
+                    background: active ? '#5F7D4F' : 'transparent',
+                    color: active ? 'white' : 'rgba(43,58,42,0.55)',
+                    fontSize: 12,
+                    fontWeight: active ? 700 : 500,
+                    fontFamily: 'Nunito, sans-serif',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  {opt.label}
+                </button>
+              );
+            })}
+          </div>
+          <div style={{
+            fontSize: 10, color: 'rgba(43,58,42,0.4)', fontFamily: 'Nunito',
+            textAlign: 'center', marginTop: 4,
+          }}>
+            {DIFF_OPTIONS.find(o => o.key === difficulty)?.desc}
+          </div>
         </div>
 
         {/* Resume Game button */}

@@ -15,6 +15,7 @@ function gameReducer(state, action) {
         ...createInitialState(),
         scores: state.scores,
         roundNumber: (state.roundNumber || 1) + 1,
+        difficulty: state.difficulty || 'spicy',
       };
     default:
       return state;

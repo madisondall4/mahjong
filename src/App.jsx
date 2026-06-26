@@ -15,7 +15,7 @@ import {
   skipSecondCharleston,
   isWallExhausted,
 } from './logic/gameEngine.js';
-import { loadGame, clearSavedGame, getSavedGameInfo } from './utils/persistence.js';
+import { loadGame, clearSavedGame, getSavedGameInfo, getDifficulty } from './utils/persistence.js';
 import {
   chooseTilesForCharleston,
   chooseTileToDiscard,
@@ -52,9 +52,10 @@ function AppInner() {
       }
 
       const aiPlayer = afterDraw.players[playerIdx];
+      const diff = gameState.difficulty || 'spicy';
 
       // Check self-declare
-      const winDef = canSelfDeclare(aiPlayer.hand, aiPlayer.flowers.length);
+      const winDef = canSelfDeclare(aiPlayer.hand, aiPlayer.flowers.length, diff);
       if (winDef) {
         const payments = calculatePayments(playerIdx, null, winDef.points);
         const newScores = applyPayments(afterDraw.scores, payments);
@@ -73,7 +74,7 @@ function AppInner() {
       }
 
       // Choose discard
-      const discardUid = chooseTileToDiscard(aiPlayer.hand, aiPlayer.flowers);
+      const discardUid = chooseTileToDiscard(aiPlayer.hand, aiPlayer.flowers, diff, afterDraw.discardPile);
       if (!discardUid) {
         setState({ ...afterDraw, thinkingPlayer: null });
         return;
@@ -96,7 +97,7 @@ function AppInner() {
       for (let i = 1; i < 4; i++) {
         if (i === playerIdx) continue;
         const aiP = afterDiscard.players[i];
-        if (shouldCallMahjong(aiP.hand, afterDiscard.lastDiscard, aiP.flowers.length)) {
+        if (shouldCallMahjong(aiP.hand, afterDiscard.lastDiscard, aiP.flowers.length, diff)) {
           const callerHand = [...aiP.hand, afterDiscard.lastDiscard];
           const winCheck = checkWin(callerHand, aiP.flowers.length, false);
           if (winCheck.matched) {
@@ -123,7 +124,7 @@ function AppInner() {
         const nextState = advanceTurn(afterDiscard);
         setState(nextState);
       }
-    }, getThinkingDelay());
+    }, getThinkingDelay(gameState.difficulty));
   }, [setState]);
 
   // Watch for AI turns
@@ -176,7 +177,7 @@ function AppInner() {
     lastAiKey.current = null;
     lastHumanDrawKey.current = null;
     clearSavedGame();
-    const newState = dealTiles(state);
+    const newState = dealTiles({ ...state, difficulty: getDifficulty() });
     setState(newState);
   }
 
@@ -191,10 +192,11 @@ function AppInner() {
   function handleCharlestonPass(humanUids) {
     patchState({ waitingForAI: true });
     setTimeout(() => {
+      const diff = state.difficulty || 'spicy';
       const allPasses = [humanUids];
       for (let i = 1; i < 4; i++) {
         const player = state.players[i];
-        const chosen = chooseTilesForCharleston(player.hand, player.flowers);
+        const chosen = chooseTilesForCharleston(player.hand, player.flowers, diff);
         allPasses.push(chosen);
       }
       const newState = applyCharlestonPass(state, allPasses);
@@ -213,10 +215,11 @@ function AppInner() {
     let afterDiscard = discardTile(state, 0, tileUid);
 
     // Check if any AI can call
+    const diff = state.difficulty || 'spicy';
     let aiCalled = false;
     for (let i = 1; i < 4; i++) {
       const aiP = afterDiscard.players[i];
-      if (shouldCallMahjong(aiP.hand, afterDiscard.lastDiscard, aiP.flowers.length)) {
+      if (shouldCallMahjong(aiP.hand, afterDiscard.lastDiscard, aiP.flowers.length, diff)) {
         const callerHand = [...aiP.hand, afterDiscard.lastDiscard];
         const winCheck = checkWin(callerHand, aiP.flowers.length, false);
         if (winCheck.matched) {

@@ -1,5 +1,24 @@
 const STORAGE_KEY = 'mahjong_saved_game';
+const DIFFICULTY_KEY = 'mahjong_difficulty';
 const SAVE_VERSION = 1;
+
+export const DIFFICULTIES = {
+  CHILL: 'chill',
+  SPICY: 'spicy',
+  RUTHLESS: 'ruthless',
+};
+
+export function getDifficulty() {
+  try {
+    const val = localStorage.getItem(DIFFICULTY_KEY);
+    if (val && Object.values(DIFFICULTIES).includes(val)) return val;
+  } catch (_) {}
+  return DIFFICULTIES.SPICY;
+}
+
+export function setDifficulty(d) {
+  try { localStorage.setItem(DIFFICULTY_KEY, d); } catch (_) {}
+}
 
 export function saveGame(state) {
   try {
