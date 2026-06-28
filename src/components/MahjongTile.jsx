@@ -403,6 +403,21 @@ function TileBack({ size }) {
   );
 }
 
+// Standalone suit-symbol renderer (returns the inner <svg>). Reused by the
+// share-card generator so it can rasterize tile art without the DOM chrome.
+export function TileSymbol({ tile, size = 'md' }) {
+  switch (tile.suit) {
+    case SUITS.BAM: return <BamSymbol value={tile.value} size={size}/>;
+    case SUITS.CRAK: return <CrakSymbol value={tile.value} size={size}/>;
+    case SUITS.DOT: return <DotSymbol value={tile.value} size={size}/>;
+    case SUITS.WIND: return <WindSymbol value={tile.value} size={size}/>;
+    case SUITS.DRAGON: return <DragonSymbol value={tile.value} size={size}/>;
+    case SUITS.FLOWER: return <FlowerSymbol value={tile.value} size={size}/>;
+    case SUITS.JOKER: return <JokerSymbol size={size}/>;
+    default: return null;
+  }
+}
+
 // ─── Main MahjongTile Component ──────────────────────────────────────────────
 
 /**
@@ -443,18 +458,7 @@ export default function MahjongTile({
   const isNumbered = [SUITS.BAM, SUITS.CRAK, SUITS.DOT].includes(tile.suit);
   const symbolSize = size;
 
-  function renderSymbol() {
-    switch (tile.suit) {
-      case SUITS.BAM: return <BamSymbol value={tile.value} size={symbolSize}/>;
-      case SUITS.CRAK: return <CrakSymbol value={tile.value} size={symbolSize}/>;
-      case SUITS.DOT: return <DotSymbol value={tile.value} size={symbolSize}/>;
-      case SUITS.WIND: return <WindSymbol value={tile.value} size={symbolSize}/>;
-      case SUITS.DRAGON: return <DragonSymbol value={tile.value} size={symbolSize}/>;
-      case SUITS.FLOWER: return <FlowerSymbol value={tile.value} size={symbolSize}/>;
-      case SUITS.JOKER: return <JokerSymbol size={symbolSize}/>;
-      default: return null;
-    }
-  }
+  const renderSymbol = () => <TileSymbol tile={tile} size={symbolSize}/>;
 
   const suitLabel = {
     [SUITS.BAM]: 'B',

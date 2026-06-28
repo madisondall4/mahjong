@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 /**
  * Scoring overlay after a win
@@ -10,7 +10,28 @@ import React from 'react';
 export default function ScoringOverlay({ winResult, playerNames, onPlayAgain, visible }) {
   if (!visible || !winResult) return null;
 
-  const { winnerIdx, winnerName, hand, payments, scores, isSelfDraw, throwerId, isWallExhausted } = winResult;
+  const { winnerIdx, winnerName, hand, tiles, flowers, payments, scores, isSelfDraw, throwerId, isWallExhausted } = winResult;
+  const [shareState, setShareState] = useState('idle'); // idle | working | done | error
+  const canShare = winnerIdx === 0 && !isWallExhausted && tiles && tiles.length > 0;
+
+  async function handleShare() {
+    setShareState('working');
+    try {
+      // Code-split: react-dom/server only loads when a player actually shares.
+      const { buildShareImage, shareOrDownload } = await import('../utils/shareCard.js');
+      const blob = await buildShareImage({
+        tiles,
+        flowers: flowers || [],
+        handName: hand?.name || 'Mahjong!',
+        points: hand?.points || 0,
+      });
+      const result = await shareOrDownload(blob);
+      setShareState(result === 'downloaded' ? 'done' : 'idle');
+    } catch (err) {
+      console.error('Share failed', err);
+      setShareState('error');
+    }
+  }
 
   return (
     <div style={{
@@ -114,6 +135,36 @@ export default function ScoringOverlay({ winResult, playerNames, onPlayAgain, vi
             </div>
           ))}
         </div>
+
+        {/* Share Hand (human win only) */}
+        {canShare && (
+          <button
+            onClick={handleShare}
+            disabled={shareState === 'working'}
+            style={{
+              padding: '13px 0',
+              borderRadius: 12,
+              border: '1.5px solid rgba(95,125,79,0.4)',
+              background: shareState === 'error' ? 'rgba(201,94,131,0.08)' : 'rgba(95,125,79,0.06)',
+              color: shareState === 'error' ? '#C95E83' : '#5F7D4F',
+              fontSize: 14,
+              fontWeight: 800,
+              fontFamily: 'Playfair Display, serif',
+              cursor: shareState === 'working' ? 'wait' : 'pointer',
+              letterSpacing: '0.03em',
+              marginTop: 4,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+            }}
+          >
+            {shareState === 'working' ? 'Creating image…'
+              : shareState === 'error' ? 'Couldn’t share — tap to retry'
+              : shareState === 'done' ? '✓ Image saved — share away!'
+              : '✦ Share Your Win'}
+          </button>
+        )}
 
         {/* Play Again */}
         <button

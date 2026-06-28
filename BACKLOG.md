@@ -21,9 +21,10 @@ Status legend: 🔲 Not started · 🟡 In progress · ✅ Done
   - **Spicy** — current heuristics.
   - **Ruthless** — AI tracks discards, blocks your hand, prioritizes
     closed/high-point hands.
-- 🔲 **Share Hand** — on the win screen, render a shareable image (tiles laid
-  out + hand name + points) for Instagram/TikTok. Free marketing from the exact
-  demographic driving the trend.
+- ✅ **Share Hand** — on the win screen, a "Share Your Win" button renders a
+  branded PNG (sorted tiles + hand name + points + bonus flowers) and opens the
+  native share sheet (Web Share API), falling back to download. Free marketing
+  from the exact demographic driving the trend.
 
 ## Learning & onboarding (the core differentiator)
 
@@ -79,3 +80,7 @@ Status legend: 🔲 Not started · 🟡 In progress · ✅ Done
   ruthless (tracks discard pile, faster, never skips).
 - Game state persists to localStorage via `src/utils/persistence.js`. Difficulty
   preference stored separately in `mahjong_difficulty` key.
+- Share-card generation lives in `src/utils/shareCard.js`: it reuses the SVG tile
+  art (`TileSymbol` export from `MahjongTile`) via `react-dom/server`, rasterizes
+  it to a canvas, and draws branded text on top. It's dynamically imported from
+  `ScoringOverlay` so `react-dom/server` (~60KB gz) stays out of the main bundle.

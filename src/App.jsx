@@ -316,10 +316,13 @@ function AppInner() {
 
   const playerNames = state.players.map(p => p.name);
 
+  const winnerPlayer = state.winner !== null ? state.players[state.winner] : null;
   const summaryData = {
     winnerIdx: state.winner,
     winnerName: state.winner !== null ? playerNames[state.winner] : null,
     hand: state.winningHand,
+    tiles: winnerPlayer ? winnerPlayer.hand : [],
+    flowers: winnerPlayer ? winnerPlayer.flowers : [],
     payments: state._payments || [],
     scores: state.scores,
     isSelfDraw: state._isSelfDraw,
