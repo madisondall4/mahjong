@@ -11,23 +11,29 @@ export default function CharlestonScreen({
   gameState,
   onPass,
   onSkipSecondCharleston,
+  viewerIdx = 0,
+  viewerLabel = null,
 }) {
   const [cardOpen, setCardOpen] = useState(false);
   const [advisorOpen, setAdvisorOpen] = useState(false);
   const [showIncoming, setShowIncoming] = useState(false);
   const [incomingTiles, setIncomingTiles] = useState(null);
 
-  const player = gameState.players[0];
+  const player = gameState.players[viewerIdx];
   const { charleston } = gameState;
+  const viewerIncoming = viewerIdx === 0
+    ? gameState.lastIncomingTiles
+    : gameState.incomingByPlayer?.[viewerIdx];
 
   useEffect(() => {
-    if (gameState.lastIncomingTiles && gameState.lastIncomingTiles.length > 0) {
-      setIncomingTiles(gameState.lastIncomingTiles);
+    if (viewerIncoming && viewerIncoming.length > 0) {
+      setIncomingTiles(viewerIncoming);
       setShowIncoming(true);
       const t = setTimeout(() => setShowIncoming(false), 2000);
       return () => clearTimeout(t);
     }
-  }, [gameState.lastIncomingTiles]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [viewerIncoming]);
 
   return (
     <div className="felt-texture" style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
@@ -41,7 +47,7 @@ export default function CharlestonScreen({
       }}>
         <div>
           <div style={{ fontSize: 13, fontFamily: 'Playfair Display, serif', color: '#5F7D4F', fontWeight: 700 }}>
-            Charleston
+            {viewerLabel ? `Charleston — ${viewerLabel}` : 'Charleston'}
           </div>
           <div style={{ fontSize: 10, color: 'rgba(51,48,42,0.5)', fontFamily: 'Nunito' }}>
             Step {charleston.step + 1}/3 · Round {charleston.round}/2
@@ -74,7 +80,7 @@ export default function CharlestonScreen({
       </div>
 
       {/* Skip second charleston option */}
-      {charleston.round === 2 && charleston.step === 0 && (
+      {onSkipSecondCharleston && charleston.round === 2 && charleston.step === 0 && (
         <div style={{
           padding: '8px 16px',
           background: 'rgba(201,94,131,0.08)',

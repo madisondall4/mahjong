@@ -96,6 +96,7 @@ const DIFF_OPTIONS = [
 export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo, onOpenJournal }) {
   const [showRules, setShowRules] = useState(false);
   const [difficulty, setDiff] = useState(getDifficulty);
+  const [mode, setMode] = useState('solo');
   const daily = getDailyChallenge();
   const stats = getStats();
 
@@ -198,8 +199,47 @@ export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo, onO
           ))}
         </div>
 
-        {/* Difficulty selector */}
+        {/* Mode selector */}
         <div style={{ width: '100%', maxWidth: 280 }}>
+          <div style={{
+            display: 'flex',
+            background: 'rgba(43,58,42,0.06)',
+            borderRadius: 999,
+            border: '1px solid rgba(95,125,79,0.15)',
+            padding: 3,
+          }}>
+            {[
+              { key: 'solo', label: '🤖 Solo vs AI' },
+              { key: 'pass', label: '👥 Pass & Play' },
+            ].map(opt => {
+              const active = mode === opt.key;
+              return (
+                <button
+                  key={opt.key}
+                  onClick={() => setMode(opt.key)}
+                  style={{
+                    flex: 1, padding: '8px 0', borderRadius: 999, border: 'none',
+                    background: active ? '#3C5236' : 'transparent',
+                    color: active ? 'white' : 'rgba(43,58,42,0.55)',
+                    fontSize: 12, fontWeight: active ? 700 : 500,
+                    fontFamily: 'Nunito, sans-serif', cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  {opt.label}
+                </button>
+              );
+            })}
+          </div>
+          {mode === 'pass' && (
+            <div style={{ fontSize: 10, color: 'rgba(43,58,42,0.45)', fontFamily: 'Nunito', textAlign: 'center', marginTop: 4 }}>
+              4 players share this device — hands stay private between turns
+            </div>
+          )}
+        </div>
+
+        {/* Difficulty selector */}
+        <div style={{ width: '100%', maxWidth: 280, display: mode === 'pass' ? 'none' : 'block' }}>
           <div style={{
             fontSize: 10, color: 'rgba(43,58,42,0.5)', fontFamily: 'Nunito',
             textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6, textAlign: 'center',
@@ -306,7 +346,7 @@ export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo, onO
 
         {/* New Game button */}
         <button
-          onClick={onNewGame}
+          onClick={() => onNewGame(mode)}
           style={{
             width: '100%', maxWidth: 280,
             padding: onResumeGame ? '12px 0' : '16px 0',

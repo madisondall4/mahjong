@@ -8,8 +8,10 @@ export default function DeclarationScreen({ gameState, onContinue }) {
   const [burst, setBurst] = useState(false);
 
   const { winner, winningHand } = gameState;
-  const winnerPlayer = winner !== null ? gameState.players[winner] : null;
-  const isHumanWin = winner === 0;
+  const winnerPlayer = winner !== null && winner !== undefined ? gameState.players[winner] : null;
+  const isPass = gameState.mode === 'pass';
+  // In pass-and-play every winner is a human at this device.
+  const isHumanWin = isPass ? winnerPlayer !== null : winner === 0;
 
   useEffect(() => {
     setBurst(true);
@@ -17,7 +19,35 @@ export default function DeclarationScreen({ gameState, onContinue }) {
     return () => clearTimeout(t);
   }, []);
 
-  if (!winnerPlayer) return null;
+  // Wall exhausted with no winner — a draw. Don't strand the player on a
+  // blank screen; explain and continue to scoring.
+  if (!winnerPlayer) {
+    return (
+      <div className="felt-texture" style={{
+        height: '100%', display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center', gap: 20, padding: 24,
+      }}>
+        <div style={{ fontSize: 56 }}>🀄</div>
+        <h1 style={{ margin: 0, fontFamily: 'Playfair Display, serif', fontSize: 28, color: '#3C5236', textAlign: 'center' }}>
+          Wall Exhausted
+        </h1>
+        <p style={{ margin: 0, fontSize: 14, color: 'rgba(51,48,42,0.6)', fontFamily: 'Nunito', textAlign: 'center', maxWidth: 280, lineHeight: 1.5 }}>
+          No tiles remain and no one declared Mahjong. The round ends in a draw — no points change hands.
+        </p>
+        <button
+          onClick={onContinue}
+          style={{
+            width: '100%', maxWidth: 300, padding: '14px 0', borderRadius: 12, border: 'none',
+            background: 'linear-gradient(135deg, #5F7D4F, #C95E83)', color: 'white',
+            fontSize: 16, fontWeight: 800, fontFamily: 'Playfair Display, serif',
+            cursor: 'pointer', letterSpacing: '0.04em', boxShadow: '0 4px 16px rgba(95,125,79,0.35)',
+          }}
+        >
+          See Scores
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="felt-texture" style={{
@@ -89,14 +119,14 @@ export default function DeclarationScreen({ gameState, onContinue }) {
             textShadow: isHumanWin ? '0 0 30px rgba(95,125,79,0.5)' : 'none',
             lineHeight: 1.1,
           }}>
-            {isHumanWin ? 'Mahjong!' : `${winnerPlayer.name}\nDeclares Mahjong`}
+            {isPass && winnerPlayer ? `${winnerPlayer.name} — Mahjong!` : isHumanWin ? 'Mahjong!' : `${winnerPlayer.name}\nDeclares Mahjong`}
           </h1>
           {winningHand && (
             <div style={{
               fontSize: 16, color: '#5F7D4F', fontFamily: 'Playfair Display, serif',
               marginTop: 4,
             }}>
-              {winningHand.pattern}
+              {winningHand.name ? `${winningHand.name} · ` : ''}{winningHand.pattern}
             </div>
           )}
         </div>

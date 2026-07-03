@@ -11,9 +11,11 @@ import { getJournal, getDailyChallenge, todayKey } from '../utils/stats.js';
 export default function ScoringOverlay({ winResult, playerNames, onPlayAgain, visible }) {
   if (!visible || !winResult) return null;
 
-  const { winnerIdx, winnerName, hand, tiles, flowers, payments, scores, isSelfDraw, throwerId, isWallExhausted } = winResult;
+  const { mode, winnerIdx, winnerName, hand, tiles, flowers, payments, scores, isSelfDraw, throwerId, isWallExhausted } = winResult;
   const [shareState, setShareState] = useState('idle'); // idle | working | done | error
-  const canShare = winnerIdx === 0 && !isWallExhausted && tiles && tiles.length > 0;
+  const isPass = mode === 'pass';
+  const humanWon = !isPass && winnerIdx === 0;
+  const canShare = !isWallExhausted && tiles && tiles.length > 0 && (isPass ? winnerIdx !== null : winnerIdx === 0);
 
   async function handleShare() {
     setShareState('working');
@@ -74,7 +76,7 @@ export default function ScoringOverlay({ winResult, playerNames, onPlayAgain, vi
             <div style={{ textAlign: 'center', borderBottom: '1px solid rgba(95,125,79,0.15)', paddingBottom: 14 }}>
               <div style={{ fontSize: 32 }}>🏆</div>
               <h2 style={{ margin: '6px 0 2px', fontFamily: 'Playfair Display, serif', fontSize: 24, color: '#5F7D4F' }}>
-                {winnerIdx === 0 ? 'You Win!' : `${winnerName} Wins!`}
+                {humanWon ? 'You Win!' : `${winnerName} Wins!`}
               </h2>
               {hand && (
                 <div style={{ fontSize: 15, color: '#33302A', fontFamily: 'Playfair Display, serif', marginTop: 2 }}>
@@ -84,7 +86,7 @@ export default function ScoringOverlay({ winResult, playerNames, onPlayAgain, vi
               <div style={{ fontSize: 12, color: 'rgba(51,48,42,0.5)', fontFamily: 'Nunito', marginTop: 4 }}>
                 {isSelfDraw ? 'Self-drawn win' : `Called discard from ${throwerId !== null ? (playerNames[throwerId] || 'unknown') : '?'}`}
               </div>
-              {winnerIdx === 0 && hand && (() => {
+              {humanWon && hand && (() => {
                 const journal = getJournal();
                 const entry = journal.entries.find(e => e.hand.id === hand.id);
                 const daily = getDailyChallenge();
@@ -151,7 +153,7 @@ export default function ScoringOverlay({ winResult, playerNames, onPlayAgain, vi
               padding: '4px 0',
             }}>
               <span style={{ fontSize: 13, fontFamily: 'Nunito', color: i === winnerIdx && !isWallExhausted ? '#5F7D4F' : 'rgba(51,48,42,0.85)', fontWeight: i === winnerIdx && !isWallExhausted ? 700 : 400 }}>
-                {playerNames[i]} {i === 0 ? '(You)' : ''}
+                {playerNames[i]} {!isPass && i === 0 ? '(You)' : ''}
               </span>
               <span style={{ fontSize: 15, fontWeight: 700, color: s >= 0 ? '#5F7D4F' : '#C95E83', fontFamily: 'Playfair Display, serif' }}>
                 {s >= 0 ? '+' : ''}{s}

@@ -5,6 +5,7 @@ import CharlestonScreen from './screens/CharlestonScreen.jsx';
 import GameTable from './screens/GameTable.jsx';
 import DeclarationScreen from './screens/DeclarationScreen.jsx';
 import JournalScreen from './screens/JournalScreen.jsx';
+import PassHandoffScreen from './screens/PassHandoffScreen.jsx';
 import ScoringOverlay from './components/ScoringOverlay.jsx';
 
 import {
@@ -133,6 +134,7 @@ function AppInner() {
   // Watch for AI turns
   useEffect(() => {
     if (state.phase !== 'playing') return;
+    if (state.mode === 'pass') return; // no AI in pass-and-play
     if (state.currentPlayer === 0) return;
     if (state.thinkingPlayer !== null) return;
     if (state.canHumanCallMahjong) return;
@@ -149,6 +151,7 @@ function AppInner() {
   // Auto-draw for human at start of turn
   useEffect(() => {
     if (state.phase !== 'playing') return;
+    if (state.mode === 'pass') return; // pass-and-play draws on reveal
     if (state.currentPlayer !== 0) return;
     if (state.lastDrawnTile) return;
     if (state.humanCanDeclare) return;
@@ -157,6 +160,17 @@ function AppInner() {
     const key = `human-draw-${state.wallIndex}-${state.discardPile.length}`;
     if (lastHumanDrawKey.current === key) return;
     lastHumanDrawKey.current = key;
+
+    // East opens the game already holding 14 tiles: no draw — they discard
+    // first. But a dealt-complete hand ("heavenly hand") must be declarable.
+    if (state.players[0].hand.length >= 14) {
+      const human = state.players[0];
+      const winDef = canSelfDeclare(human.hand, human.flowers.length);
+      if (winDef) {
+        setState({ ...state, humanCanDeclare: true, _selfDeclareHand: winDef });
+      }
+      return;
+    }
 
     if (isWallExhausted(state)) {
       setState({ ...state, phase: 'declaration', wallExhausted: true });
@@ -171,11 +185,13 @@ function AppInner() {
     const human = newState.players[0];
     const winDef = canSelfDeclare(human.hand, human.flowers.length);
     setState({ ...newState, humanCanDeclare: !!winDef, _selfDeclareHand: winDef || null });
-  }, [state.phase, state.currentPlayer, state.wallIndex, state.discardPile.length, state.lastDrawnTile, state.humanCanDeclare, state.canHumanCallMahjong]);
+  }, [state.phase, state.mode, state.currentPlayer, state.wallIndex, state.discardPile.length, state.lastDrawnTile, state.humanCanDeclare, state.canHumanCallMahjong]);
 
   // Record game results for stats/journal once per game (idempotent by gameId).
+  // Solo only — pass-and-play wins belong to whoever held the device.
   useEffect(() => {
     if (state.phase !== 'declaration' && state.phase !== 'summary') return;
+    if (state.mode === 'pass') return;
     if (!state.gameId) return;
     recordGameEnd({
       gameId: state.gameId,
@@ -187,13 +203,135 @@ function AppInner() {
 
   // ── Handlers ──────────────────────────────────────────────────────────────
 
-  function handleNewGame() {
+  function handleNewGame(mode = 'solo') {
     if (aiTimerRef.current) clearTimeout(aiTimerRef.current);
     lastAiKey.current = null;
     lastHumanDrawKey.current = null;
     clearSavedGame();
-    const newState = dealTiles({ ...state, difficulty: getDifficulty() });
+    const players = mode === 'pass'
+      ? ['Player 1', 'Player 2', 'Player 3', 'Player 4'].map((name, id) => ({
+          id, name, isHuman: true, hand: [], flowers: [], score: 0,
+        }))
+      : ['You', 'South', 'West', 'North'].map((name, id) => ({
+          id, name, isHuman: id === 0, hand: [], flowers: [], score: 0,
+        }));
+    const newState = dealTiles({ ...state, difficulty: getDifficulty(), mode, players });
+    if (mode === 'pass') {
+      newState._passStage = 'handoff';
+      newState._passPicker = 0;
+      newState._passPicks = [null, null, null, null];
+    }
     setState(newState);
+  }
+
+  // ── Pass-and-play orchestration ────────────────────────────────────────────
+
+  function handlePassCharlestonPick(uids) {
+    const picks = [...(state._passPicks || [null, null, null, null])];
+    picks[state._passPicker] = uids;
+    if (state._passPicker < 3) {
+      setState({ ...state, _passPicks: picks, _passPicker: state._passPicker + 1, _passStage: 'handoff' });
+      return;
+    }
+    const afterPass = applyCharlestonPass(state, picks);
+    setState({
+      ...afterPass,
+      _passPicks: [null, null, null, null],
+      _passPicker: 0,
+      _passStage: 'handoff',
+    });
+  }
+
+  function handlePassSkipSecond() {
+    setState({ ...skipSecondCharleston(state), _passStage: 'handoff', _passPicker: 0 });
+  }
+
+  function handlePassReveal() {
+    const p = state.currentPlayer;
+    const player = state.players[p];
+
+    // East's opening turn: already 14 tiles — no draw, discard first.
+    if (player.hand.length >= 14) {
+      const win = checkWin(player.hand, player.flowers.length, true);
+      setState({
+        ...state,
+        _passStage: 'act',
+        humanCanDeclare: win.matched,
+        _selfDeclareHand: win.matched ? win.handDef : null,
+      });
+      return;
+    }
+
+    if (isWallExhausted(state)) {
+      setState({ ...state, phase: 'declaration', wallExhausted: true });
+      return;
+    }
+    const { newState, drawnTile } = drawTile(state, p);
+    if (!drawnTile) {
+      setState({ ...newState, phase: 'declaration', wallExhausted: true });
+      return;
+    }
+    const drawn = newState.players[p];
+    const win = checkWin(drawn.hand, drawn.flowers.length, true);
+    setState({
+      ...newState,
+      _passStage: 'act',
+      humanCanDeclare: win.matched,
+      _selfDeclareHand: win.matched ? win.handDef : null,
+    });
+  }
+
+  function handlePassDiscard(tileUid) {
+    const afterDiscard = discardTile(state, state.currentPlayer, tileUid);
+    setState({ ...afterDiscard, _passStage: 'call', humanCanDeclare: false, _selfDeclareHand: null });
+  }
+
+  function handlePassCallContinue() {
+    setState({ ...advanceTurn(state), _passStage: 'handoff' });
+  }
+
+  function handlePassCall(callerIdx) {
+    const caller = state.players[callerIdx];
+    const tile = state.lastDiscard;
+    if (!tile) return false;
+    const result = canWinWithTile(caller.hand, tile, caller.flowers.length);
+    if (!result.matched) return false;
+
+    const payments = calculatePayments(callerIdx, state.lastDiscardBy, result.handDef.points);
+    const newScores = applyPayments(state.scores, payments);
+    setState({
+      ...state,
+      phase: 'declaration',
+      winner: callerIdx,
+      winningHand: result.handDef,
+      players: state.players.map((pl, i) =>
+        i === callerIdx ? { ...pl, hand: [...pl.hand, tile] } : pl
+      ),
+      scores: newScores,
+      _payments: payments,
+      _throwerId: state.lastDiscardBy,
+      _isSelfDraw: false,
+    });
+    return true;
+  }
+
+  function handlePassDeclare() {
+    const p = state.currentPlayer;
+    const player = state.players[p];
+    const winDef = state._selfDeclareHand || checkWin(player.hand, player.flowers.length, true).handDef;
+    if (!winDef) return;
+    const payments = calculatePayments(p, null, winDef.points);
+    const newScores = applyPayments(state.scores, payments);
+    setState({
+      ...state,
+      phase: 'declaration',
+      winner: p,
+      winningHand: winDef,
+      scores: newScores,
+      _payments: payments,
+      _throwerId: null,
+      _isSelfDraw: true,
+    });
   }
 
   function handleResumeGame() {
@@ -333,6 +471,7 @@ function AppInner() {
 
   const winnerPlayer = state.winner !== null ? state.players[state.winner] : null;
   const summaryData = {
+    mode: state.mode,
     winnerIdx: state.winner,
     winnerName: state.winner !== null ? playerNames[state.winner] : null,
     hand: state.winningHand,
@@ -361,6 +500,28 @@ function AppInner() {
   }
 
   if (state.phase === 'charleston') {
+    if (state.mode === 'pass') {
+      const picker = state._passPicker || 0;
+      if (state._passStage === 'handoff') {
+        return (
+          <PassHandoffScreen
+            mode="handoff"
+            toName={state.players[picker].name}
+            subtitle={`Charleston · round ${state.charleston.round}, step ${state.charleston.step + 1} — pick 3 tiles to pass`}
+            onReveal={() => patchState({ _passStage: 'act' })}
+          />
+        );
+      }
+      return (
+        <CharlestonScreen
+          gameState={state}
+          viewerIdx={picker}
+          viewerLabel={state.players[picker].name}
+          onPass={handlePassCharlestonPick}
+          onSkipSecondCharleston={picker === 0 ? handlePassSkipSecond : null}
+        />
+      );
+    }
     return (
       <CharlestonScreen
         gameState={state}
@@ -371,6 +532,43 @@ function AppInner() {
   }
 
   if (state.phase === 'playing') {
+    if (state.mode === 'pass') {
+      const p = state.currentPlayer;
+      if (state._passStage === 'call' && state.lastDiscard) {
+        const nextIdx = (p + 1) % 4;
+        return (
+          <PassHandoffScreen
+            mode="call"
+            lastDiscard={state.lastDiscard}
+            discarderName={state.players[state.lastDiscardBy]?.name}
+            discarderIdx={state.lastDiscardBy}
+            players={state.players}
+            toName={state.players[nextIdx].name}
+            onContinue={handlePassCallContinue}
+            onCallMahjong={handlePassCall}
+          />
+        );
+      }
+      if (state._passStage !== 'act') {
+        return (
+          <PassHandoffScreen
+            mode="handoff"
+            toName={state.players[p].name}
+            subtitle={state.players[p].hand.length >= 14 ? 'You open — discard a tile' : 'Your turn — draw and discard'}
+            onReveal={handlePassReveal}
+          />
+        );
+      }
+      return (
+        <GameTable
+          gameState={state}
+          viewerIdx={p}
+          onDiscard={handlePassDiscard}
+          onCallMahjong={() => {}}
+          onDeclareMahjong={handlePassDeclare}
+        />
+      );
+    }
     return (
       <GameTable
         gameState={state}

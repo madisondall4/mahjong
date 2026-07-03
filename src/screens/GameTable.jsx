@@ -16,15 +16,19 @@ export default function GameTable({
   onDiscard,
   onCallMahjong,
   onDeclareMahjong,
+  viewerIdx = 0,
 }) {
   const [cardOpen, setCardOpen] = useState(false);
   const [advisorOpen, setAdvisorOpen] = useState(false);
   const [selectedUid, setSelectedUid] = useState(null);
   const [showMahjongBtn, setShowMahjongBtn] = useState(false);
 
-  const humanPlayer = gameState.players[0];
+  const humanPlayer = gameState.players[viewerIdx];
+  const seatRight = gameState.players[(viewerIdx + 1) % 4];
+  const seatTop = gameState.players[(viewerIdx + 2) % 4];
+  const seatLeft = gameState.players[(viewerIdx + 3) % 4];
   const currentPlayer = gameState.currentPlayer;
-  const isHumanTurn = currentPlayer === 0;
+  const isHumanTurn = currentPlayer === viewerIdx;
   const wallRemaining = gameState.wall.length - gameState.wallIndex;
   const canCall = gameState.canHumanCallMahjong || false;
   const thinkingPlayer = gameState.thinkingPlayer;
@@ -136,10 +140,10 @@ export default function GameTable({
         zIndex: 2, flexShrink: 0,
       }}>
         <OpponentSeat
-          player={gameState.players[2]}
+          player={seatTop}
           position="top"
-          isThinking={thinkingPlayer === 2}
-          isCurrentTurn={currentPlayer === 2}
+          isThinking={thinkingPlayer === seatTop.id}
+          isCurrentTurn={currentPlayer === seatTop.id}
         />
       </div>
 
@@ -148,13 +152,13 @@ export default function GameTable({
         flex: 1, display: 'flex', alignItems: 'stretch',
         padding: '2px 6px', gap: 4, minHeight: 0, zIndex: 2,
       }}>
-        {/* Left: North */}
+        {/* Left seat */}
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <OpponentSeat
-            player={gameState.players[3]}
+            player={seatLeft}
             position="left"
-            isThinking={thinkingPlayer === 3}
-            isCurrentTurn={currentPlayer === 3}
+            isThinking={thinkingPlayer === seatLeft.id}
+            isCurrentTurn={currentPlayer === seatLeft.id}
           />
         </div>
 
@@ -177,13 +181,13 @@ export default function GameTable({
           />
         </div>
 
-        {/* Right: South */}
+        {/* Right seat */}
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <OpponentSeat
-            player={gameState.players[1]}
+            player={seatRight}
             position="right"
-            isThinking={thinkingPlayer === 1}
-            isCurrentTurn={currentPlayer === 1}
+            isThinking={thinkingPlayer === seatRight.id}
+            isCurrentTurn={currentPlayer === seatRight.id}
           />
         </div>
       </div>

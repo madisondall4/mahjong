@@ -82,6 +82,7 @@ const TIPS = [
 export default function CoachTips({ gameState }) {
   const [seenTick, setSeenTick] = useState(0); // re-render after dismiss
 
+  if (gameState.mode === 'pass') return null; // coach is a solo-mode feature
   if (!isCoachEnabled()) return null;
   const seen = getSeen();
   const tip = TIPS.find(t => !seen.has(t.id) && t.when(gameState));

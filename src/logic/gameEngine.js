@@ -5,6 +5,7 @@ export const WALL_MIN = 14;
 export function createInitialState() {
   return {
     phase: 'home',
+    mode: 'solo', // 'solo' (vs AI) | 'pass' (pass-and-play, 4 humans)
     wall: [],
     wallIndex: 0,
     players: [
@@ -238,13 +239,13 @@ export function applyCharlestonPass(state, passTileUids) {
     return { ...player, hand: newHand };
   });
 
-  // Human receives tiles from whoever passes to them
-  const humanReceives = [];
+  // Track what every seat received (pass-and-play shows each player theirs;
+  // solo mode only surfaces player 0's).
+  const incomingByPlayer = [[], [], [], []];
   for (let sender = 0; sender < 4; sender++) {
-    if (directions[sender] === 0) {
-      humanReceives.push(...givingTiles[sender]);
-    }
+    incomingByPlayer[directions[sender]].push(...givingTiles[sender]);
   }
+  const humanReceives = incomingByPlayer[0];
 
   // Advance step
   let newRound = round;
@@ -271,6 +272,7 @@ export function applyCharlestonPass(state, passTileUids) {
       done,
     },
     lastIncomingTiles: humanReceives,
+    incomingByPlayer,
     phase: done ? 'playing' : 'charleston',
   };
 }
