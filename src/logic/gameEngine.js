@@ -1,6 +1,7 @@
-import { buildWall, shuffle, isFlower, isJoker } from '../data/tiles.js';
+import { buildWall, shuffle, isFlower } from '../data/tiles.js';
 
-export const WALL_MIN = 14;
+// American mahjong plays the wall to the last tile — no dead wall.
+export const WALL_MIN = 0;
 
 export function createInitialState() {
   return {
@@ -52,26 +53,6 @@ function drawRaw(wall, wallIndex) {
   return { tile: wall[wallIndex], wallIndex: wallIndex + 1 };
 }
 
-// Draw a tile for a player, automatically replacing flowers
-function drawTileForPlayer(wall, wallIndex, player) {
-  let wi = wallIndex;
-  const newPlayer = { ...player, hand: [...player.hand], flowers: [...player.flowers] };
-
-  const { tile, wallIndex: wi2 } = drawRaw(wall, wi);
-  wi = wi2;
-  if (!tile) return { player: newPlayer, wallIndex: wi, drawnTile: null };
-
-  if (isFlower(tile)) {
-    newPlayer.flowers.push(tile);
-    // Draw replacement
-    const res = drawTileForPlayer(wall, wi, newPlayer);
-    return res;
-  }
-
-  newPlayer.hand.push(tile);
-  return { player: newPlayer, wallIndex: wi, drawnTile: tile };
-}
-
 export function dealTiles(state) {
   const wall = shuffle(buildWall());
   let wallIndex = 0;
@@ -91,11 +72,6 @@ export function dealTiles(state) {
         players[i].hand.push(tile);
       }
     }
-  }
-
-  // Replace flowers (draw replacements for all flowers dealt)
-  for (let i = 0; i < 4; i++) {
-    // Already handled inline above
   }
 
   return {
@@ -130,13 +106,11 @@ export function drawTile(state, playerIdx) {
   const player = { ...state.players[playerIdx], hand: [...state.players[playerIdx].hand], flowers: [...state.players[playerIdx].flowers] };
 
   let drawnTile = null;
-  let isFlowerDraw = false;
 
   while (wallIndex < wall.length) {
     const tile = wall[wallIndex++];
     if (isFlower(tile)) {
       player.flowers.push(tile);
-      isFlowerDraw = true;
     } else {
       player.hand.push(tile);
       drawnTile = tile;

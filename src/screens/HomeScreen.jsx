@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { SUITS } from '../data/tiles.js';
 import { getDifficulty, setDifficulty, DIFFICULTIES } from '../utils/persistence.js';
 import { getDailyChallenge, getStats } from '../utils/stats.js';
-import { setCoachEnabled, isCoachEnabled } from '../components/CoachTips.jsx';
+import { setCoachEnabled, isCoachEnabled } from '../utils/coach.js';
 import { THEME_PRESETS, TILE_BACKS, applyTheme, getSavedTheme, getSavedTileBack, setTileBack } from '../theme/presets.js';
 
 const DEMO_TILES = [

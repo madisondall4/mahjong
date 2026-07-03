@@ -25,9 +25,9 @@ function gameReducer(state, action) {
 export function GameProvider({ children }) {
   const [state, dispatch] = useReducer(gameReducer, createInitialState());
   const stateRef = useRef(state);
-  stateRef.current = state;
 
   useEffect(() => {
+    stateRef.current = state;
     if (state.phase !== 'home') {
       saveGame(state);
     }
@@ -62,6 +62,7 @@ export function GameProvider({ children }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components -- context + hook co-location is intentional
 export function useGame() {
   const ctx = useContext(GameContext);
   if (!ctx) throw new Error('useGame must be used within GameProvider');

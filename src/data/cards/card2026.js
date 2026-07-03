@@ -88,11 +88,15 @@ export const WINNING_HANDS = [
     points: 30,
     closed: false,
     flowers: 2,
-    description: 'Kongs of 2 and 4 plus pungs of 6 and 8, all one suit. Needs 2 flowers.',
+    description: 'Kongs of 2 and 4 plus pungs of 6 and 8 — each group in any suit. Needs 2 flowers.',
     variants() {
-      return NSUITS.map(s => [G(s, 2, 4), G(s, 4, 4), G(s, 6, 3), G(s, 8, 3)]);
+      const out = [];
+      for (const s2 of NSUITS) for (const s4 of NSUITS)
+        for (const s6 of NSUITS) for (const s8 of NSUITS)
+          out.push([G(s2, 2, 4), G(s4, 4, 4), G(s6, 6, 3), G(s8, 8, 3)]);
+      return out;
     },
-    example: [G('dot', 2, 4), G('dot', 4, 4), G('dot', 6, 3), G('dot', 8, 3)],
+    example: [G('dot', 2, 4), G('bam', 4, 4), G('dot', 6, 3), G('crak', 8, 3)],
   },
   {
     id: 3,
@@ -144,15 +148,18 @@ export const WINNING_HANDS = [
     points: 25,
     closed: false,
     flowers: 0,
-    description: 'Four consecutive pungs plus the next pair up, all one suit. Start anywhere 1–5.',
+    description: 'Four consecutive pungs plus the next pair up — every group may be a different suit. Start anywhere 1–5.',
     variants() {
       const out = [];
-      for (const s of NSUITS) for (let v = 1; v <= 5; v++) {
-        out.push([G(s, v, 3), G(s, v + 1, 3), G(s, v + 2, 3), G(s, v + 3, 3), G(s, v + 4, 2)]);
+      for (let v = 1; v <= 5; v++) {
+        for (const s1 of NSUITS) for (const s2 of NSUITS)
+          for (const s3 of NSUITS) for (const s4 of NSUITS) for (const s5 of NSUITS) {
+            out.push([G(s1, v, 3), G(s2, v + 1, 3), G(s3, v + 2, 3), G(s4, v + 3, 3), G(s5, v + 4, 2)]);
+          }
       }
       return out;
     },
-    example: [G('crak', 1, 3), G('crak', 2, 3), G('crak', 3, 3), G('crak', 4, 3), G('crak', 5, 2)],
+    example: [G('crak', 1, 3), G('bam', 2, 3), G('crak', 3, 3), G('dot', 4, 3), G('crak', 5, 2)],
   },
   {
     id: 6,
@@ -162,15 +169,18 @@ export const WINNING_HANDS = [
     points: 30,
     closed: false,
     flowers: 2,
-    description: 'Three consecutive kongs plus the next pair up, one suit. Needs 2 flowers.',
+    description: 'Three consecutive kongs plus the next pair up — every group may be a different suit. Needs 2 flowers.',
     variants() {
       const out = [];
-      for (const s of NSUITS) for (let v = 1; v <= 6; v++) {
-        out.push([G(s, v, 4), G(s, v + 1, 4), G(s, v + 2, 4), G(s, v + 3, 2)]);
+      for (let v = 1; v <= 6; v++) {
+        for (const s1 of NSUITS) for (const s2 of NSUITS)
+          for (const s3 of NSUITS) for (const s4 of NSUITS) {
+            out.push([G(s1, v, 4), G(s2, v + 1, 4), G(s3, v + 2, 4), G(s4, v + 3, 2)]);
+          }
       }
       return out;
     },
-    example: [G('dot', 1, 4), G('dot', 2, 4), G('dot', 3, 4), G('dot', 4, 2)],
+    example: [G('dot', 1, 4), G('bam', 2, 4), G('dot', 3, 4), G('crak', 4, 2)],
   },
   {
     id: 7,

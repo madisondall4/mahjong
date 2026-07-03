@@ -16,8 +16,7 @@ export default function CharlestonScreen({
 }) {
   const [cardOpen, setCardOpen] = useState(false);
   const [advisorOpen, setAdvisorOpen] = useState(false);
-  const [showIncoming, setShowIncoming] = useState(false);
-  const [incomingTiles, setIncomingTiles] = useState(null);
+  const [toast, setToast] = useState(null); // transient "tiles received" banner
 
   const player = gameState.players[viewerIdx];
   const { charleston } = gameState;
@@ -27,13 +26,15 @@ export default function CharlestonScreen({
 
   useEffect(() => {
     if (viewerIncoming && viewerIncoming.length > 0) {
-      setIncomingTiles(viewerIncoming);
-      setShowIncoming(true);
-      const t = setTimeout(() => setShowIncoming(false), 2000);
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- transient toast keyed to the incoming-tiles prop
+      setToast(viewerIncoming);
+      const t = setTimeout(() => setToast(null), 2000);
       return () => clearTimeout(t);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [viewerIncoming]);
+
+  const showIncoming = !!toast;
+  const incomingTiles = toast;
 
   return (
     <div className="felt-texture" style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>

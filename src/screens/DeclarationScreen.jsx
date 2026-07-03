@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import MahjongTile from '../components/MahjongTile.jsx';
 
 /**
@@ -6,6 +6,16 @@ import MahjongTile from '../components/MahjongTile.jsx';
  */
 export default function DeclarationScreen({ gameState, onContinue }) {
   const [burst, setBurst] = useState(false);
+  // Decorative confetti positions: random once per mount, stable thereafter.
+  /* eslint-disable react-hooks/purity -- intentional one-shot randomness for celebration sparkles */
+  const sparkles = useMemo(() =>
+    Array.from({ length: 20 }, () => ({
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+      duration: 1 + Math.random() * 2,
+      delay: Math.random() * 1000,
+    })), []);
+  /* eslint-enable react-hooks/purity */
 
   const { winner, winningHand } = gameState;
   const winnerPlayer = winner !== null && winner !== undefined ? gameState.players[winner] : null;
@@ -75,15 +85,15 @@ export default function DeclarationScreen({ gameState, onContinue }) {
       {/* Sparkles */}
       {isHumanWin && (
         <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>
-          {Array.from({ length: 20 }).map((_, i) => (
+          {sparkles.map((s, i) => (
             <div key={i} style={{
               position: 'absolute',
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
+              left: s.left,
+              top: s.top,
               width: 6, height: 6,
               background: i % 2 === 0 ? 'var(--matcha)' : 'var(--rose)',
               borderRadius: '50%',
-              animation: `floatSparkle ${1 + Math.random() * 2}s ease-out ${Math.random() * 1000}ms forwards`,
+              animation: `floatSparkle ${s.duration}s ease-out ${s.delay}ms forwards`,
               opacity: 0,
             }}/>
           ))}

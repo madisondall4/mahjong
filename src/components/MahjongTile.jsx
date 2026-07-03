@@ -262,7 +262,7 @@ function FlowerSymbol({ value, size }) {
   const s = size === 'lg' ? 36 : size === 'md' ? 28 : 18;
   const cy = 12; // bloom center, leaving room for the season label
 
-  const SeasonLabel = () => size === 'sm' ? null : (
+  const seasonLabel = size === 'sm' ? null : (
     <text x="16" y="30" textAnchor="middle" fontSize="4.5" fontWeight="800"
       fontFamily="Nunito, sans-serif" letterSpacing="0.4" fill={FLOWER_HUES[value]}>
       {FLOWER_SEASONS[value]}
@@ -283,7 +283,7 @@ function FlowerSymbol({ value, size }) {
           const rad = (deg * Math.PI) / 180;
           return <circle key={deg} cx={16 + Math.cos(rad) * 2.3} cy={cy + Math.sin(rad) * 2.3} r="0.5" fill="#C5302B"/>;
         })}
-        <SeasonLabel/>
+        {seasonLabel}
       </svg>
     );
   }
@@ -304,7 +304,7 @@ function FlowerSymbol({ value, size }) {
         })}
         <circle cx="16" cy={cy} r="2" fill="#15486E"/>
         <circle cx="16" cy={cy} r="0.9" fill="#F2C14E"/>
-        <SeasonLabel/>
+        {seasonLabel}
       </svg>
     );
   }
@@ -322,7 +322,7 @@ function FlowerSymbol({ value, size }) {
         {layer(12, 4, 3.2, 1.3, '#E8A54D', 15)}
         {layer(8, 2, 1.9, 1, '#F2C14E')}
         <circle cx="16" cy={cy} r="1.5" fill="#B5651D"/>
-        <SeasonLabel/>
+        {seasonLabel}
       </svg>
     );
   }
@@ -345,7 +345,7 @@ function FlowerSymbol({ value, size }) {
         </g>;
       })}
       <circle cx="16" cy={cy} r="1.6" fill="#5E3A78"/>
-      <SeasonLabel/>
+      {seasonLabel}
     </svg>
   );
 }

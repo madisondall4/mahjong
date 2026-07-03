@@ -12,19 +12,19 @@ export function getDifficulty() {
   try {
     const val = localStorage.getItem(DIFFICULTY_KEY);
     if (val && Object.values(DIFFICULTIES).includes(val)) return val;
-  } catch (_) {}
+  } catch { /* best effort */ }
   return DIFFICULTIES.SPICY;
 }
 
 export function setDifficulty(d) {
-  try { localStorage.setItem(DIFFICULTY_KEY, d); } catch (_) {}
+  try { localStorage.setItem(DIFFICULTY_KEY, d); } catch { /* best effort */ }
 }
 
 export function saveGame(state) {
   try {
     const data = { v: SAVE_VERSION, state, ts: Date.now() };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch (_) {}
+  } catch { /* best effort */ }
 }
 
 export function loadGame() {
@@ -40,7 +40,7 @@ export function loadGame() {
       thinkingPlayer: null,
       waitingForAI: false,
     };
-  } catch (_) {
+  } catch {
     clearSavedGame();
     return null;
   }
@@ -49,7 +49,7 @@ export function loadGame() {
 export function clearSavedGame() {
   try {
     localStorage.removeItem(STORAGE_KEY);
-  } catch (_) {}
+  } catch { /* best effort */ }
 }
 
 export function getSavedGameInfo() {
@@ -66,7 +66,7 @@ export function getSavedGameInfo() {
       tilesRemaining: s.wall ? s.wall.length - (s.wallIndex || 0) : 0,
       timestamp: data.ts,
     };
-  } catch (_) {
+  } catch {
     return null;
   }
 }

@@ -32,7 +32,7 @@ export default function DiscardPool({ discards = [], lastDiscard = null, onCallM
         alignContent: 'center',
         maxWidth: 220,
       }}>
-        {toShow.map((tile, idx) => {
+        {toShow.map((tile) => {
           const isLast = lastDiscard && tile.uid === lastDiscard.uid;
           return (
             <div

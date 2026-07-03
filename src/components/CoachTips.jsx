@@ -7,32 +7,7 @@ import React, { useState } from 'react';
  * core tips are seen. Replayable from the Home rules panel.
  */
 
-const SEEN_KEY = 'mahjong_coach_seen';
-const OFF_KEY = 'mahjong_coach_off';
-
-function getSeen() {
-  try { return new Set(JSON.parse(localStorage.getItem(SEEN_KEY) || '[]')); }
-  catch { return new Set(); }
-}
-
-function persistSeen(seen) {
-  try { localStorage.setItem(SEEN_KEY, JSON.stringify([...seen])); } catch { /* best effort */ }
-}
-
-export function isCoachEnabled() {
-  try { return localStorage.getItem(OFF_KEY) !== '1'; } catch { return true; }
-}
-
-export function setCoachEnabled(on) {
-  try {
-    if (on) {
-      localStorage.removeItem(OFF_KEY);
-      localStorage.removeItem(SEEN_KEY);
-    } else {
-      localStorage.setItem(OFF_KEY, '1');
-    }
-  } catch { /* best effort */ }
-}
+import { getSeenTips, persistSeenTips, isCoachEnabled, setCoachEnabled } from '../utils/coach.js';
 
 const TIPS = [
   {
@@ -84,14 +59,14 @@ export default function CoachTips({ gameState }) {
 
   if (gameState.mode === 'pass') return null; // coach is a solo-mode feature
   if (!isCoachEnabled()) return null;
-  const seen = getSeen();
+  const seen = getSeenTips();
   const tip = TIPS.find(t => !seen.has(t.id) && t.when(gameState));
   if (!tip) return null;
 
   function dismiss() {
-    const s = getSeen();
+    const s = getSeenTips();
     s.add(tip.id);
-    persistSeen(s);
+    persistSeenTips(s);
     if (TIPS.every(t => s.has(t.id))) setCoachEnabled(false);
     setSeenTick(seenTick + 1);
   }

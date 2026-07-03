@@ -12,75 +12,93 @@ Status legend: 🔲 Not started · 🟡 In progress · ✅ Done
 
 ---
 
-## Quick wins (ship first — pure frontend, no backend)
+## Shipped
 
-- ✅ **localStorage save/resume** — persist game state so a refresh doesn't kill
-  an in-progress game (prevents the #1 rage-quit). Also unlocks stats below.
-- ✅ **AI difficulty selector** on the home screen:
-  - **Chill** — AI makes suboptimal discards, doesn't aggressively call Mahjong.
-  - **Spicy** — current heuristics.
-  - **Ruthless** — AI tracks discards, blocks your hand, prioritizes
-    closed/high-point hands.
-- ✅ **Share Hand** — on the win screen, a "Share Your Win" button renders a
-  branded PNG (sorted tiles + hand name + points + bonus flowers) and opens the
-  native share sheet (Web Share API), falling back to download. Free marketing
-  from the exact demographic driving the trend.
+### Quick wins
+- ✅ **localStorage save/resume** — full game state persists; refresh-proof.
+- ✅ **AI difficulty selector** — Chill / Spicy / Ruthless. Spicy and Ruthless
+  are goal-directed (they target their closest card hands via the advisor
+  engine); Chill plays loose and almost never wins, leaving room for the
+  learning player.
+- ✅ **Share Hand** — branded PNG of the winning hand via Web Share API /
+  download. Works for any winner in pass-and-play too.
 
-## Learning & onboarding (the core differentiator)
+### Learning & onboarding
+- ✅ **"What Can I Win?" advisor** — ranks all 24 hands by tiles-away with
+  missing-tile chips and joker hints. Available in-game and during Charleston.
+- ✅ **Interactive card reference** — every hand rendered with real tile art;
+  tap to expand.
+- ✅ **Guided first game** — six phase-aware coach tips (Charleston → discard →
+  advisor → calling → declaring), replayable from Home.
 
-- 🔲 **"What Can I Win?" advisor** — highlight which of the 24 hands the current
-  tiles are closest to, ranked by tiles needed. Solves the #1 new-player problem
-  ("what am I even building toward?").
-- 🔲 **Interactive card reference** — tap any hand to see an example layout
-  rendered with real tile art instead of text notation like `FF 222 444 666 888`.
-- 🔲 **Tutorial / guided first game** — walk a brand-new player through Charleston,
-  building toward a hand, and calling Mahjong.
+### Retention
+- ✅ **Hand Journal** — per-hand win counts, 24-hand collection meter,
+  trophy/locked states.
+- ✅ **Lifetime stats** — games, win rate, streaks, best hand, average win.
+- ✅ **Daily challenge** — date-seeded featured hand; win any game for the
+  streak, win the featured hand for gold.
 
-## Retention loops
+### Social
+- ✅ **Pass-and-play multiplayer** — 4 humans, one device, privacy handoff
+  screens, per-seat Charleston, post-discard call window.
 
-- 🔲 **Hand Journal** — track which of the 24 hands you've won, how often, average
-  points. Gamify completion ("You've won 18/24 unique hands!"). Drives the
-  "collection" return loop.
-- 🔲 **Session & lifetime stats** — win rate, average score, best hand, longest
-  win streak.
-- 🔲 **Daily / weekly challenges** — e.g. "Win with a Quints hand today."
+### Aesthetics
+- ✅ **Runtime theme switcher** — Matcha Garden, Midnight Bloom (dark),
+  Coastal Calm, Classic Jade. Full CSS-variable theming; tile faces stay
+  authentic across themes.
+- ✅ **Tile back designs** — four selectable patterns with per-theme defaults.
 
-## Social
+### Platform
+- ✅ **Installable PWA** — manifest, icons, offline service worker, iOS meta.
+- ✅ **App Store path** — see `APP_STORE.md` (PWA today, Bubblewrap for Play,
+  Capacitor for iOS).
+- ✅ **Seasonal card structure** — the 2026 Garden Card lives in
+  `src/data/cards/card2026.js`; new years drop in beside it.
 
-- 🔲 **Pass-and-play multiplayer** — 4 players on one device, each sees only their
-  hand. Perfect for game nights. Stepping stone before online play.
-- 🔲 **Online multiplayer** — matchmaking + real-time play (larger backend effort).
+---
 
-## Aesthetic customization & theme packs
+## Next up (priority order)
 
-- ✅ **Matcha Garden** preset (greens / creams) — active theme.
-- ✅ **Midnight Bloom** preset (pinks / plum) — original Pop & Play palette,
-  retained as a preset.
-- 🔲 **Runtime theme switcher** — migrate remaining hardcoded component colors to
-  the CSS variables in `globals.css`, driven by `src/theme/presets.js`
-  (`applyTheme()`), so users can switch presets live in-app.
-- 🔲 **Additional presets** — "Coastal Calm" (blues / sand), "Classic Jade"
-  (traditional).
-- 🔲 **Tile back designs** — selectable patterns.
-
-## Content / longevity
-
-- 🔲 **Seasonal NMJL card updates** — the official card changes annually; ship new
-  hand sets each year.
+- 🔲 **Exposures (calling pung/kong/quint)** — the single biggest gameplay
+  gap. Without exposures every hand must be assembled from solo draws;
+  simulation shows ~63–65% of Spicy/Ruthless games end in wall draws (real
+  American mahjong tables see far fewer because calls feed hands). Needs:
+  call-window priority (mahjong > exposure), exposed-meld rendering on all
+  seats, matcher support (exposed groups pin variant groups), closed-hand
+  restrictions, joker-exchange rule, AI call judgment.
+- 🔲 **Player-named seats in pass-and-play** — quick name entry before deal.
+- 🔲 **Online multiplayer** — needs a realtime backend (rooms, matchmaking,
+  reconnect). Pass-and-play ships as the stepping stone.
+- 🔲 **Seasonal NMJL-style card updates** — ship a 2027 card next year (never
+  copy the NMJL card itself; it's copyrighted).
+- 🔲 **Sound & haptics** — tile clacks, win fanfare (add via Capacitor for
+  native builds).
+- 🔲 **Bundle Google Fonts locally** — removes the last runtime third-party
+  request (also required for an honest "no data collected" store label).
 
 ---
 
 ## Engineering notes
 
-- Theme tokens live in `src/theme/presets.js` and `src/styles/globals.css`
-  (`:root` custom properties) + `tailwind.config.js`. The full runtime switcher
-  is blocked on migrating per-component hardcoded hex values to `var(--…)` refs.
-- AI heuristics live in `src/logic/aiPlayer.js` with three difficulty tiers:
-  chill (random noise, skips 40% mahjong calls), spicy (default balanced),
-  ruthless (tracks discard pile, faster, never skips).
-- Game state persists to localStorage via `src/utils/persistence.js`. Difficulty
-  preference stored separately in `mahjong_difficulty` key.
-- Share-card generation lives in `src/utils/shareCard.js`: it reuses the SVG tile
-  art (`TileSymbol` export from `MahjongTile`) via `react-dom/server`, rasterizes
-  it to a canvas, and draws branded text on top. It's dynamically imported from
-  `ScoringOverlay` so `react-dom/server` (~60KB gz) stays out of the main bundle.
+- **Hand engine**: `src/data/cards/card2026.js` declares each hand's concrete
+  variants (groups sum to exactly 14; flowers are a side requirement).
+  `src/logic/handMatcher.js` is the single evaluator behind `checkWin`,
+  `canWinWithTile`, `rankHands` (advisor), and card examples — display,
+  win-checking, and advice can never disagree. Jokers only ever fill groups
+  of 3+ (derived from group size). Tests: scratchpad engine suite covers
+  structure, joker rules, closed/flower gating, 3k-trial fuzz, and full-game
+  sims with tile-conservation invariants.
+- **AI**: `src/logic/aiPlayer.js`. Spicy/Ruthless pick discards by minimizing
+  tiles-to-completion across their top 3/5 ranked hands (~20–45ms per
+  decision, hidden inside the thinking delay); Chill uses loose heuristics
+  plus randomness and skips 40% of winning calls.
+- **Theming**: tokens in `src/styles/globals.css`, presets + `applyTheme()` in
+  `src/theme/presets.js` (auto-computes rgb triplets, syncs `theme-color`).
+  Tile faces/artwork are deliberately un-themed.
+- **Persistence**: game saves in `mahjong_saved_game` (v1); stats/journal/
+  daily in `mahjong_stats` (v1, self-healing); theme, tile back, difficulty,
+  and coach flags in their own keys.
+- **Stats recording**: once per game, idempotent by `gameId`, solo mode only.
+- **PWA**: `public/sw.js` precaches the shell + parsed assets at install;
+  network-first navigations, cache-first assets/fonts. Bump `VERSION` on
+  deploys that must invalidate.

@@ -9,10 +9,11 @@ import { getJournal, getDailyChallenge, todayKey } from '../utils/stats.js';
  * @param {boolean} visible
  */
 export default function ScoringOverlay({ winResult, playerNames, onPlayAgain, visible }) {
+  const [shareState, setShareState] = useState('idle'); // idle | working | done | error
+
   if (!visible || !winResult) return null;
 
   const { mode, winnerIdx, winnerName, hand, tiles, flowers, payments, scores, isSelfDraw, throwerId, isWallExhausted } = winResult;
-  const [shareState, setShareState] = useState('idle'); // idle | working | done | error
   const isPass = mode === 'pass';
   const humanWon = !isPass && winnerIdx === 0;
   const canShare = !isWallExhausted && tiles && tiles.length > 0 && (isPass ? winnerIdx !== null : winnerIdx === 0);
@@ -153,7 +154,7 @@ export default function ScoringOverlay({ winResult, playerNames, onPlayAgain, vi
               padding: '4px 0',
             }}>
               <span style={{ fontSize: 13, fontFamily: 'Nunito', color: i === winnerIdx && !isWallExhausted ? 'var(--matcha)' : 'rgba(var(--ink-rgb),0.85)', fontWeight: i === winnerIdx && !isWallExhausted ? 700 : 400 }}>
-                {playerNames[i]} {!isPass && i === 0 ? '(You)' : ''}
+                {playerNames[i]}
               </span>
               <span style={{ fontSize: 15, fontWeight: 700, color: s >= 0 ? 'var(--matcha)' : 'var(--rose)', fontFamily: 'Playfair Display, serif' }}>
                 {s >= 0 ? '+' : ''}{s}

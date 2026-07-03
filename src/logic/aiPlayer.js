@@ -7,9 +7,52 @@
  * - ruthless: tracks discards, avoids helping opponents, faster
  */
 
-import { checkWin, canWinWithTile } from './handMatcher.js';
+import { checkWin, canWinWithTile, rankHands, evaluateHand } from './handMatcher.js';
 
 const SUITS_NUMBERED = ['bam', 'crak', 'dot'];
+
+/**
+ * Goal-directed evaluation: how close is this tile set to its best target
+ * hands? Returns the minimum distance across the current top-K candidates.
+ */
+function bestDistance(tiles, flowerCount, targets) {
+  let best = Infinity;
+  for (const t of targets) {
+    const res = evaluateHand(t, tiles, flowerCount);
+    if (res.distance < best) best = res.distance;
+    if (best === 0) break;
+  }
+  return best;
+}
+
+/**
+ * Pick the discard that leaves the hand closest to completing one of its
+ * best target hands. Ties break toward the generic heuristic (dumping
+ * isolated tiles first). Jokers and near-target tiles are protected.
+ */
+function chooseDiscardGoalDirected(hand, flowers, difficulty, discardPile, targetCount) {
+  const flowerCount = flowers.length;
+  const targets = rankHands(hand, flowerCount).slice(0, targetCount).map(r => r.hand);
+  let bestUid = null;
+  let bestDist = Infinity;
+  let bestHeuristic = Infinity;
+  const seenIds = new Set();
+  for (const tile of hand) {
+    if (tile.suit === 'joker') continue; // never throw a joker
+    if (seenIds.has(tile.id)) continue; // identical tiles are interchangeable
+    seenIds.add(tile.id);
+    const without = hand.filter(t => t.uid !== tile.uid);
+    const d = bestDistance(without, flowerCount, targets);
+    const h = scoreTile(tile, hand, difficulty, discardPile);
+    if (d < bestDist || (d === bestDist && h < bestHeuristic)) {
+      bestDist = d;
+      bestHeuristic = h;
+      bestUid = tile.uid;
+    }
+  }
+  // All tiles were jokers/degenerate — fall back to heuristic.
+  return bestUid ?? null;
+}
 
 function scoreTile(tile, hand, difficulty, discardPile) {
   if (tile.suit === 'joker') return 100;
@@ -59,10 +102,11 @@ function scoreTile(tile, hand, difficulty, discardPile) {
 export function chooseTilesForCharleston(hand, flowers, difficulty = 'spicy') {
   if (hand.length < 3) return hand.map(t => t.uid);
 
-  const scored = hand.map(tile => ({ tile, score: scoreTile(tile, hand, difficulty, []) }));
-  scored.sort((a, b) => a.score - b.score);
-
   if (difficulty === 'chill') {
+    const scored = hand
+      .filter(t => t.suit !== 'joker')
+      .map(tile => ({ tile, score: scoreTile(tile, hand, difficulty, []) }));
+    scored.sort((a, b) => a.score - b.score);
     const pool = scored.slice(0, 6);
     for (let i = pool.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -71,11 +115,31 @@ export function chooseTilesForCharleston(hand, flowers, difficulty = 'spicy') {
     return pool.slice(0, 3).map(s => s.tile.uid);
   }
 
-  return scored.slice(0, 3).map(s => s.tile.uid);
+  // Goal-directed: iteratively give away the three least useful tiles.
+  const targetCount = difficulty === 'ruthless' ? 5 : 3;
+  let working = [...hand];
+  const give = [];
+  for (let k = 0; k < 3; k++) {
+    const uid = chooseDiscardGoalDirected(working, flowers, difficulty, [], targetCount);
+    const pick = uid !== null
+      ? working.find(t => t.uid === uid)
+      : working.find(t => t.suit !== 'joker') || working[0];
+    give.push(pick.uid);
+    working = working.filter(t => t.uid !== pick.uid);
+  }
+  return give;
 }
 
 export function chooseTileToDiscard(hand, flowers, difficulty = 'spicy', discardPile = []) {
   if (hand.length === 0) return null;
+
+  if (difficulty !== 'chill') {
+    // Spicy targets its 3 closest hands; Ruthless searches 5 and also
+    // weighs the discard pile via the heuristic tiebreak.
+    const targetCount = difficulty === 'ruthless' ? 5 : 3;
+    const uid = chooseDiscardGoalDirected(hand, flowers, difficulty, discardPile, targetCount);
+    if (uid !== null) return uid;
+  }
 
   const scored = hand.map(tile => ({
     tile,

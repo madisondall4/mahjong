@@ -146,7 +146,8 @@ function AppInner() {
     const captured = { ...state };
     patchState({ thinkingPlayer: state.currentPlayer });
     runAiTurn(captured, state.currentPlayer);
-  }, [state.phase, state.currentPlayer, state.thinkingPlayer, state.discardPile.length, state.canHumanCallMahjong]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed by turn signature; the full state object is captured intentionally
+  }, [state.phase, state.mode, state.currentPlayer, state.thinkingPlayer, state.discardPile.length, state.canHumanCallMahjong]);
 
   // Auto-draw for human at start of turn
   useEffect(() => {
@@ -185,6 +186,7 @@ function AppInner() {
     const human = newState.players[0];
     const winDef = canSelfDeclare(human.hand, human.flowers.length);
     setState({ ...newState, humanCanDeclare: !!winDef, _selfDeclareHand: winDef || null });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed by draw signature (wallIndex + discard count); guarded by lastHumanDrawKey
   }, [state.phase, state.mode, state.currentPlayer, state.wallIndex, state.discardPile.length, state.lastDrawnTile, state.humanCanDeclare, state.canHumanCallMahjong]);
 
   // Record game results for stats/journal once per game (idempotent by gameId).
@@ -199,7 +201,7 @@ function AppInner() {
       handDef: state.winningHand,
       wallExhausted: state.wallExhausted,
     });
-  }, [state.phase, state.gameId, state.winner, state.winningHand, state.wallExhausted]);
+  }, [state.phase, state.mode, state.gameId, state.winner, state.winningHand, state.wallExhausted]);
 
   // ── Handlers ──────────────────────────────────────────────────────────────
 

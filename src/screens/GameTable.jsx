@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import PlayerHand from '../components/PlayerHand.jsx';
 import OpponentSeat from '../components/OpponentSeat.jsx';
 import DiscardPool from '../components/DiscardPool.jsx';
@@ -21,7 +21,6 @@ export default function GameTable({
   const [cardOpen, setCardOpen] = useState(false);
   const [advisorOpen, setAdvisorOpen] = useState(false);
   const [selectedUid, setSelectedUid] = useState(null);
-  const [showMahjongBtn, setShowMahjongBtn] = useState(false);
 
   const humanPlayer = gameState.players[viewerIdx];
   const seatRight = gameState.players[(viewerIdx + 1) % 4];
@@ -32,14 +31,7 @@ export default function GameTable({
   const wallRemaining = gameState.wall.length - gameState.wallIndex;
   const canCall = gameState.canHumanCallMahjong || false;
   const thinkingPlayer = gameState.thinkingPlayer;
-
-  useEffect(() => {
-    if (isHumanTurn && gameState.humanCanDeclare) {
-      setShowMahjongBtn(true);
-    } else {
-      setShowMahjongBtn(false);
-    }
-  }, [isHumanTurn, gameState.humanCanDeclare]);
+  const showMahjongBtn = isHumanTurn && gameState.humanCanDeclare;
 
   function handleTileClick(tile) {
     if (!isHumanTurn) return;
