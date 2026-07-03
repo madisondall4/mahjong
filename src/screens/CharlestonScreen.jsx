@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import CharlestonUI from '../components/CharlestonUI.jsx';
 import CardReference from '../components/CardReference.jsx';
 import Advisor from '../components/Advisor.jsx';
+import CoachTips from '../components/CoachTips.jsx';
 
 /**
  * Charleston phase screen
@@ -133,6 +134,7 @@ export default function CharlestonScreen({
         />
       </div>
 
+      <CoachTips gameState={gameState}/>
       <CardReference isOpen={cardOpen} onClose={() => setCardOpen(false)}/>
       <Advisor
         isOpen={advisorOpen}

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { SUITS } from '../data/tiles.js';
 import { getDifficulty, setDifficulty, DIFFICULTIES } from '../utils/persistence.js';
 import { getDailyChallenge, getStats } from '../utils/stats.js';
+import { setCoachEnabled, isCoachEnabled } from '../components/CoachTips.jsx';
 
 const DEMO_TILES = [
   { suit: SUITS.BAM, value: 1, color: '#5F7D4F' },
@@ -365,6 +366,19 @@ export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo, onO
               <li>Match a hand on the card to declare Mahjong!</li>
               <li>Closed hands (🔒) must be self-drawn wins</li>
             </ul>
+            <button
+              onClick={() => { setCoachEnabled(true); setShowRules(false); }}
+              style={{
+                marginTop: 10, width: '100%',
+                background: isCoachEnabled() ? 'rgba(95,125,79,0.12)' : '#5F7D4F',
+                border: '1px solid rgba(95,125,79,0.35)',
+                borderRadius: 8, padding: '8px 0',
+                color: isCoachEnabled() ? '#5F7D4F' : 'white',
+                fontSize: 12, fontFamily: 'Nunito', fontWeight: 800, cursor: 'pointer',
+              }}
+            >
+              {isCoachEnabled() ? '🌱 Coach tips are on for your next game' : '🌱 Replay coach tips in my next game'}
+            </button>
           </div>
         )}
       </div>

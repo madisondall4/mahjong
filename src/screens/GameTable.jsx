@@ -5,6 +5,7 @@ import DiscardPool from '../components/DiscardPool.jsx';
 import WallCounter from '../components/WallCounter.jsx';
 import CardReference from '../components/CardReference.jsx';
 import Advisor from '../components/Advisor.jsx';
+import CoachTips from '../components/CoachTips.jsx';
 import MahjongTile from '../components/MahjongTile.jsx';
 
 /**
@@ -219,6 +220,7 @@ export default function GameTable({
         )}
       </div>
 
+      <CoachTips gameState={gameState}/>
       <CardReference isOpen={cardOpen} onClose={() => setCardOpen(false)}/>
       <Advisor
         isOpen={advisorOpen}
