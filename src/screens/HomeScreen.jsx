@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { SUITS } from '../data/tiles.js';
 import { getDifficulty, setDifficulty, DIFFICULTIES } from '../utils/persistence.js';
+import { getDailyChallenge, getStats } from '../utils/stats.js';
 
 const DEMO_TILES = [
   { suit: SUITS.BAM, value: 1, color: '#5F7D4F' },
@@ -91,9 +92,11 @@ const DIFF_OPTIONS = [
   { key: DIFFICULTIES.RUTHLESS, label: 'Ruthless', desc: 'Tracks discards, no mercy' },
 ];
 
-export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo }) {
+export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo, onOpenJournal }) {
   const [showRules, setShowRules] = useState(false);
   const [difficulty, setDiff] = useState(getDifficulty);
+  const daily = getDailyChallenge();
+  const stats = getStats();
 
   return (
     <div style={{
@@ -242,6 +245,29 @@ export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo }) {
           </div>
         </div>
 
+        {/* Daily challenge strip */}
+        <button
+          onClick={onOpenJournal}
+          style={{
+            width: '100%', maxWidth: 280,
+            display: 'flex', alignItems: 'center', gap: 8,
+            background: daily.status ? 'rgba(95,125,79,0.1)' : 'rgba(201,94,131,0.07)',
+            border: `1px solid ${daily.status ? 'rgba(95,125,79,0.35)' : 'rgba(201,94,131,0.28)'}`,
+            borderRadius: 12, padding: '9px 12px', cursor: 'pointer', textAlign: 'left',
+          }}
+        >
+          <span style={{ fontSize: 17, flexShrink: 0 }}>{daily.status === 'gold' ? '⭐' : daily.status ? '✅' : '☀️'}</span>
+          <span style={{ minWidth: 0, flex: 1 }}>
+            <span style={{ display: 'block', fontSize: 10, fontFamily: 'Nunito', fontWeight: 800, color: daily.status ? '#5F7D4F' : '#C95E83', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
+              Daily Challenge{daily.streak > 0 ? ` · 🔥 ${daily.streak}` : ''}
+            </span>
+            <span style={{ display: 'block', fontSize: 11.5, fontFamily: 'Nunito', fontWeight: 600, color: 'rgba(43,58,42,0.75)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {daily.status ? 'Done for today!' : 'Win a game'} · Featured: {daily.hand.name}
+            </span>
+          </span>
+          <span style={{ color: 'rgba(43,58,42,0.35)', fontSize: 14, flexShrink: 0 }}>›</span>
+        </button>
+
         {/* Resume Game button */}
         {onResumeGame && savedGameInfo && (
           <button
@@ -298,18 +324,31 @@ export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo }) {
           New Game
         </button>
 
-        {/* Rules toggle */}
-        <button
-          onClick={() => setShowRules(v => !v)}
-          style={{
-            background: 'none', border: '1px solid rgba(95,125,79,0.25)',
-            borderRadius: 8, padding: '8px 20px',
-            color: 'rgba(43,58,42,0.55)', fontSize: 13,
-            fontFamily: 'Nunito', cursor: 'pointer',
-          }}
-        >
-          {showRules ? 'Hide Rules' : 'How to Play'}
-        </button>
+        {/* Secondary actions */}
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button
+            onClick={() => setShowRules(v => !v)}
+            style={{
+              background: 'none', border: '1px solid rgba(95,125,79,0.25)',
+              borderRadius: 8, padding: '8px 16px',
+              color: 'rgba(43,58,42,0.55)', fontSize: 13,
+              fontFamily: 'Nunito', cursor: 'pointer',
+            }}
+          >
+            {showRules ? 'Hide Rules' : 'How to Play'}
+          </button>
+          <button
+            onClick={onOpenJournal}
+            style={{
+              background: 'none', border: '1px solid rgba(95,125,79,0.25)',
+              borderRadius: 8, padding: '8px 16px',
+              color: 'rgba(43,58,42,0.55)', fontSize: 13,
+              fontFamily: 'Nunito', cursor: 'pointer',
+            }}
+          >
+            📖 Journal{stats.gamesPlayed > 0 ? ` · ${stats.wins}W` : ''}
+          </button>
+        </div>
 
         {showRules && (
           <div style={{

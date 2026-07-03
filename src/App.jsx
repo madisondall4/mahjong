@@ -1,9 +1,10 @@
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useRef, useCallback, useState } from 'react';
 import { GameProvider, useGame } from './context/GameContext.jsx';
 import HomeScreen from './screens/HomeScreen.jsx';
 import CharlestonScreen from './screens/CharlestonScreen.jsx';
 import GameTable from './screens/GameTable.jsx';
 import DeclarationScreen from './screens/DeclarationScreen.jsx';
+import JournalScreen from './screens/JournalScreen.jsx';
 import ScoringOverlay from './components/ScoringOverlay.jsx';
 
 import {
@@ -16,6 +17,7 @@ import {
   isWallExhausted,
 } from './logic/gameEngine.js';
 import { loadGame, clearSavedGame, getSavedGameInfo, getDifficulty } from './utils/persistence.js';
+import { recordGameEnd } from './utils/stats.js';
 import {
   chooseTilesForCharleston,
   chooseTileToDiscard,
@@ -28,6 +30,7 @@ import { calculatePayments, applyPayments } from './logic/scoring.js';
 
 function AppInner() {
   const { state, setState, patchState, reset } = useGame();
+  const [journalOpen, setJournalOpen] = useState(false);
   const aiTimerRef = useRef(null);
   const lastAiKey = useRef(null);
   const lastHumanDrawKey = useRef(null);
@@ -169,6 +172,18 @@ function AppInner() {
     const winDef = canSelfDeclare(human.hand, human.flowers.length);
     setState({ ...newState, humanCanDeclare: !!winDef, _selfDeclareHand: winDef || null });
   }, [state.phase, state.currentPlayer, state.wallIndex, state.discardPile.length, state.lastDrawnTile, state.humanCanDeclare, state.canHumanCallMahjong]);
+
+  // Record game results for stats/journal once per game (idempotent by gameId).
+  useEffect(() => {
+    if (state.phase !== 'declaration' && state.phase !== 'summary') return;
+    if (!state.gameId) return;
+    recordGameEnd({
+      gameId: state.gameId,
+      winnerIdx: state.winner,
+      handDef: state.winningHand,
+      wallExhausted: state.wallExhausted,
+    });
+  }, [state.phase, state.gameId, state.winner, state.winningHand, state.wallExhausted]);
 
   // ── Handlers ──────────────────────────────────────────────────────────────
 
@@ -331,12 +346,16 @@ function AppInner() {
   };
 
   if (state.phase === 'home') {
+    if (journalOpen) {
+      return <JournalScreen onClose={() => setJournalOpen(false)}/>;
+    }
     const savedInfo = getSavedGameInfo();
     return (
       <HomeScreen
         onNewGame={handleNewGame}
         onResumeGame={savedInfo ? handleResumeGame : null}
         savedGameInfo={savedInfo}
+        onOpenJournal={() => setJournalOpen(true)}
       />
     );
   }

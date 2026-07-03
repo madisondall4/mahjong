@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { getJournal, getDailyChallenge, todayKey } from '../utils/stats.js';
 
 /**
  * Scoring overlay after a win
@@ -83,6 +84,29 @@ export default function ScoringOverlay({ winResult, playerNames, onPlayAgain, vi
               <div style={{ fontSize: 12, color: 'rgba(51,48,42,0.5)', fontFamily: 'Nunito', marginTop: 4 }}>
                 {isSelfDraw ? 'Self-drawn win' : `Called discard from ${throwerId !== null ? (playerNames[throwerId] || 'unknown') : '?'}`}
               </div>
+              {winnerIdx === 0 && hand && (() => {
+                const journal = getJournal();
+                const entry = journal.entries.find(e => e.hand.id === hand.id);
+                const daily = getDailyChallenge();
+                const badges = [];
+                if (entry && entry.count === 1) badges.push('📖 New hand for your journal!');
+                if (daily.status === 'gold' && daily.hand.id === hand.id) badges.push('⭐ Daily gold — featured hand!');
+                else if (daily.status && daily.dateKey === todayKey()) badges.push(`🔥 Daily challenge done · streak ${daily.streak}`);
+                if (entry && journal.uniqueWon > 0) badges.push(`🏆 Collection: ${journal.uniqueWon}/${journal.total}`);
+                return badges.length > 0 ? (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, justifyContent: 'center', marginTop: 8 }}>
+                    {badges.map((b, i) => (
+                      <span key={i} style={{
+                        fontSize: 10.5, fontFamily: 'Nunito', fontWeight: 700,
+                        background: 'rgba(95,125,79,0.1)', border: '1px solid rgba(95,125,79,0.3)',
+                        color: '#3C5236', borderRadius: 999, padding: '3px 9px',
+                      }}>
+                        {b}
+                      </span>
+                    ))}
+                  </div>
+                ) : null;
+              })()}
             </div>
 
             {/* Payments */}

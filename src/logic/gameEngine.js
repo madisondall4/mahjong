@@ -99,6 +99,7 @@ export function dealTiles(state) {
 
   return {
     ...state,
+    gameId: `g-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`,
     wall,
     wallIndex,
     players,
