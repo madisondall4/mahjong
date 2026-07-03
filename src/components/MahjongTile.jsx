@@ -388,9 +388,9 @@ function TileBack({ size }) {
       style={{
         width: w, height: h,
         borderRadius: 7,
-        background: 'linear-gradient(150deg, #4A6340 0%, #34472E 55%, #46603C 100%)',
+        background: 'linear-gradient(150deg, var(--tb-a, #4A6340) 0%, var(--tb-b, #34472E) 55%, var(--tb-c, #46603C) 100%)',
         border: '1px solid rgba(251,247,239,0.2)',
-        boxShadow: '0 3px 7px rgba(60,82,54,0.25)',
+        boxShadow: '0 3px 7px rgba(0,0,0,0.22)',
       }}
     >
       <div style={{

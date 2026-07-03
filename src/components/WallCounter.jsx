@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function WallCounter({ remaining, total = 160 }) {
   const pct = total > 0 ? remaining / total : 0;
-  const color = pct > 0.5 ? '#5F7D4F' : pct > 0.25 ? '#C95E83' : '#C5302B';
+  const color = pct > 0.5 ? 'var(--matcha)' : pct > 0.25 ? 'var(--rose)' : '#C5302B';
 
   return (
     <div style={{
@@ -11,13 +11,13 @@ export default function WallCounter({ remaining, total = 160 }) {
       alignItems: 'center',
       gap: 3,
       padding: '4px 10px',
-      background: 'rgba(251,247,239,0.85)',
+      background: 'rgba(var(--paper-rgb),0.85)',
       borderRadius: 10,
-      border: '1px solid rgba(95,125,79,0.2)',
+      border: '1px solid rgba(var(--matcha-rgb),0.2)',
     }}>
       <div style={{
         fontSize: 10,
-        color: '#5E92B3',
+        color: 'var(--sky)',
         fontFamily: 'Nunito',
         textTransform: 'uppercase',
         letterSpacing: '0.06em',
@@ -36,7 +36,7 @@ export default function WallCounter({ remaining, total = 160 }) {
       {/* Progress bar */}
       <div style={{
         width: 50, height: 4,
-        background: 'rgba(60,82,54,0.14)',
+        background: 'rgba(var(--shadow-rgb),0.14)',
         borderRadius: 2,
         overflow: 'hidden',
       }}>

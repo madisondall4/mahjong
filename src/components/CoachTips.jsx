@@ -99,19 +99,19 @@ export default function CoachTips({ gameState }) {
   return (
     <div style={{
       position: 'absolute', top: 58, left: 12, right: 12, zIndex: 30,
-      background: 'rgba(251,247,239,0.98)',
-      border: '1.5px solid rgba(95,125,79,0.45)',
+      background: 'rgba(var(--paper-rgb),0.98)',
+      border: '1.5px solid rgba(var(--matcha-rgb),0.45)',
       borderRadius: 14, padding: '12px 14px',
-      boxShadow: '0 10px 30px rgba(60,82,54,0.22)',
+      boxShadow: '0 10px 30px rgba(var(--shadow-rgb),0.22)',
       display: 'flex', gap: 10, alignItems: 'flex-start',
       animation: 'fadeInUp 0.35s ease-out',
     }}>
       <span style={{ fontSize: 22, flexShrink: 0, lineHeight: 1.2 }}>{tip.icon}</span>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 13.5, fontFamily: 'Playfair Display, serif', fontWeight: 700, color: '#3C5236', marginBottom: 2 }}>
+        <div style={{ fontSize: 13.5, fontFamily: 'Playfair Display, serif', fontWeight: 700, color: 'var(--matcha-deep)', marginBottom: 2 }}>
           {tip.title}
         </div>
-        <div style={{ fontSize: 12, fontFamily: 'Nunito', color: 'rgba(51,48,42,0.75)', lineHeight: 1.5 }}>
+        <div style={{ fontSize: 12, fontFamily: 'Nunito', color: 'rgba(var(--ink-rgb),0.75)', lineHeight: 1.5 }}>
           {tip.text}
         </div>
       </div>
@@ -119,7 +119,7 @@ export default function CoachTips({ gameState }) {
         onClick={dismiss}
         style={{
           flexShrink: 0,
-          background: '#5F7D4F', color: 'white', border: 'none',
+          background: 'var(--matcha)', color: 'white', border: 'none',
           borderRadius: 999, padding: '6px 13px',
           fontSize: 11.5, fontFamily: 'Nunito', fontWeight: 800, cursor: 'pointer',
           alignSelf: 'center',

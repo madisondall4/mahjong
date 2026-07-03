@@ -64,7 +64,7 @@ export default function GameTable({
         position: 'absolute', inset: 0,
         border: '6px solid transparent',
         borderRadius: 0,
-        background: 'linear-gradient(#ECE6D8, #ECE6D8) padding-box, linear-gradient(135deg, #5F7D4F 0%, #9DB58E 50%, #5F7D4F 100%) border-box',
+        background: 'linear-gradient(var(--table), var(--table)) padding-box, linear-gradient(135deg, var(--matcha) 0%, var(--sage) 50%, var(--matcha) 100%) border-box',
         pointerEvents: 'none',
         zIndex: 1,
       }}/>
@@ -74,16 +74,16 @@ export default function GameTable({
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         padding: '8px 16px 6px',
         zIndex: 2, flexShrink: 0,
-        background: 'rgba(251,247,239,0.78)',
-        borderBottom: '1px solid rgba(95,125,79,0.14)',
+        background: 'rgba(var(--paper-rgb),0.78)',
+        borderBottom: '1px solid rgba(var(--matcha-rgb),0.14)',
       }}>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <WallCounter remaining={wallRemaining} total={160}/>
           <div style={{
-            fontSize: 11, color: isHumanTurn ? '#5F7D4F' : 'rgba(51,48,42,0.5)',
+            fontSize: 11, color: isHumanTurn ? 'var(--matcha)' : 'rgba(var(--ink-rgb),0.5)',
             fontFamily: 'Nunito', fontWeight: 700,
-            padding: '4px 8px', background: isHumanTurn ? 'rgba(95,125,79,0.12)' : 'transparent',
-            borderRadius: 6, border: isHumanTurn ? '1px solid rgba(95,125,79,0.35)' : '1px solid transparent',
+            padding: '4px 8px', background: isHumanTurn ? 'rgba(var(--matcha-rgb),0.12)' : 'transparent',
+            borderRadius: 6, border: isHumanTurn ? '1px solid rgba(var(--matcha-rgb),0.35)' : '1px solid transparent',
             transition: 'all 0.3s',
           }}>
             {isHumanTurn ? '► Your Turn' : `${gameState.players[currentPlayer]?.name}'s Turn`}
@@ -95,13 +95,13 @@ export default function GameTable({
             <button
               onClick={() => onDeclareMahjong?.()}
               style={{
-                background: 'linear-gradient(135deg, #5F7D4F, #C95E83)',
+                background: 'linear-gradient(135deg, var(--matcha), var(--rose))',
                 border: 'none', borderRadius: 8,
                 padding: '6px 12px',
                 color: 'white', fontSize: 12, fontWeight: 800,
                 fontFamily: 'Playfair Display, serif', cursor: 'pointer',
                 animation: 'pulseGlow 1s ease-in-out infinite',
-                boxShadow: '0 0 12px rgba(95,125,79,0.5)',
+                boxShadow: '0 0 12px rgba(var(--matcha-rgb),0.5)',
               }}
             >
               Mahjong!
@@ -111,9 +111,9 @@ export default function GameTable({
             onClick={() => setAdvisorOpen(true)}
             aria-label="What can I win?"
             style={{
-              background: 'rgba(95,125,79,0.12)', border: '1px solid rgba(95,125,79,0.35)',
+              background: 'rgba(var(--matcha-rgb),0.12)', border: '1px solid rgba(var(--matcha-rgb),0.35)',
               borderRadius: 8, padding: '6px 10px',
-              color: '#5F7D4F', fontSize: 11, fontFamily: 'Nunito', fontWeight: 800,
+              color: 'var(--matcha)', fontSize: 11, fontFamily: 'Nunito', fontWeight: 800,
               cursor: 'pointer',
             }}
           >
@@ -123,9 +123,9 @@ export default function GameTable({
             onClick={() => setCardOpen(true)}
             aria-label="Card reference"
             style={{
-              background: 'rgba(94,146,179,0.12)', border: '1px solid rgba(94,146,179,0.3)',
+              background: 'rgba(var(--sky-rgb),0.12)', border: '1px solid rgba(var(--sky-rgb),0.3)',
               borderRadius: 8, padding: '6px 10px',
-              color: '#5E92B3', fontSize: 11, fontFamily: 'Nunito', fontWeight: 700,
+              color: 'var(--sky)', fontSize: 11, fontFamily: 'Nunito', fontWeight: 700,
               cursor: 'pointer',
             }}
           >
@@ -167,7 +167,7 @@ export default function GameTable({
           flex: 1,
           background: 'rgba(255,255,255,0.42)',
           borderRadius: 14,
-          border: '1px solid rgba(95,125,79,0.14)',
+          border: '1px solid rgba(var(--matcha-rgb),0.14)',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
@@ -198,15 +198,15 @@ export default function GameTable({
           display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 6,
           padding: '2px 0', zIndex: 2, flexShrink: 0,
         }}>
-          <span style={{ fontSize: 10, color: 'rgba(51,48,42,0.5)', fontFamily: 'Nunito' }}>Drew:</span>
+          <span style={{ fontSize: 10, color: 'rgba(var(--ink-rgb),0.5)', fontFamily: 'Nunito' }}>Drew:</span>
           <MahjongTile tile={gameState.lastDrawnTile} size="sm" animateIn/>
         </div>
       )}
 
       {/* Human player hand */}
       <div style={{
-        background: 'rgba(251,247,239,0.85)',
-        borderTop: '1px solid rgba(95,125,79,0.25)',
+        background: 'rgba(var(--paper-rgb),0.85)',
+        borderTop: '1px solid rgba(var(--matcha-rgb),0.25)',
         zIndex: 2, flexShrink: 0,
         paddingBottom: 'env(safe-area-inset-bottom, 8px)',
       }}>
@@ -218,7 +218,7 @@ export default function GameTable({
           canDiscard={isHumanTurn && humanPlayer.hand.length > 13}
         />
         {selectedUid !== null && (
-          <div style={{ textAlign: 'center', fontSize: 11, color: 'rgba(51,48,42,0.5)', fontFamily: 'Nunito', paddingBottom: 4 }}>
+          <div style={{ textAlign: 'center', fontSize: 11, color: 'rgba(var(--ink-rgb),0.5)', fontFamily: 'Nunito', paddingBottom: 4 }}>
             Tap again to discard · tap another to swap
           </div>
         )}

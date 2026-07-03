@@ -43,7 +43,7 @@ export function MissingTileChip({ entry }) {
       {entry.short > 1 && (
         <span style={{
           position: 'absolute', top: -6, right: -6,
-          background: '#C95E83', color: 'white',
+          background: 'var(--rose)', color: 'white',
           borderRadius: 999, fontSize: 9, fontWeight: 800,
           fontFamily: 'Nunito, sans-serif',
           minWidth: 15, height: 15, lineHeight: '15px', textAlign: 'center',

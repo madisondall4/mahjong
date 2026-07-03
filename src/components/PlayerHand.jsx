@@ -43,7 +43,7 @@ export default function PlayerHand({ tiles = [], selectedUids = new Set(), onTil
             marginTop: 8,
             marginBottom: 8,
             borderRadius: 1,
-            background: 'rgba(201,94,131,0.25)',
+            background: 'rgba(var(--rose-rgb),0.25)',
             flexShrink: 0,
           }}/>
         )}
@@ -74,7 +74,7 @@ export default function PlayerHand({ tiles = [], selectedUids = new Set(), onTil
         <div style={{
           textAlign: 'center',
           fontSize: 11,
-          color: 'rgba(95,125,79,0.7)',
+          color: 'rgba(var(--matcha-rgb),0.7)',
           fontFamily: 'Nunito',
           fontWeight: 700,
           marginTop: -14,

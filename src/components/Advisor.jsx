@@ -34,8 +34,8 @@ export default function Advisor({ isOpen, onClose, tiles = [], flowerCount = 0 }
       />
       <div aria-hidden={!isOpen} style={{
         position: 'fixed', left: 0, right: 0, bottom: 0, height: '78vh',
-        background: '#FBF7EF',
-        borderTop: '2px solid rgba(95,125,79,0.25)',
+        background: 'var(--paper)',
+        borderTop: '2px solid rgba(var(--matcha-rgb),0.25)',
         borderRadius: '16px 16px 0 0', zIndex: 51,
         transform: isOpen ? 'translateY(0)' : 'translateY(100%)',
         transition: 'transform 0.35s cubic-bezier(0.34,1.56,0.64,1)',
@@ -43,25 +43,25 @@ export default function Advisor({ isOpen, onClose, tiles = [], flowerCount = 0 }
         pointerEvents: isOpen ? 'auto' : 'none',
       }}>
         <div style={{ display: 'flex', justifyContent: 'center', padding: '10px 0 4px' }}>
-          <div style={{ width: 40, height: 4, background: 'rgba(95,125,79,0.4)', borderRadius: 2 }}/>
+          <div style={{ width: 40, height: 4, background: 'rgba(var(--matcha-rgb),0.4)', borderRadius: 2 }}/>
         </div>
 
         <div style={{
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          padding: '0 16px 10px', borderBottom: '1px solid rgba(95,125,79,0.15)',
+          padding: '0 16px 10px', borderBottom: '1px solid rgba(var(--matcha-rgb),0.15)',
         }}>
           <div>
-            <h2 style={{ margin: 0, fontSize: 18, fontFamily: 'Playfair Display, serif', color: '#5F7D4F', fontWeight: 700 }}>
+            <h2 style={{ margin: 0, fontSize: 18, fontFamily: 'Playfair Display, serif', color: 'var(--matcha)', fontWeight: 700 }}>
               What Can I Win?
             </h2>
-            <p style={{ margin: 0, fontSize: 11, color: 'rgba(51,48,42,0.5)', fontFamily: 'Nunito' }}>
+            <p style={{ margin: 0, fontSize: 11, color: 'rgba(var(--ink-rgb),0.5)', fontFamily: 'Nunito' }}>
               Your closest hands, ranked
               {jokersHeld > 0 && ` · ${jokersHeld} joker${jokersHeld > 1 ? 's' : ''} can fill dashed spots`}
             </p>
           </div>
           <button
             onClick={onClose}
-            style={{ background: 'none', border: 'none', color: '#C95E83', fontSize: 22, cursor: 'pointer', padding: 4, lineHeight: 1 }}
+            style={{ background: 'none', border: 'none', color: 'var(--rose)', fontSize: 22, cursor: 'pointer', padding: 4, lineHeight: 1 }}
           >
             ×
           </button>
@@ -76,43 +76,43 @@ export default function Advisor({ isOpen, onClose, tiles = [], flowerCount = 0 }
                 key={r.hand.id}
                 onClick={() => setExpanded(isExpanded ? null : r.hand.id)}
                 style={{
-                  background: i === 0 ? 'rgba(95,125,79,0.08)' : 'rgba(251,247,239,0.7)',
-                  border: `1px solid ${i === 0 ? 'rgba(95,125,79,0.4)' : 'rgba(95,125,79,0.18)'}`,
+                  background: i === 0 ? 'rgba(var(--matcha-rgb),0.08)' : 'rgba(var(--paper-rgb),0.7)',
+                  border: `1px solid ${i === 0 ? 'rgba(var(--matcha-rgb),0.4)' : 'rgba(var(--matcha-rgb),0.18)'}`,
                   borderRadius: 10, padding: '10px 12px', textAlign: 'left', cursor: 'pointer',
                   display: 'flex', flexDirection: 'column', gap: 7,
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8 }}>
-                  <span style={{ fontSize: 14, fontFamily: 'Playfair Display, serif', fontWeight: 700, color: '#33302A' }}>
+                  <span style={{ fontSize: 14, fontFamily: 'Playfair Display, serif', fontWeight: 700, color: 'var(--ink)' }}>
                     {i === 0 && '⭐ '}{r.hand.name}
                   </span>
-                  <span style={{ flexShrink: 0, fontSize: 12, fontFamily: 'Nunito', fontWeight: 800, color: r.distance <= 2 ? '#5F7D4F' : 'rgba(51,48,42,0.55)' }}>
+                  <span style={{ flexShrink: 0, fontSize: 12, fontFamily: 'Nunito', fontWeight: 800, color: r.distance <= 2 ? 'var(--matcha)' : 'rgba(var(--ink-rgb),0.55)' }}>
                     {r.complete ? 'MAHJONG!' : `${r.distance} away`}
                   </span>
                 </div>
 
                 {/* Progress bar */}
-                <div style={{ height: 5, background: 'rgba(95,125,79,0.12)', borderRadius: 3, overflow: 'hidden' }}>
+                <div style={{ height: 5, background: 'rgba(var(--matcha-rgb),0.12)', borderRadius: 3, overflow: 'hidden' }}>
                   <div style={{
                     width: `${pct * 100}%`, height: '100%',
                     background: r.distance <= 2
-                      ? 'linear-gradient(90deg, #5F7D4F, #8FBC6F)'
-                      : 'linear-gradient(90deg, #9DB58E, #C9D8BE)',
+                      ? 'linear-gradient(90deg, var(--matcha), #8FBC6F)'
+                      : 'linear-gradient(90deg, var(--sage), #C9D8BE)',
                     borderRadius: 3, transition: 'width 0.3s ease',
                   }}/>
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
-                  <span style={{ fontSize: 11, fontFamily: 'Nunito', color: 'rgba(51,48,42,0.5)' }}>
+                  <span style={{ fontSize: 11, fontFamily: 'Nunito', color: 'rgba(var(--ink-rgb),0.5)' }}>
                     {r.hand.pattern}
                   </span>
                   <span style={{ display: 'flex', gap: 5, alignItems: 'center', flexShrink: 0 }}>
                     {r.hand.closed && (
-                      <span style={{ fontSize: 9, background: 'rgba(201,94,131,0.12)', color: '#C95E83', border: '1px solid rgba(201,94,131,0.35)', borderRadius: 3, padding: '1px 4px', fontFamily: 'Nunito', fontWeight: 700 }}>
+                      <span style={{ fontSize: 9, background: 'rgba(var(--rose-rgb),0.12)', color: 'var(--rose)', border: '1px solid rgba(var(--rose-rgb),0.35)', borderRadius: 3, padding: '1px 4px', fontFamily: 'Nunito', fontWeight: 700 }}>
                         CLOSED
                       </span>
                     )}
-                    <span style={{ fontSize: 12, fontWeight: 800, color: '#5F7D4F', fontFamily: 'Playfair Display, serif' }}>
+                    <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--matcha)', fontFamily: 'Playfair Display, serif' }}>
                       {r.hand.points}pts
                     </span>
                   </span>
@@ -121,17 +121,17 @@ export default function Advisor({ isOpen, onClose, tiles = [], flowerCount = 0 }
                 {/* Missing tiles */}
                 {!r.complete && (r.missing.length > 0 || r.flowersShort > 0) && (
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, alignItems: 'center', paddingTop: 2 }}>
-                    <span style={{ fontSize: 10, fontFamily: 'Nunito', fontWeight: 700, color: 'rgba(51,48,42,0.45)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    <span style={{ fontSize: 10, fontFamily: 'Nunito', fontWeight: 700, color: 'rgba(var(--ink-rgb),0.45)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                       Need:
                     </span>
                     {r.missing.slice(0, 8).map((m, mi) => <MissingTileChip key={mi} entry={m}/>)}
                     {r.missing.length > 8 && (
-                      <span style={{ fontSize: 11, fontFamily: 'Nunito', color: 'rgba(51,48,42,0.5)' }}>
+                      <span style={{ fontSize: 11, fontFamily: 'Nunito', color: 'rgba(var(--ink-rgb),0.5)' }}>
                         +{r.missing.length - 8} more
                       </span>
                     )}
                     {r.flowersShort > 0 && (
-                      <span style={{ fontSize: 11, fontFamily: 'Nunito', fontWeight: 700, color: '#C95E83' }}>
+                      <span style={{ fontSize: 11, fontFamily: 'Nunito', fontWeight: 700, color: 'var(--rose)' }}>
                         +{r.flowersShort} flower{r.flowersShort > 1 ? 's' : ''}
                       </span>
                     )}
@@ -143,13 +143,13 @@ export default function Advisor({ isOpen, onClose, tiles = [], flowerCount = 0 }
                   <div style={{
                     marginTop: 4, padding: '10px 10px 8px',
                     background: 'rgba(255,255,255,0.7)', borderRadius: 8,
-                    border: '1px solid rgba(95,125,79,0.15)',
+                    border: '1px solid rgba(var(--matcha-rgb),0.15)',
                   }}>
-                    <div style={{ fontSize: 10, fontFamily: 'Nunito', fontWeight: 700, color: 'rgba(51,48,42,0.45)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>
+                    <div style={{ fontSize: 10, fontFamily: 'Nunito', fontWeight: 700, color: 'rgba(var(--ink-rgb),0.45)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>
                       Example
                     </div>
                     <HandExample hand={r.hand}/>
-                    <div style={{ fontSize: 11, fontFamily: 'Nunito', color: 'rgba(51,48,42,0.6)', lineHeight: 1.5, marginTop: 8 }}>
+                    <div style={{ fontSize: 11, fontFamily: 'Nunito', color: 'rgba(var(--ink-rgb),0.6)', lineHeight: 1.5, marginTop: 8 }}>
                       {r.hand.description}
                     </div>
                   </div>

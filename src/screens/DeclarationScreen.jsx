@@ -28,19 +28,19 @@ export default function DeclarationScreen({ gameState, onContinue }) {
         alignItems: 'center', justifyContent: 'center', gap: 20, padding: 24,
       }}>
         <div style={{ fontSize: 56 }}>🀄</div>
-        <h1 style={{ margin: 0, fontFamily: 'Playfair Display, serif', fontSize: 28, color: '#3C5236', textAlign: 'center' }}>
+        <h1 style={{ margin: 0, fontFamily: 'Playfair Display, serif', fontSize: 28, color: 'var(--matcha-deep)', textAlign: 'center' }}>
           Wall Exhausted
         </h1>
-        <p style={{ margin: 0, fontSize: 14, color: 'rgba(51,48,42,0.6)', fontFamily: 'Nunito', textAlign: 'center', maxWidth: 280, lineHeight: 1.5 }}>
+        <p style={{ margin: 0, fontSize: 14, color: 'rgba(var(--ink-rgb),0.6)', fontFamily: 'Nunito', textAlign: 'center', maxWidth: 280, lineHeight: 1.5 }}>
           No tiles remain and no one declared Mahjong. The round ends in a draw — no points change hands.
         </p>
         <button
           onClick={onContinue}
           style={{
             width: '100%', maxWidth: 300, padding: '14px 0', borderRadius: 12, border: 'none',
-            background: 'linear-gradient(135deg, #5F7D4F, #C95E83)', color: 'white',
+            background: 'linear-gradient(135deg, var(--matcha), var(--rose))', color: 'white',
             fontSize: 16, fontWeight: 800, fontFamily: 'Playfair Display, serif',
-            cursor: 'pointer', letterSpacing: '0.04em', boxShadow: '0 4px 16px rgba(95,125,79,0.35)',
+            cursor: 'pointer', letterSpacing: '0.04em', boxShadow: '0 4px 16px rgba(var(--matcha-rgb),0.35)',
           }}
         >
           See Scores
@@ -64,8 +64,8 @@ export default function DeclarationScreen({ gameState, onContinue }) {
         <div style={{
           position: 'absolute', inset: 0,
           background: isHumanWin
-            ? 'radial-gradient(ellipse at center, rgba(95,125,79,0.35) 0%, transparent 65%)'
-            : 'radial-gradient(ellipse at center, rgba(94,146,179,0.15) 0%, transparent 65%)',
+            ? 'radial-gradient(ellipse at center, rgba(var(--matcha-rgb),0.35) 0%, transparent 65%)'
+            : 'radial-gradient(ellipse at center, rgba(var(--sky-rgb),0.15) 0%, transparent 65%)',
           animation: 'burstFade 1.5s ease-out forwards',
           pointerEvents: 'none',
           zIndex: 0,
@@ -81,7 +81,7 @@ export default function DeclarationScreen({ gameState, onContinue }) {
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
               width: 6, height: 6,
-              background: i % 2 === 0 ? '#5F7D4F' : '#C95E83',
+              background: i % 2 === 0 ? 'var(--matcha)' : 'var(--rose)',
               borderRadius: '50%',
               animation: `floatSparkle ${1 + Math.random() * 2}s ease-out ${Math.random() * 1000}ms forwards`,
               opacity: 0,
@@ -115,15 +115,15 @@ export default function DeclarationScreen({ gameState, onContinue }) {
             fontFamily: 'Playfair Display, serif',
             fontSize: isHumanWin ? 34 : 26,
             fontWeight: 700,
-            color: isHumanWin ? '#5F7D4F' : '#3C5236',
-            textShadow: isHumanWin ? '0 0 30px rgba(95,125,79,0.5)' : 'none',
+            color: isHumanWin ? 'var(--matcha)' : 'var(--matcha-deep)',
+            textShadow: isHumanWin ? '0 0 30px rgba(var(--matcha-rgb),0.5)' : 'none',
             lineHeight: 1.1,
           }}>
             {isPass && winnerPlayer ? `${winnerPlayer.name} — Mahjong!` : isHumanWin ? 'Mahjong!' : `${winnerPlayer.name}\nDeclares Mahjong`}
           </h1>
           {winningHand && (
             <div style={{
-              fontSize: 16, color: '#5F7D4F', fontFamily: 'Playfair Display, serif',
+              fontSize: 16, color: 'var(--matcha)', fontFamily: 'Playfair Display, serif',
               marginTop: 4,
             }}>
               {winningHand.name ? `${winningHand.name} · ` : ''}{winningHand.pattern}
@@ -134,13 +134,13 @@ export default function DeclarationScreen({ gameState, onContinue }) {
         {/* Winning hand tiles */}
         {isHumanWin && winnerPlayer.hand.length > 0 && (
           <div style={{
-            background: 'rgba(251,247,239,0.8)',
-            border: '1px solid rgba(95,125,79,0.2)',
+            background: 'rgba(var(--paper-rgb),0.8)',
+            border: '1px solid rgba(var(--matcha-rgb),0.2)',
             borderRadius: 12,
             padding: '12px 14px',
             width: '100%',
           }}>
-            <div style={{ fontSize: 11, color: '#5F7D4F', fontFamily: 'Nunito', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>
+            <div style={{ fontSize: 11, color: 'var(--matcha)', fontFamily: 'Nunito', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>
               Winning Hand
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, justifyContent: 'center' }}>
@@ -153,11 +153,11 @@ export default function DeclarationScreen({ gameState, onContinue }) {
             </div>
             {winningHand && (
               <div style={{ marginTop: 10, textAlign: 'center' }}>
-                <span style={{ fontSize: 22, fontWeight: 800, color: '#5F7D4F', fontFamily: 'Playfair Display, serif' }}>
+                <span style={{ fontSize: 22, fontWeight: 800, color: 'var(--matcha)', fontFamily: 'Playfair Display, serif' }}>
                   {winningHand.points} points
                 </span>
                 {winningHand.closed && (
-                  <span style={{ marginLeft: 8, fontSize: 11, color: 'rgba(51,48,42,0.55)', fontFamily: 'Nunito', fontWeight: 700 }}>
+                  <span style={{ marginLeft: 8, fontSize: 11, color: 'rgba(var(--ink-rgb),0.55)', fontFamily: 'Nunito', fontWeight: 700 }}>
                     (CLOSED)
                   </span>
                 )}
@@ -174,14 +174,14 @@ export default function DeclarationScreen({ gameState, onContinue }) {
             padding: '14px 0',
             borderRadius: 12,
             border: 'none',
-            background: 'linear-gradient(135deg, #5F7D4F, #C95E83)',
+            background: 'linear-gradient(135deg, var(--matcha), var(--rose))',
             color: 'white',
             fontSize: 16,
             fontWeight: 800,
             fontFamily: 'Playfair Display, serif',
             cursor: 'pointer',
             letterSpacing: '0.04em',
-            boxShadow: '0 4px 16px rgba(95,125,79,0.35)',
+            boxShadow: '0 4px 16px rgba(var(--matcha-rgb),0.35)',
           }}
         >
           See Scores

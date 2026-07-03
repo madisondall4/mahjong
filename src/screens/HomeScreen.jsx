@@ -3,26 +3,27 @@ import { SUITS } from '../data/tiles.js';
 import { getDifficulty, setDifficulty, DIFFICULTIES } from '../utils/persistence.js';
 import { getDailyChallenge, getStats } from '../utils/stats.js';
 import { setCoachEnabled, isCoachEnabled } from '../components/CoachTips.jsx';
+import { THEME_PRESETS, TILE_BACKS, applyTheme, getSavedTheme, getSavedTileBack, setTileBack } from '../theme/presets.js';
 
 const DEMO_TILES = [
-  { suit: SUITS.BAM, value: 1, color: '#5F7D4F' },
-  { suit: SUITS.CRAK, value: 7, color: '#5F7D4F' },
-  { suit: SUITS.DOT, value: 5, color: '#5E92B3' },
-  { suit: SUITS.WIND, value: 'East', color: '#2B3A2A' },
-  { suit: SUITS.DRAGON, value: 'Red', color: '#5F7D4F' },
-  { suit: SUITS.JOKER, value: 'joker', color: '#C95E83' },
+  { suit: SUITS.BAM, value: 1, color: 'var(--matcha)' },
+  { suit: SUITS.CRAK, value: 7, color: 'var(--matcha)' },
+  { suit: SUITS.DOT, value: 5, color: 'var(--sky)' },
+  { suit: SUITS.WIND, value: 'East', color: 'var(--surface-deep)' },
+  { suit: SUITS.DRAGON, value: 'Red', color: 'var(--matcha)' },
+  { suit: SUITS.JOKER, value: 'joker', color: 'var(--rose)' },
 ];
 
 function FloatingTile({ tile, delay, x, y, size }) {
   const s = size || 44;
   const colors = {
-    [SUITS.BAM]: '#5F7D4F',
-    [SUITS.CRAK]: '#5F7D4F',
-    [SUITS.DOT]: '#5E92B3',
-    [SUITS.WIND]: '#2B3A2A',
-    [SUITS.DRAGON]: '#5F7D4F',
-    [SUITS.JOKER]: '#C95E83',
-    [SUITS.FLOWER]: '#C95E83',
+    [SUITS.BAM]: 'var(--matcha)',
+    [SUITS.CRAK]: 'var(--matcha)',
+    [SUITS.DOT]: 'var(--sky)',
+    [SUITS.WIND]: 'var(--surface-deep)',
+    [SUITS.DRAGON]: 'var(--matcha)',
+    [SUITS.JOKER]: 'var(--rose)',
+    [SUITS.FLOWER]: 'var(--rose)',
   };
   const labels = {
     [SUITS.BAM]: `${tile.value}B`,
@@ -49,7 +50,7 @@ function FloatingTile({ tile, delay, x, y, size }) {
       justifyContent: 'center',
       fontSize: s * 0.28,
       fontWeight: 800,
-      color: colors[tile.suit] || '#2B3A2A',
+      color: colors[tile.suit] || 'var(--surface-deep)',
       fontFamily: 'Nunito, sans-serif',
       animation: `floatTile 4s ease-in-out ${delay}ms infinite alternate`,
       opacity: 0.35,
@@ -97,6 +98,8 @@ export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo, onO
   const [showRules, setShowRules] = useState(false);
   const [difficulty, setDiff] = useState(getDifficulty);
   const [mode, setMode] = useState('solo');
+  const [theme, setTheme] = useState(getSavedTheme);
+  const [tileBack, setTb] = useState(() => getSavedTileBack() || THEME_PRESETS[getSavedTheme()].tileBack);
   const daily = getDailyChallenge();
   const stats = getStats();
 
@@ -109,7 +112,7 @@ export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo, onO
       alignItems: 'center',
       justifyContent: 'center',
       overflow: 'hidden',
-      background: '#F4EEE2',
+      background: 'var(--bg)',
     }}>
       <style>{`
         @keyframes floatTile {
@@ -136,7 +139,7 @@ export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo, onO
         position: 'absolute', inset: 10,
         border: '6px solid transparent',
         borderRadius: 16,
-        background: 'linear-gradient(#F4EEE2, #F4EEE2) padding-box, linear-gradient(135deg, #5F7D4F, #9DB58E, #5F7D4F) border-box',
+        background: 'linear-gradient(var(--bg), var(--bg)) padding-box, linear-gradient(135deg, var(--matcha), var(--sage), var(--matcha)) border-box',
         pointerEvents: 'none',
       }}/>
 
@@ -147,7 +150,7 @@ export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo, onO
       }}>
         {/* Logo area */}
         <div style={{ textAlign: 'center' }}>
-          <div className="eyebrow" style={{ color: '#5F7D4F', marginBottom: 10 }}>
+          <div className="eyebrow" style={{ color: 'var(--matcha)', marginBottom: 10 }}>
             Pop &amp; Play
           </div>
           <h1 style={{
@@ -155,17 +158,17 @@ export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo, onO
             fontFamily: 'Playfair Display, serif',
             fontSize: 46,
             fontWeight: 700,
-            color: '#3C5236',
+            color: 'var(--matcha-deep)',
             lineHeight: 1.02,
           }}>
             American<br/>
-            <span style={{ fontStyle: 'italic', fontWeight: 600, color: '#C95E83' }}>Mahjong</span>
+            <span style={{ fontStyle: 'italic', fontWeight: 600, color: 'var(--rose)' }}>Mahjong</span>
           </h1>
           <p style={{
             margin: '12px 0 0',
             fontFamily: 'Nunito, sans-serif',
             fontSize: 12.5,
-            color: 'rgba(51,48,42,0.5)',
+            color: 'rgba(var(--ink-rgb),0.5)',
             letterSpacing: '0.1em',
             textTransform: 'uppercase',
           }}>
@@ -175,9 +178,9 @@ export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo, onO
 
         {/* Decorative divider */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', maxWidth: 280 }}>
-          <div style={{ flex: 1, height: 1, background: 'linear-gradient(to right, transparent, rgba(95,125,79,0.3))' }}/>
-          <span style={{ color: '#5F7D4F', fontSize: 16 }}>✦</span>
-          <div style={{ flex: 1, height: 1, background: 'linear-gradient(to left, transparent, rgba(95,125,79,0.3))' }}/>
+          <div style={{ flex: 1, height: 1, background: 'linear-gradient(to right, transparent, rgba(var(--matcha-rgb),0.3))' }}/>
+          <span style={{ color: 'var(--matcha)', fontSize: 16 }}>✦</span>
+          <div style={{ flex: 1, height: 1, background: 'linear-gradient(to left, transparent, rgba(var(--matcha-rgb),0.3))' }}/>
         </div>
 
         {/* Game info */}
@@ -189,12 +192,12 @@ export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo, onO
           ].map(({ icon, text }) => (
             <div key={text} style={{
               display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
-              background: 'rgba(43,58,42,0.06)', borderRadius: 10,
-              padding: '8px 14px', border: '1px solid rgba(95,125,79,0.15)',
+              background: 'rgba(var(--deep-rgb),0.06)', borderRadius: 10,
+              padding: '8px 14px', border: '1px solid rgba(var(--matcha-rgb),0.15)',
               minWidth: 70,
             }}>
               <span style={{ fontSize: 20 }}>{icon}</span>
-              <span style={{ fontSize: 11, color: 'rgba(43,58,42,0.65)', fontFamily: 'Nunito', fontWeight: 600 }}>{text}</span>
+              <span style={{ fontSize: 11, color: 'rgba(var(--deep-rgb),0.65)', fontFamily: 'Nunito', fontWeight: 600 }}>{text}</span>
             </div>
           ))}
         </div>
@@ -203,9 +206,9 @@ export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo, onO
         <div style={{ width: '100%', maxWidth: 280 }}>
           <div style={{
             display: 'flex',
-            background: 'rgba(43,58,42,0.06)',
+            background: 'rgba(var(--deep-rgb),0.06)',
             borderRadius: 999,
-            border: '1px solid rgba(95,125,79,0.15)',
+            border: '1px solid rgba(var(--matcha-rgb),0.15)',
             padding: 3,
           }}>
             {[
@@ -219,8 +222,8 @@ export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo, onO
                   onClick={() => setMode(opt.key)}
                   style={{
                     flex: 1, padding: '8px 0', borderRadius: 999, border: 'none',
-                    background: active ? '#3C5236' : 'transparent',
-                    color: active ? 'white' : 'rgba(43,58,42,0.55)',
+                    background: active ? 'var(--matcha-deep)' : 'transparent',
+                    color: active ? 'white' : 'rgba(var(--deep-rgb),0.55)',
                     fontSize: 12, fontWeight: active ? 700 : 500,
                     fontFamily: 'Nunito, sans-serif', cursor: 'pointer',
                     transition: 'all 0.2s ease',
@@ -232,7 +235,7 @@ export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo, onO
             })}
           </div>
           {mode === 'pass' && (
-            <div style={{ fontSize: 10, color: 'rgba(43,58,42,0.45)', fontFamily: 'Nunito', textAlign: 'center', marginTop: 4 }}>
+            <div style={{ fontSize: 10, color: 'rgba(var(--deep-rgb),0.45)', fontFamily: 'Nunito', textAlign: 'center', marginTop: 4 }}>
               4 players share this device — hands stay private between turns
             </div>
           )}
@@ -241,16 +244,16 @@ export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo, onO
         {/* Difficulty selector */}
         <div style={{ width: '100%', maxWidth: 280, display: mode === 'pass' ? 'none' : 'block' }}>
           <div style={{
-            fontSize: 10, color: 'rgba(43,58,42,0.5)', fontFamily: 'Nunito',
+            fontSize: 10, color: 'rgba(var(--deep-rgb),0.5)', fontFamily: 'Nunito',
             textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6, textAlign: 'center',
           }}>
             AI Difficulty
           </div>
           <div style={{
             display: 'flex',
-            background: 'rgba(43,58,42,0.06)',
+            background: 'rgba(var(--deep-rgb),0.06)',
             borderRadius: 999,
-            border: '1px solid rgba(95,125,79,0.15)',
+            border: '1px solid rgba(var(--matcha-rgb),0.15)',
             padding: 3,
           }}>
             {DIFF_OPTIONS.map(opt => {
@@ -264,8 +267,8 @@ export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo, onO
                     padding: '7px 0',
                     borderRadius: 999,
                     border: 'none',
-                    background: active ? '#5F7D4F' : 'transparent',
-                    color: active ? 'white' : 'rgba(43,58,42,0.55)',
+                    background: active ? 'var(--matcha)' : 'transparent',
+                    color: active ? 'white' : 'rgba(var(--deep-rgb),0.55)',
                     fontSize: 12,
                     fontWeight: active ? 700 : 500,
                     fontFamily: 'Nunito, sans-serif',
@@ -279,10 +282,61 @@ export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo, onO
             })}
           </div>
           <div style={{
-            fontSize: 10, color: 'rgba(43,58,42,0.4)', fontFamily: 'Nunito',
+            fontSize: 10, color: 'rgba(var(--deep-rgb),0.4)', fontFamily: 'Nunito',
             textAlign: 'center', marginTop: 4,
           }}>
             {DIFF_OPTIONS.find(o => o.key === difficulty)?.desc}
+          </div>
+        </div>
+
+        {/* Theme + tile back pickers */}
+        <div style={{ width: '100%', maxWidth: 280, display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 8 }}>
+            {Object.entries(THEME_PRESETS).map(([key, preset]) => {
+              const active = theme === key;
+              return (
+                <button
+                  key={key}
+                  onClick={() => { applyTheme(key); setTheme(key); setTb(getSavedTileBack() || preset.tileBack); }}
+                  aria-label={preset.label}
+                  title={preset.label}
+                  style={{
+                    width: 44, height: 44, borderRadius: 14, cursor: 'pointer',
+                    border: active ? '2.5px solid var(--matcha)' : '1.5px solid rgba(var(--deep-rgb),0.2)',
+                    background: `linear-gradient(135deg, ${preset.tokens.bg} 0%, ${preset.tokens.bg} 48%, ${preset.tokens.primary} 52%, ${preset.tokens.primary} 100%)`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 16,
+                    boxShadow: active ? '0 3px 10px rgba(var(--shadow-rgb),0.3)' : 'none',
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  {preset.emoji}
+                </button>
+              );
+            })}
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 7 }}>
+            <span style={{ fontSize: 9.5, fontFamily: 'Nunito', fontWeight: 800, color: 'rgba(var(--deep-rgb),0.45)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
+              Tile back
+            </span>
+            {Object.entries(TILE_BACKS).map(([key, tb]) => {
+              const active = tileBack === key;
+              return (
+                <button
+                  key={key}
+                  onClick={() => { setTileBack(key); setTb(key); }}
+                  aria-label={`${tb.label} tile back`}
+                  title={tb.label}
+                  style={{
+                    width: 24, height: 32, borderRadius: 5, cursor: 'pointer',
+                    border: active ? '2px solid var(--matcha)' : '1px solid rgba(var(--deep-rgb),0.2)',
+                    background: `linear-gradient(150deg, ${tb.a} 0%, ${tb.b} 55%, ${tb.c} 100%)`,
+                    boxShadow: active ? '0 2px 8px rgba(var(--shadow-rgb),0.3)' : 'none',
+                    transition: 'all 0.15s ease',
+                  }}
+                />
+              );
+            })}
           </div>
         </div>
 
@@ -292,21 +346,21 @@ export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo, onO
           style={{
             width: '100%', maxWidth: 280,
             display: 'flex', alignItems: 'center', gap: 8,
-            background: daily.status ? 'rgba(95,125,79,0.1)' : 'rgba(201,94,131,0.07)',
-            border: `1px solid ${daily.status ? 'rgba(95,125,79,0.35)' : 'rgba(201,94,131,0.28)'}`,
+            background: daily.status ? 'rgba(var(--matcha-rgb),0.1)' : 'rgba(var(--rose-rgb),0.07)',
+            border: `1px solid ${daily.status ? 'rgba(var(--matcha-rgb),0.35)' : 'rgba(var(--rose-rgb),0.28)'}`,
             borderRadius: 12, padding: '9px 12px', cursor: 'pointer', textAlign: 'left',
           }}
         >
           <span style={{ fontSize: 17, flexShrink: 0 }}>{daily.status === 'gold' ? '⭐' : daily.status ? '✅' : '☀️'}</span>
           <span style={{ minWidth: 0, flex: 1 }}>
-            <span style={{ display: 'block', fontSize: 10, fontFamily: 'Nunito', fontWeight: 800, color: daily.status ? '#5F7D4F' : '#C95E83', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
+            <span style={{ display: 'block', fontSize: 10, fontFamily: 'Nunito', fontWeight: 800, color: daily.status ? 'var(--matcha)' : 'var(--rose)', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
               Daily Challenge{daily.streak > 0 ? ` · 🔥 ${daily.streak}` : ''}
             </span>
-            <span style={{ display: 'block', fontSize: 11.5, fontFamily: 'Nunito', fontWeight: 600, color: 'rgba(43,58,42,0.75)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <span style={{ display: 'block', fontSize: 11.5, fontFamily: 'Nunito', fontWeight: 600, color: 'rgba(var(--deep-rgb),0.75)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {daily.status ? 'Done for today!' : 'Win a game'} · Featured: {daily.hand.name}
             </span>
           </span>
-          <span style={{ color: 'rgba(43,58,42,0.35)', fontSize: 14, flexShrink: 0 }}>›</span>
+          <span style={{ color: 'rgba(var(--deep-rgb),0.35)', fontSize: 14, flexShrink: 0 }}>›</span>
         </button>
 
         {/* Resume Game button */}
@@ -318,13 +372,13 @@ export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo, onO
               padding: '16px 0',
               borderRadius: 999,
               border: 'none',
-              background: '#5F7D4F',
+              background: 'var(--matcha)',
               color: 'white',
               fontSize: 17,
               fontWeight: 700,
               fontFamily: 'Playfair Display, serif',
               cursor: 'pointer',
-              boxShadow: '0 8px 20px rgba(60,82,54,0.28)',
+              boxShadow: '0 8px 20px rgba(var(--shadow-rgb),0.28)',
               letterSpacing: '0.03em',
               position: 'relative',
             }}
@@ -351,14 +405,14 @@ export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo, onO
             width: '100%', maxWidth: 280,
             padding: onResumeGame ? '12px 0' : '16px 0',
             borderRadius: 999,
-            border: onResumeGame ? '1.5px solid rgba(95,125,79,0.35)' : 'none',
-            background: onResumeGame ? 'transparent' : '#5F7D4F',
-            color: onResumeGame ? '#5F7D4F' : 'white',
+            border: onResumeGame ? '1.5px solid rgba(var(--matcha-rgb),0.35)' : 'none',
+            background: onResumeGame ? 'transparent' : 'var(--matcha)',
+            color: onResumeGame ? 'var(--matcha)' : 'white',
             fontSize: onResumeGame ? 15 : 17,
             fontWeight: 700,
             fontFamily: 'Playfair Display, serif',
             cursor: 'pointer',
-            boxShadow: onResumeGame ? 'none' : '0 8px 20px rgba(60,82,54,0.28)',
+            boxShadow: onResumeGame ? 'none' : '0 8px 20px rgba(var(--shadow-rgb),0.28)',
             letterSpacing: '0.03em',
           }}
         >
@@ -370,9 +424,9 @@ export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo, onO
           <button
             onClick={() => setShowRules(v => !v)}
             style={{
-              background: 'none', border: '1px solid rgba(95,125,79,0.25)',
+              background: 'none', border: '1px solid rgba(var(--matcha-rgb),0.25)',
               borderRadius: 8, padding: '8px 16px',
-              color: 'rgba(43,58,42,0.55)', fontSize: 13,
+              color: 'rgba(var(--deep-rgb),0.55)', fontSize: 13,
               fontFamily: 'Nunito', cursor: 'pointer',
             }}
           >
@@ -381,9 +435,9 @@ export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo, onO
           <button
             onClick={onOpenJournal}
             style={{
-              background: 'none', border: '1px solid rgba(95,125,79,0.25)',
+              background: 'none', border: '1px solid rgba(var(--matcha-rgb),0.25)',
               borderRadius: 8, padding: '8px 16px',
-              color: 'rgba(43,58,42,0.55)', fontSize: 13,
+              color: 'rgba(var(--deep-rgb),0.55)', fontSize: 13,
               fontFamily: 'Nunito', cursor: 'pointer',
             }}
           >
@@ -393,11 +447,11 @@ export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo, onO
 
         {showRules && (
           <div style={{
-            background: 'rgba(43,58,42,0.06)', border: '1px solid rgba(95,125,79,0.15)',
+            background: 'rgba(var(--deep-rgb),0.06)', border: '1px solid rgba(var(--matcha-rgb),0.15)',
             borderRadius: 12, padding: 16, maxWidth: 320, fontSize: 12,
-            color: 'rgba(43,58,42,0.75)', fontFamily: 'Nunito', lineHeight: 1.6,
+            color: 'rgba(var(--deep-rgb),0.75)', fontFamily: 'Nunito', lineHeight: 1.6,
           }}>
-            <p style={{ margin: '0 0 8px', color: '#5F7D4F', fontWeight: 700, fontFamily: 'Playfair Display, serif', fontSize: 14 }}>American Mahjong Rules</p>
+            <p style={{ margin: '0 0 8px', color: 'var(--matcha)', fontWeight: 700, fontFamily: 'Playfair Display, serif', fontSize: 14 }}>American Mahjong Rules</p>
             <ul style={{ margin: 0, paddingLeft: 16 }}>
               <li>Tap a tile to select it, tap again to discard</li>
               <li>Charleston: pass 3 tiles in each direction</li>
@@ -410,10 +464,10 @@ export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo, onO
               onClick={() => { setCoachEnabled(true); setShowRules(false); }}
               style={{
                 marginTop: 10, width: '100%',
-                background: isCoachEnabled() ? 'rgba(95,125,79,0.12)' : '#5F7D4F',
-                border: '1px solid rgba(95,125,79,0.35)',
+                background: isCoachEnabled() ? 'rgba(var(--matcha-rgb),0.12)' : 'var(--matcha)',
+                border: '1px solid rgba(var(--matcha-rgb),0.35)',
                 borderRadius: 8, padding: '8px 0',
-                color: isCoachEnabled() ? '#5F7D4F' : 'white',
+                color: isCoachEnabled() ? 'var(--matcha)' : 'white',
                 fontSize: 12, fontFamily: 'Nunito', fontWeight: 800, cursor: 'pointer',
               }}
             >
@@ -426,7 +480,7 @@ export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo, onO
       {/* Version */}
       <div style={{
         position: 'absolute', bottom: 16,
-        fontSize: 10, color: 'rgba(43,58,42,0.25)',
+        fontSize: 10, color: 'rgba(var(--deep-rgb),0.25)',
         fontFamily: 'Nunito',
       }}>
         American Mahjong v1.0
