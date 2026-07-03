@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import WINNING_HANDS, { CATEGORIES } from '../data/card.js';
-import MahjongTile from './MahjongTile';
+import WINNING_HANDS, { CATEGORIES, CARD_META } from '../data/card.js';
+import { HandExample } from './HandTiles.jsx';
 
 const CATEGORY_COLORS = {
   [CATEGORIES.EVEN]: '#5F7D4F',
@@ -44,8 +44,13 @@ function HandCard({ hand, onClick }) {
           </span>
         </div>
       </div>
-      <div style={{ fontSize: 13, color: '#33302A', fontFamily: 'Playfair Display, serif', fontWeight: 600 }}>
-        {hand.pattern}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8 }}>
+        <span style={{ fontSize: 14, color: '#33302A', fontFamily: 'Playfair Display, serif', fontWeight: 700 }}>
+          {hand.name}
+        </span>
+        <span style={{ fontSize: 11.5, color: 'rgba(51,48,42,0.55)', fontFamily: 'Nunito', fontWeight: 600 }}>
+          {hand.pattern}
+        </span>
       </div>
     </button>
   );
@@ -81,7 +86,7 @@ export default function CardReference({ isOpen, onClose }) {
       />
 
       {/* Panel */}
-      <div style={{
+      <div aria-hidden={!isOpen} style={{
         position: 'fixed',
         left: 0, right: 0, bottom: 0,
         height: '80vh',
@@ -94,6 +99,7 @@ export default function CardReference({ isOpen, onClose }) {
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
+        pointerEvents: isOpen ? 'auto' : 'none',
       }}>
         {/* Handle bar */}
         <div style={{ display: 'flex', justifyContent: 'center', padding: '10px 0 4px' }}>
@@ -108,10 +114,10 @@ export default function CardReference({ isOpen, onClose }) {
         }}>
           <div>
             <h2 style={{ margin: 0, fontSize: 18, fontFamily: 'Playfair Display, serif', color: '#5F7D4F', fontWeight: 700 }}>
-              Mahjong Card
+              {CARD_META.name}
             </h2>
             <p style={{ margin: 0, fontSize: 11, color: 'rgba(51,48,42,0.5)', fontFamily: 'Nunito' }}>
-              24 winning hands
+              {CARD_META.edition} · 24 winning hands · tap any hand to see it in tiles
             </p>
           </div>
           <button
@@ -196,35 +202,31 @@ function HandDetail({ hand, onBack }) {
           </div>
         </div>
 
-        <div style={{ fontSize: 22, color: '#33302A', fontFamily: 'Playfair Display, serif', fontWeight: 700, marginBottom: 10 }}>
+        <div style={{ fontSize: 20, color: '#33302A', fontFamily: 'Playfair Display, serif', fontWeight: 700, marginBottom: 4 }}>
+          {hand.name}
+        </div>
+        <div style={{ fontSize: 13, color: 'rgba(51,48,42,0.55)', fontFamily: 'Nunito', fontWeight: 600, marginBottom: 12 }}>
           {hand.pattern}
+        </div>
+
+        {/* Example rendered with real tile art */}
+        <div style={{
+          background: 'rgba(255,255,255,0.75)', borderRadius: 10,
+          border: '1px solid rgba(95,125,79,0.18)', padding: '12px 10px', marginBottom: 12,
+        }}>
+          <div style={{ fontSize: 10, fontFamily: 'Nunito', fontWeight: 700, color: 'rgba(51,48,42,0.45)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>
+            Example
+          </div>
+          <HandExample hand={hand}/>
+          {hand.flowers > 0 && (
+            <div style={{ fontSize: 10.5, fontFamily: 'Nunito', color: '#C95E83', fontWeight: 600, marginTop: 8 }}>
+              ✿ Requires {hand.flowers} flowers set aside
+            </div>
+          )}
         </div>
 
         <div style={{ fontSize: 12, color: 'rgba(51,48,42,0.65)', fontFamily: 'Nunito', lineHeight: 1.5 }}>
           {hand.description}
-        </div>
-
-        {/* Group breakdown */}
-        <div style={{ marginTop: 10, display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-          {hand.groups.map((g, i) => (
-            <span key={i} style={{
-              fontSize: 10, padding: '2px 8px', borderRadius: 10,
-              background: 'rgba(95,125,79,0.1)', border: '1px solid rgba(95,125,79,0.25)',
-              color: '#5F7D4F', fontFamily: 'Nunito', fontWeight: 600,
-            }}>
-              {g.type === 'flowers' ? `${g.count} Flower(s)` :
-               g.type === 'quint' ? 'Quint ×5' :
-               g.type === 'kong' ? 'Kong ×4' :
-               g.type === 'pung' ? 'Pung ×3' :
-               g.type === 'pair' ? 'Pair ×2' :
-               g.type === 'sequence' ? `Run [${g.values?.join(',')}]` :
-               g.type === 'allWinds' ? 'NEWS set' :
-               g.type === 'sevenPairs' ? '7 Pairs' :
-               g.type === 'fourConsecPairs' ? '4 Consec Pairs' :
-               g.type === 'fiveConsecPairs' ? '5 Consec Pairs' :
-               g.type}
-            </span>
-          ))}
         </div>
       </div>
     </div>

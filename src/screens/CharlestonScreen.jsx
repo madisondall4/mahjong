@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import CharlestonUI from '../components/CharlestonUI.jsx';
 import CardReference from '../components/CardReference.jsx';
+import Advisor from '../components/Advisor.jsx';
 
 /**
  * Charleston phase screen
@@ -11,6 +12,7 @@ export default function CharlestonScreen({
   onSkipSecondCharleston,
 }) {
   const [cardOpen, setCardOpen] = useState(false);
+  const [advisorOpen, setAdvisorOpen] = useState(false);
   const [showIncoming, setShowIncoming] = useState(false);
   const [incomingTiles, setIncomingTiles] = useState(null);
 
@@ -44,17 +46,30 @@ export default function CharlestonScreen({
             Step {charleston.step + 1}/3 · Round {charleston.round}/2
           </div>
         </div>
-        <button
-          onClick={() => setCardOpen(true)}
-          style={{
-            background: 'rgba(94,146,179,0.15)', border: '1px solid rgba(94,146,179,0.35)',
-            borderRadius: 8, padding: '6px 12px',
-            color: '#5E92B3', fontSize: 11, fontFamily: 'Nunito', fontWeight: 700,
-            cursor: 'pointer',
-          }}
-        >
-          📋 Card
-        </button>
+        <div style={{ display: 'flex', gap: 6 }}>
+          <button
+            onClick={() => setAdvisorOpen(true)}
+            style={{
+              background: 'rgba(95,125,79,0.12)', border: '1px solid rgba(95,125,79,0.35)',
+              borderRadius: 8, padding: '6px 12px',
+              color: '#5F7D4F', fontSize: 11, fontFamily: 'Nunito', fontWeight: 800,
+              cursor: 'pointer',
+            }}
+          >
+            💡 Hands
+          </button>
+          <button
+            onClick={() => setCardOpen(true)}
+            style={{
+              background: 'rgba(94,146,179,0.15)', border: '1px solid rgba(94,146,179,0.35)',
+              borderRadius: 8, padding: '6px 12px',
+              color: '#5E92B3', fontSize: 11, fontFamily: 'Nunito', fontWeight: 700,
+              cursor: 'pointer',
+            }}
+          >
+            📋 Card
+          </button>
+        </div>
       </div>
 
       {/* Skip second charleston option */}
@@ -119,6 +134,12 @@ export default function CharlestonScreen({
       </div>
 
       <CardReference isOpen={cardOpen} onClose={() => setCardOpen(false)}/>
+      <Advisor
+        isOpen={advisorOpen}
+        onClose={() => setAdvisorOpen(false)}
+        tiles={player.hand}
+        flowerCount={player.flowers.length}
+      />
     </div>
   );
 }

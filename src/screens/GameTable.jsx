@@ -4,6 +4,7 @@ import OpponentSeat from '../components/OpponentSeat.jsx';
 import DiscardPool from '../components/DiscardPool.jsx';
 import WallCounter from '../components/WallCounter.jsx';
 import CardReference from '../components/CardReference.jsx';
+import Advisor from '../components/Advisor.jsx';
 import MahjongTile from '../components/MahjongTile.jsx';
 
 /**
@@ -16,6 +17,7 @@ export default function GameTable({
   onDeclareMahjong,
 }) {
   const [cardOpen, setCardOpen] = useState(false);
+  const [advisorOpen, setAdvisorOpen] = useState(false);
   const [selectedUid, setSelectedUid] = useState(null);
   const [showMahjongBtn, setShowMahjongBtn] = useState(false);
 
@@ -101,7 +103,20 @@ export default function GameTable({
             </button>
           )}
           <button
+            onClick={() => setAdvisorOpen(true)}
+            aria-label="What can I win?"
+            style={{
+              background: 'rgba(95,125,79,0.12)', border: '1px solid rgba(95,125,79,0.35)',
+              borderRadius: 8, padding: '6px 10px',
+              color: '#5F7D4F', fontSize: 11, fontFamily: 'Nunito', fontWeight: 800,
+              cursor: 'pointer',
+            }}
+          >
+            💡 Hands
+          </button>
+          <button
             onClick={() => setCardOpen(true)}
+            aria-label="Card reference"
             style={{
               background: 'rgba(94,146,179,0.12)', border: '1px solid rgba(94,146,179,0.3)',
               borderRadius: 8, padding: '6px 10px',
@@ -205,6 +220,12 @@ export default function GameTable({
       </div>
 
       <CardReference isOpen={cardOpen} onClose={() => setCardOpen(false)}/>
+      <Advisor
+        isOpen={advisorOpen}
+        onClose={() => setAdvisorOpen(false)}
+        tiles={humanPlayer.hand}
+        flowerCount={humanPlayer.flowers.length}
+      />
     </div>
   );
 }
