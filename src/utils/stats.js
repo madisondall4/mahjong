@@ -4,7 +4,7 @@
  * corrupted store self-heals to defaults.
  */
 
-import WINNING_HANDS, { CARD_META } from '../data/card.js';
+import { GARDEN_CARD, getActiveCard } from '../data/card.js';
 
 const KEY = 'mahjong_stats';
 const VERSION = 1;
@@ -61,7 +61,10 @@ export function getDailyChallenge(dateKey = todayKey()) {
   for (let i = 0; i < dateKey.length; i++) {
     h = (h * 31 + dateKey.charCodeAt(i)) >>> 0;
   }
-  const hand = WINNING_HANDS[h % WINNING_HANDS.length];
+  // Daily challenge is always seeded from the built-in Garden Card so it is
+  // the same for every player regardless of which card they play.
+  const hands = GARDEN_CARD.hands;
+  const hand = hands[h % hands.length];
   const stats = getStats();
   const status = stats.daily.completed[dateKey] || null; // null | 'win' | 'gold'
   return { dateKey, hand, status, streak: stats.daily.streak };
@@ -102,7 +105,7 @@ export function recordGameEnd({ gameId, winnerIdx, handDef, wallExhausted }) {
       if (!stats.bestHand || (handDef.points || 0) > stats.bestHand.points) {
         stats.bestHand = { name: handDef.name, points: handDef.points, date: todayKey() };
       }
-      const key = `${CARD_META.year}:${handDef.id}`;
+      const key = `${getActiveCard().meta.year}:${handDef.id}`;
       stats.handsWon[key] = (stats.handsWon[key] || 0) + 1;
 
       // Daily challenge
@@ -139,10 +142,11 @@ export function recordGameEnd({ gameId, winnerIdx, handDef, wallExhausted }) {
  */
 export function getJournal() {
   const stats = getStats();
-  const entries = WINNING_HANDS.map(hand => ({
+  const card = getActiveCard();
+  const entries = card.hands.map(hand => ({
     hand,
-    count: stats.handsWon[`${CARD_META.year}:${hand.id}`] || 0,
+    count: stats.handsWon[`${card.meta.year}:${hand.id}`] || 0,
   }));
   const uniqueWon = entries.filter(e => e.count > 0).length;
-  return { entries, uniqueWon, total: WINNING_HANDS.length };
+  return { entries, uniqueWon, total: card.hands.length };
 }

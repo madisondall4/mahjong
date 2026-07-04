@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import WINNING_HANDS, { CATEGORIES, CARD_META } from '../data/card.js';
+import { CATEGORIES, getActiveCard } from '../data/card.js';
 import { HandExample } from './HandTiles.jsx';
 
 const CATEGORY_COLORS = {
@@ -65,10 +65,11 @@ export default function CardReference({ isOpen, onClose }) {
   const [selectedHand, setSelectedHand] = useState(null);
   const [activeCategory, setActiveCategory] = useState('All');
 
-  const categories = ['All', ...Object.values(CATEGORIES)];
+  const card = getActiveCard();
+  const categories = ['All', ...Object.values(card.categories)];
   const filtered = activeCategory === 'All'
-    ? WINNING_HANDS
-    : WINNING_HANDS.filter(h => h.category === activeCategory);
+    ? card.hands
+    : card.hands.filter(h => h.category === activeCategory);
 
   return (
     <>
@@ -114,10 +115,10 @@ export default function CardReference({ isOpen, onClose }) {
         }}>
           <div>
             <h2 style={{ margin: 0, fontSize: 18, fontFamily: 'Playfair Display, serif', color: 'var(--matcha)', fontWeight: 700 }}>
-              {CARD_META.name}
+              {card.meta.name}
             </h2>
             <p style={{ margin: 0, fontSize: 11, color: 'rgba(var(--ink-rgb),0.5)', fontFamily: 'Nunito' }}>
-              {CARD_META.edition} · 24 winning hands · tap any hand to see it in tiles
+              {card.meta.edition} · {card.hands.length} hands · tap any to see it in tiles
             </p>
           </div>
           <button

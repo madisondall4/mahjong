@@ -57,6 +57,17 @@ Status legend: 🔲 Not started · 🟡 In progress · ✅ Done
 - ✅ **Sound & haptics** — synthesized Web Audio (tile clacks, call alerts,
   win fanfare — zero assets, offline-safe) plus vibration; mute persists.
 
+### Real-card support (see LEGAL_CARDS.md)
+- ✅ **Flowers in hand** — flowers are ordinary tiles inside the 14 (152-tile
+  standard set), passable, callable, discardable — real-card semantics.
+- ✅ **"My Card" builder** — players who own a physical card transcribe it
+  with card notation (suit classes a/b/c, NEWS, dragons, soap, year digits,
+  sliding runs); live tile-art validation; compiles into the same variant
+  engine as the built-in card. Local-only storage, ships empty.
+- ✅ **Card switcher** — Garden Card ↔ My Card on Home; gameplay, advisor,
+  card reference, and journal all follow the active card. The daily
+  challenge stays pinned to the Garden Card so it's global.
+
 ### Platform
 - ✅ **Installable PWA** — manifest, icons, offline service worker, iOS meta.
 - ✅ **Self-hosted fonts** — Playfair Display + Nunito latin variable fonts
@@ -74,13 +85,12 @@ Status legend: 🔲 Not started · 🟡 In progress · ✅ Done
   joker in ANY exposed meld (yours or an opponent's). The classic American
   mahjong joker economy; the exposure engine already models melds, so this
   is an engine helper + a turn action + AI judgment.
+- 🔲 **NMJL license** — the business path to shipping official card content
+  in-app; until signed, the Garden Card + "My Card" lanes only (see
+  LEGAL_CARDS.md).
 - 🔲 **Online multiplayer** — needs a realtime backend (rooms, matchmaking,
   reconnect). Pass-and-play ships as the stepping stone.
-- 🔲 **Seasonal card updates** — ship a 2027 Garden Card next year (never
-  copy the NMJL card itself; it's copyrighted).
-- 🔲 **Ruthless AI tuning** — spicy currently completes more games than
-  ruthless (35% vs 53% draws in sims); ruthless's wider 5-target search
-  thrashes. Consider target commitment once distance ≤ 3.
+- 🔲 **Seasonal card updates** — ship a 2027 Garden Card next year.
 
 ---
 
@@ -110,9 +120,15 @@ Status legend: 🔲 Not started · 🟡 In progress · ✅ Done
 - **Theming**: tokens in `src/styles/globals.css`, presets + `applyTheme()` in
   `src/theme/presets.js` (auto-computes rgb triplets, syncs `theme-color`).
   Tile faces/artwork are deliberately un-themed.
-- **Persistence**: game saves in `mahjong_saved_game` (v1); stats/journal/
-  daily in `mahjong_stats` (v1, self-healing); theme, tile back, difficulty,
-  and coach flags in their own keys.
+- **Cards**: `src/data/card.js` resolves the active card (Garden built-in vs
+  compiled "My Card"); `src/logic/cardCompiler.js` parses card notation into
+  variants; `src/logic/customCard.js` stores/compiles the user's card
+  (local-only by policy). Matcher variant cache is a WeakMap keyed on hand
+  definition objects so cards can never collide.
+- **Persistence**: game saves in `mahjong_saved_game` (v2 — flowers in
+  hand); stats/journal/daily in `mahjong_stats` (v1, self-healing; journal
+  keys are `cardYear:handId`); theme, tile back, difficulty, coach flags,
+  and `mahjong_custom_card`/`mahjong_active_card` in their own keys.
 - **Stats recording**: once per game, idempotent by `gameId`, solo mode only.
 - **PWA**: `public/sw.js` precaches the shell + parsed assets at install;
   network-first navigations, cache-first assets/fonts. Bump `VERSION` on

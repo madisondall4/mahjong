@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { getStats, getJournal, getDailyChallenge } from '../utils/stats.js';
-import { CARD_META, CATEGORIES } from '../data/card.js';
+import { CATEGORIES, getActiveCard } from '../data/card.js';
 import { HandExample } from '../components/HandTiles.jsx';
 
 const CATEGORY_COLORS = {
@@ -61,7 +61,7 @@ export default function JournalScreen({ onClose }) {
             Hand Journal
           </h1>
           <p style={{ margin: 0, fontSize: 11, color: 'rgba(var(--ink-rgb),0.5)', fontFamily: 'Nunito' }}>
-            {CARD_META.name} · {CARD_META.edition}
+            {getActiveCard().meta.name} · {getActiveCard().meta.edition}
           </p>
         </div>
         <button

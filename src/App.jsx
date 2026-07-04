@@ -5,6 +5,7 @@ import CharlestonScreen from './screens/CharlestonScreen.jsx';
 import GameTable from './screens/GameTable.jsx';
 import DeclarationScreen from './screens/DeclarationScreen.jsx';
 import JournalScreen from './screens/JournalScreen.jsx';
+import CardBuilderScreen from './screens/CardBuilderScreen.jsx';
 import PassHandoffScreen from './screens/PassHandoffScreen.jsx';
 import ScoringOverlay from './components/ScoringOverlay.jsx';
 
@@ -54,6 +55,7 @@ function useSoundEffects(state) {
 function AppInner() {
   const { state, setState, patchState, reset } = useGame();
   const [journalOpen, setJournalOpen] = useState(false);
+  const [builderOpen, setBuilderOpen] = useState(false);
   const aiTimerRef = useRef(null);
   const lastAiKey = useRef(null);
   const lastHumanDrawKey = useRef(null);
@@ -533,6 +535,9 @@ function AppInner() {
     if (journalOpen) {
       return <JournalScreen onClose={() => setJournalOpen(false)}/>;
     }
+    if (builderOpen) {
+      return <CardBuilderScreen onClose={() => setBuilderOpen(false)}/>;
+    }
     const savedInfo = getSavedGameInfo();
     return (
       <HomeScreen
@@ -540,6 +545,7 @@ function AppInner() {
         onResumeGame={savedInfo ? handleResumeGame : null}
         savedGameInfo={savedInfo}
         onOpenJournal={() => setJournalOpen(true)}
+        onOpenBuilder={() => setBuilderOpen(true)}
       />
     );
   }

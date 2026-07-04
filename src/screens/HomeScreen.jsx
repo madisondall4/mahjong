@@ -5,6 +5,8 @@ import { getDailyChallenge, getStats } from '../utils/stats.js';
 import { setCoachEnabled, isCoachEnabled } from '../utils/coach.js';
 import { THEME_PRESETS, TILE_BACKS, applyTheme, getSavedTheme, getSavedTileBack, setTileBack } from '../theme/presets.js';
 import { isSoundOn, setSoundOn } from '../utils/sound.js';
+import { getActiveCardKey, setActiveCardKey } from '../data/card.js';
+import { hasCustomCard, getCompiledCustomCard } from '../logic/customCard.js';
 
 const DEMO_TILES = [
   { suit: SUITS.BAM, value: 1, color: 'var(--matcha)' },
@@ -95,7 +97,7 @@ const DIFF_OPTIONS = [
   { key: DIFFICULTIES.RUTHLESS, label: 'Ruthless', desc: 'Tracks discards, no mercy' },
 ];
 
-export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo, onOpenJournal }) {
+export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo, onOpenJournal, onOpenBuilder }) {
   const [showRules, setShowRules] = useState(false);
   const [difficulty, setDiff] = useState(getDifficulty);
   const [mode, setMode] = useState('solo');
@@ -103,6 +105,7 @@ export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo, onO
   const [tileBack, setTb] = useState(() => getSavedTileBack() || THEME_PRESETS[getSavedTheme()].tileBack);
   const [soundOn, setSound] = useState(isSoundOn);
   const [passNames, setPassNames] = useState(['', '', '', '']);
+  const [cardKey, setCardKey] = useState(getActiveCardKey);
   const daily = getDailyChallenge();
   const stats = getStats();
 
@@ -366,6 +369,56 @@ export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo, onO
               );
             })}
           </div>
+        </div>
+
+        {/* Card picker: Garden (built-in) vs My Card (user-entered) */}
+        <div style={{ width: '100%', maxWidth: 280, display: 'flex', gap: 6, alignItems: 'center' }}>
+          <div style={{
+            flex: 1, display: 'flex',
+            background: 'rgba(var(--deep-rgb),0.06)',
+            borderRadius: 999, border: '1px solid rgba(var(--matcha-rgb),0.15)', padding: 3,
+          }}>
+            <button
+              onClick={() => { setActiveCardKey('garden'); setCardKey('garden'); }}
+              style={{
+                flex: 1, padding: '7px 0', borderRadius: 999, border: 'none',
+                background: cardKey === 'garden' ? 'var(--matcha)' : 'transparent',
+                color: cardKey === 'garden' ? 'white' : 'rgba(var(--deep-rgb),0.55)',
+                fontSize: 11.5, fontWeight: cardKey === 'garden' ? 700 : 500,
+                fontFamily: 'Nunito, sans-serif', cursor: 'pointer', transition: 'all 0.2s ease',
+              }}
+            >
+              🌿 Garden Card
+            </button>
+            <button
+              onClick={() => {
+                if (hasCustomCard()) { setActiveCardKey('custom'); setCardKey('custom'); }
+                else onOpenBuilder();
+              }}
+              style={{
+                flex: 1, padding: '7px 0', borderRadius: 999, border: 'none',
+                background: cardKey === 'custom' ? 'var(--matcha)' : 'transparent',
+                color: cardKey === 'custom' ? 'white' : 'rgba(var(--deep-rgb),0.55)',
+                fontSize: 11.5, fontWeight: cardKey === 'custom' ? 700 : 500,
+                fontFamily: 'Nunito, sans-serif', cursor: 'pointer', transition: 'all 0.2s ease',
+              }}
+            >
+              ✏️ {hasCustomCard() ? (getCompiledCustomCard()?.meta.name || 'My Card') : 'My Card'}
+            </button>
+          </div>
+          {hasCustomCard() && (
+            <button
+              onClick={onOpenBuilder}
+              aria-label="Edit my card"
+              style={{
+                width: 34, height: 34, borderRadius: 999, flexShrink: 0,
+                background: 'rgba(var(--deep-rgb),0.06)', border: '1px solid rgba(var(--matcha-rgb),0.25)',
+                fontSize: 13, cursor: 'pointer',
+              }}
+            >
+              ✏️
+            </button>
+          )}
         </div>
 
         {/* Daily challenge strip */}

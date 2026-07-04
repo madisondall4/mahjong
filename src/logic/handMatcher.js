@@ -15,17 +15,21 @@
  * tiles, all interchangeable, filling F groups inside the 14.
  */
 
-import WINNING_HANDS from '../data/card.js';
+import { getActiveCard } from '../data/card.js';
 
 // ─── Variant cache ────────────────────────────────────────────────────────────
 
-const variantCache = new Map();
+// Keyed on the definition OBJECT (not its id) so hands from different cards —
+// including user-compiled "My Card" hands — can never collide.
+const variantCache = new WeakMap();
 
 function getVariants(handDef) {
-  if (!variantCache.has(handDef.id)) {
-    variantCache.set(handDef.id, handDef.variants());
+  let v = variantCache.get(handDef);
+  if (!v) {
+    v = handDef.variants();
+    variantCache.set(handDef, v);
   }
-  return variantCache.get(handDef.id);
+  return v;
 }
 
 function countTiles(tiles) {
@@ -198,7 +202,7 @@ export function evaluateHand(handDef, tiles, exposures = []) {
  */
 export function checkWin(hand14, isSelfDraw = true, exposures = []) {
   let bestDef = null;
-  for (const handDef of WINNING_HANDS) {
+  for (const handDef of getActiveCard().hands) {
     if (handDef.closed && !isSelfDraw) continue;
     const res = evaluateHand(handDef, hand14, exposures);
     if (res && res.isWin) {
@@ -225,7 +229,7 @@ export function canWinWithTile(hand13, tile, exposures = []) {
  * @returns {Array<{ hand, distance, flowersShort, missing, complete }>}
  */
 export function rankHands(tiles, exposures = []) {
-  const results = WINNING_HANDS.map(handDef => {
+  const results = getActiveCard().hands.map(handDef => {
     const res = evaluateHand(handDef, tiles, exposures);
     return {
       hand: handDef,
@@ -254,4 +258,3 @@ export function exampleTileGroups(handDef) {
   );
 }
 
-export { WINNING_HANDS };
