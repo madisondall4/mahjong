@@ -1,6 +1,7 @@
 const STORAGE_KEY = 'mahjong_saved_game';
 const DIFFICULTY_KEY = 'mahjong_difficulty';
-const SAVE_VERSION = 1;
+// v2: flowers became ordinary in-hand tiles (152-tile set); v1 saves are incompatible.
+const SAVE_VERSION = 2;
 
 export const DIFFICULTIES = {
   CHILL: 'chill',

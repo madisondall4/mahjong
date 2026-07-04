@@ -218,11 +218,6 @@ function HandDetail({ hand, onBack }) {
             Example
           </div>
           <HandExample hand={hand}/>
-          {hand.flowers > 0 && (
-            <div style={{ fontSize: 10.5, fontFamily: 'Nunito', color: 'var(--rose)', fontWeight: 600, marginTop: 8 }}>
-              ✿ Requires {hand.flowers} flowers set aside
-            </div>
-          )}
         </div>
 
         <div style={{ fontSize: 12, color: 'rgba(var(--ink-rgb),0.65)', fontFamily: 'Nunito', lineHeight: 1.5 }}>

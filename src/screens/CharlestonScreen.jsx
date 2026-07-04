@@ -132,7 +132,6 @@ export default function CharlestonScreen({
       <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
         <CharlestonUI
           hand={player.hand}
-          flowers={player.flowers}
           charlestonRound={charleston.round}
           charlestonStep={charleston.step}
           onPass={onPass}
@@ -147,7 +146,6 @@ export default function CharlestonScreen({
         isOpen={advisorOpen}
         onClose={() => setAdvisorOpen(false)}
         tiles={player.hand}
-        flowerCount={player.flowers.length}
       />
     </div>
   );

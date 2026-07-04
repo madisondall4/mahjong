@@ -1,4 +1,4 @@
-import { buildWall, shuffle, isFlower } from '../data/tiles.js';
+import { buildWall, shuffle } from '../data/tiles.js';
 
 // American mahjong plays the wall to the last tile — no dead wall.
 export const WALL_MIN = 0;
@@ -10,10 +10,10 @@ export function createInitialState() {
     wall: [],
     wallIndex: 0,
     players: [
-      { id: 0, name: 'You', isHuman: true, hand: [], flowers: [], exposures: [], score: 0 },
-      { id: 1, name: 'South', isHuman: false, hand: [], flowers: [], exposures: [], score: 0 },
-      { id: 2, name: 'West', isHuman: false, hand: [], flowers: [], exposures: [], score: 0 },
-      { id: 3, name: 'North', isHuman: false, hand: [], flowers: [], exposures: [], score: 0 },
+      { id: 0, name: 'You', isHuman: true, hand: [], exposures: [], score: 0 },
+      { id: 1, name: 'South', isHuman: false, hand: [], exposures: [], score: 0 },
+      { id: 2, name: 'West', isHuman: false, hand: [], exposures: [], score: 0 },
+      { id: 3, name: 'North', isHuman: false, hand: [], exposures: [], score: 0 },
     ],
     currentPlayer: 0,
     discardPile: [],
@@ -56,21 +56,17 @@ function drawRaw(wall, wallIndex) {
 export function dealTiles(state) {
   const wall = shuffle(buildWall());
   let wallIndex = 0;
-  const players = state.players.map(p => ({ ...p, hand: [], flowers: [], exposures: [] }));
+  const players = state.players.map(p => ({ ...p, hand: [], exposures: [] }));
 
-  // Deal: players 1-3 get 13, player 0 (East) gets 14
+  // Deal: players 1-3 get 13, player 0 (East) gets 14. Flowers are ordinary
+  // tiles — they stay in hand (real-card rules; F groups count in the 14).
   for (let i = 0; i < 4; i++) {
     const count = i === 0 ? 14 : 13;
     for (let j = 0; j < count; j++) {
       const { tile, wallIndex: wi } = drawRaw(wall, wallIndex);
       wallIndex = wi;
       if (!tile) break;
-      if (isFlower(tile)) {
-        players[i].flowers.push(tile);
-        j--; // re-draw
-      } else {
-        players[i].hand.push(tile);
-      }
+      players[i].hand.push(tile);
     }
   }
 
@@ -103,19 +99,12 @@ export function dealTiles(state) {
 export function drawTile(state, playerIdx) {
   const wall = state.wall;
   let wallIndex = state.wallIndex;
-  const player = { ...state.players[playerIdx], hand: [...state.players[playerIdx].hand], flowers: [...state.players[playerIdx].flowers] };
+  const player = { ...state.players[playerIdx], hand: [...state.players[playerIdx].hand] };
 
   let drawnTile = null;
-
-  while (wallIndex < wall.length) {
-    const tile = wall[wallIndex++];
-    if (isFlower(tile)) {
-      player.flowers.push(tile);
-    } else {
-      player.hand.push(tile);
-      drawnTile = tile;
-      break;
-    }
+  if (wallIndex < wall.length) {
+    drawnTile = wall[wallIndex++];
+    player.hand.push(drawnTile);
   }
 
   const newPlayers = state.players.map((p, i) => i === playerIdx ? player : p);
@@ -180,9 +169,12 @@ export function effectiveHandCount(player) {
  * Jokers may fill any of the n-1 rack tiles; the minimum joker count is used.
  * @returns {Array<{n:number, jokersUsed:number}>}
  */
+const sameClass = (a, b) =>
+  a.suit === 'flower' ? b.suit === 'flower' : a.id === b.id;
+
 export function legalExposures(player, tile) {
-  if (!tile || tile.suit === 'joker' || tile.suit === 'flower') return [];
-  const real = player.hand.filter(t => t.id === tile.id).length;
+  if (!tile || tile.suit === 'joker') return [];
+  const real = player.hand.filter(t => sameClass(t, tile)).length;
   const jokers = player.hand.filter(t => t.suit === 'joker').length;
   const out = [];
   for (const n of [3, 4, 5]) {
@@ -211,7 +203,7 @@ export function exposeFromDiscard(state, callerIdx, meldSize, jokersUsed = 0) {
   let jokersTaken = 0;
   for (let i = remaining.length - 1; i >= 0; i--) {
     const t = remaining[i];
-    if (realTaken < realNeeded && t.id === tile.id) {
+    if (realTaken < realNeeded && sameClass(t, tile)) {
       meldTiles.push(t);
       remaining.splice(i, 1);
       realTaken++;
@@ -223,7 +215,7 @@ export function exposeFromDiscard(state, callerIdx, meldSize, jokersUsed = 0) {
   }
   if (realTaken !== realNeeded || jokersTaken !== jokersUsed) return state; // illegal claim
 
-  const exposure = { id: tile.id, tiles: meldTiles };
+  const exposure = { id: tile.suit === 'flower' ? 'flower' : tile.id, tiles: meldTiles };
   const newPlayers = state.players.map((p, i) =>
     i === callerIdx
       ? { ...p, hand: remaining, exposures: [...(p.exposures || []), exposure] }

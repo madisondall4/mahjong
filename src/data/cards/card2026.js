@@ -5,8 +5,8 @@
  * card (inspired by, but not copying, the annual NMJL card).
  *
  * DESIGN INVARIANTS — enforced by tests:
- *  1. Every variant's groups sum to EXACTLY 14 tiles. Flowers are a side
- *     requirement (`flowers: n`) because the engine auto-sets flowers aside.
+ *  1. Every variant's groups sum to EXACTLY 14 tiles — flowers included
+ *     (F groups are real tiles in the hand, as on physical cards).
  *  2. Every variant is physically buildable: ≤4 copies of any tile id, and
  *     joker-eligible shortfalls never exceed the 8 jokers in the wall.
  *  3. Jokers substitute ONLY in groups of 3+ (pung/kong/quint) — never in
@@ -41,6 +41,8 @@ const DRAGONS = ['Red', 'Green', 'White'];
 
 const tid = (s, v) => `${s}-${v}`;
 const G = (suit, value, n) => ({ id: tid(suit, value), suit, value, n });
+// Flowers are interchangeable: one pooled class id for all of them.
+const FG = (n) => ({ id: 'flower', suit: 'flower', value: 'any', n, isFlower: true });
 
 const EVEN_IDS = NSUITS.flatMap(s => [2, 4, 6, 8].map(v => tid(s, v)));
 const ODD_IDS = NSUITS.flatMap(s => [1, 3, 5, 7, 9].map(v => tid(s, v)));
@@ -69,7 +71,6 @@ export const WINNING_HANDS = [
     pattern: '222 444 6666 8888',
     points: 25,
     closed: false,
-    flowers: 0,
     description: 'Pungs of 2 and 4, kongs of 6 and 8 — each group in any suit.',
     variants() {
       const out = [];
@@ -84,19 +85,18 @@ export const WINNING_HANDS = [
     id: 2,
     category: CATEGORIES.EVEN,
     name: 'Even Keel',
-    pattern: 'FF 2222 4444 666 888',
+    pattern: 'FF 2222 4444 66 88',
     points: 30,
     closed: false,
-    flowers: 2,
-    description: 'Kongs of 2 and 4 plus pungs of 6 and 8 — each group in any suit. Needs 2 flowers.',
+    description: 'Two flowers, kongs of 2 and 4, pairs of 6 and 8 — each group in any suit.',
     variants() {
       const out = [];
       for (const s2 of NSUITS) for (const s4 of NSUITS)
         for (const s6 of NSUITS) for (const s8 of NSUITS)
-          out.push([G(s2, 2, 4), G(s4, 4, 4), G(s6, 6, 3), G(s8, 8, 3)]);
+          out.push([FG(2), G(s2, 2, 4), G(s4, 4, 4), G(s6, 6, 2), G(s8, 8, 2)]);
       return out;
     },
-    example: [G('dot', 2, 4), G('bam', 4, 4), G('dot', 6, 3), G('crak', 8, 3)],
+    example: [FG(2), G('dot', 2, 4), G('bam', 4, 4), G('dot', 6, 2), G('crak', 8, 2)],
   },
   {
     id: 3,
@@ -105,7 +105,6 @@ export const WINNING_HANDS = [
     pattern: '22 44 66 88 22 44 66',
     points: 40,
     closed: true,
-    flowers: 0,
     description: 'Seven pairs, all even numbers, any suits. No jokers. Closed.',
     variants() {
       return [[{ poolPairs: { pool: EVEN_IDS, count: 7 } }]];
@@ -122,7 +121,6 @@ export const WINNING_HANDS = [
     pattern: '2468 2468 2468 22',
     points: 45,
     closed: true,
-    flowers: 0,
     description: 'A full 2-4-6-8 in every suit, plus one extra even pair. No jokers in singles or pairs. Closed.',
     variants() {
       const singles = NSUITS.flatMap(s => [2, 4, 6, 8].map(v => G(s, v, 1)));
@@ -147,7 +145,6 @@ export const WINNING_HANDS = [
     pattern: '111 222 333 444 55',
     points: 25,
     closed: false,
-    flowers: 0,
     description: 'Four consecutive pungs plus the next pair up — every group may be a different suit. Start anywhere 1–5.',
     variants() {
       const out = [];
@@ -165,22 +162,20 @@ export const WINNING_HANDS = [
     id: 6,
     category: CATEGORIES.CONSEC,
     name: 'Big Steps',
-    pattern: 'FF 1111 2222 3333 44',
+    pattern: 'FF 1111 2222 3333',
     points: 30,
     closed: false,
-    flowers: 2,
-    description: 'Three consecutive kongs plus the next pair up — every group may be a different suit. Needs 2 flowers.',
+    description: 'Two flowers plus three consecutive kongs — every kong may be a different suit.',
     variants() {
       const out = [];
-      for (let v = 1; v <= 6; v++) {
-        for (const s1 of NSUITS) for (const s2 of NSUITS)
-          for (const s3 of NSUITS) for (const s4 of NSUITS) {
-            out.push([G(s1, v, 4), G(s2, v + 1, 4), G(s3, v + 2, 4), G(s4, v + 3, 2)]);
-          }
+      for (let v = 1; v <= 7; v++) {
+        for (const s1 of NSUITS) for (const s2 of NSUITS) for (const s3 of NSUITS) {
+          out.push([FG(2), G(s1, v, 4), G(s2, v + 1, 4), G(s3, v + 2, 4)]);
+        }
       }
       return out;
     },
-    example: [G('dot', 1, 4), G('bam', 2, 4), G('dot', 3, 4), G('crak', 4, 2)],
+    example: [FG(2), G('dot', 1, 4), G('bam', 2, 4), G('dot', 3, 4)],
   },
   {
     id: 7,
@@ -189,7 +184,6 @@ export const WINNING_HANDS = [
     pattern: '123456789 111 99',
     points: 40,
     closed: true,
-    flowers: 0,
     description: 'The full run 1 through 9 plus a pung of 1 and a pair of 9, all one suit. Jokers only in the pung. Closed.',
     variants() {
       return NSUITS.map(s => [
@@ -207,19 +201,18 @@ export const WINNING_HANDS = [
     id: 8,
     category: CATEGORIES.CONSEC,
     name: 'Seven Steps',
-    pattern: 'FF 11 22 33 44 55 66 77',
+    pattern: 'FF 11 22 33 44 55 66',
     points: 45,
     closed: true,
-    flowers: 2,
-    description: 'Seven consecutive pairs in one suit. No jokers. Needs 2 flowers. Closed.',
+    description: 'A flower pair plus six consecutive pairs in one suit — seven pairs in all. No jokers. Closed.',
     variants() {
       const out = [];
-      for (const s of NSUITS) for (let v = 1; v <= 3; v++) {
-        out.push([0, 1, 2, 3, 4, 5, 6].map(i => G(s, v + i, 2)));
+      for (const s of NSUITS) for (let v = 1; v <= 4; v++) {
+        out.push([FG(2), ...[0, 1, 2, 3, 4, 5].map(i => G(s, v + i, 2))]);
       }
       return out;
     },
-    example: [1, 2, 3, 4, 5, 6, 7].map(v => G('dot', v, 2)),
+    example: [FG(2), ...[1, 2, 3, 4, 5, 6].map(v => G('dot', v, 2))],
   },
 
   // ── Like Numbers ────────────────────────────────────────────────────────
@@ -230,7 +223,6 @@ export const WINNING_HANDS = [
     pattern: '555 555 555 GGG RR',
     points: 30,
     closed: false,
-    flowers: 0,
     description: 'Pungs of one number in all three suits, plus a dragon pung and a different dragon pair.',
     variants() {
       const out = [];
@@ -257,7 +249,6 @@ export const WINNING_HANDS = [
     pattern: '3333 3333 3333 DD',
     points: 50,
     closed: true,
-    flowers: 0,
     description: 'Kongs of one number in all three suits — every copy in the set — plus any dragon pair. Closed.',
     variants() {
       const out = [];
@@ -275,7 +266,6 @@ export const WINNING_HANDS = [
     pattern: '7777 7777 NEWS 77',
     points: 35,
     closed: false,
-    flowers: 0,
     description: 'Kongs of one number in two suits, its pair in the third suit, plus one of each wind.',
     variants() {
       const out = [];
@@ -301,31 +291,30 @@ export const WINNING_HANDS = [
     id: 12,
     category: CATEGORIES.LIKE,
     name: 'Nines & Aces',
-    pattern: 'FF 9999 999 99 111 11',
+    pattern: 'FF 9999 999 99 111',
     points: 40,
     closed: true,
-    flowers: 2,
-    description: 'Kong, pung and pair of one number spread across the three suits, plus a pung and pair of a second number in two suits. Needs 2 flowers. Closed.',
+    description: 'Two flowers, then a kong, pung and pair of one number spread across the three suits, plus a pung of a second number in any suit. Closed.',
     variants() {
       const out = [];
       for (let hi = 1; hi <= 9; hi++) for (let lo = 1; lo <= 9; lo++) {
         if (hi === lo) continue;
         for (const [sk, sp, spr] of perms3) {
           for (const loPung of NSUITS) {
-            for (const loPair of others(loPung)) {
-              out.push([
-                G(sk, hi, 4), G(sp, hi, 3), G(spr, hi, 2),
-                G(loPung, lo, 3), G(loPair, lo, 2),
-              ]);
-            }
+            out.push([
+              FG(2),
+              G(sk, hi, 4), G(sp, hi, 3), G(spr, hi, 2),
+              G(loPung, lo, 3),
+            ]);
           }
         }
       }
       return out;
     },
     example: [
+      FG(2),
       G('bam', 9, 4), G('crak', 9, 3), G('dot', 9, 2),
-      G('bam', 1, 3), G('crak', 1, 2),
+      G('bam', 1, 3),
     ],
   },
 
@@ -337,7 +326,6 @@ export const WINNING_HANDS = [
     pattern: 'NNN EEE WWW SSS RG',
     points: 30,
     closed: false,
-    flowers: 0,
     description: 'A pung of every wind, plus one Red and one Green dragon. Jokers only in the pungs.',
     variants() {
       return [[
@@ -354,22 +342,21 @@ export const WINNING_HANDS = [
     id: 14,
     category: CATEGORIES.WINDS,
     name: 'East–West',
-    pattern: 'FF EEEE WWWW SS NN DD',
+    pattern: 'FF EEEE WWWW SS NN',
     points: 35,
     closed: false,
-    flowers: 2,
-    description: 'Kongs of East and West, pairs of South and North, plus any dragon pair. Needs 2 flowers.',
+    description: 'Two flowers, kongs of East and West, pairs of South and North.',
     variants() {
-      return DRAGONS.map(d => [
+      return [[
+        FG(2),
         G('wind', 'East', 4), G('wind', 'West', 4),
         G('wind', 'South', 2), G('wind', 'North', 2),
-        G('dragon', d, 2),
-      ]);
+      ]];
     },
     example: [
+      FG(2),
       G('wind', 'East', 4), G('wind', 'West', 4),
       G('wind', 'South', 2), G('wind', 'North', 2),
-      G('dragon', 'Red', 2),
     ],
   },
   {
@@ -379,7 +366,6 @@ export const WINNING_HANDS = [
     pattern: 'RRRR GGGG 0000 NN',
     points: 45,
     closed: true,
-    flowers: 0,
     description: 'A kong of every dragon (0 = White "soap"), plus any wind pair. Closed.',
     variants() {
       return WINDS.map(w => [
@@ -399,7 +385,6 @@ export const WINNING_HANDS = [
     pattern: 'EEEE SSS WWW NNNN',
     points: 40,
     closed: true,
-    flowers: 0,
     description: 'Kongs of two winds and pungs of the other two — any arrangement. Closed.',
     variants() {
       const out = [];
@@ -429,7 +414,6 @@ export const WINNING_HANDS = [
     pattern: 'NN EE WW SS RR GG 00',
     points: 50,
     closed: true,
-    flowers: 0,
     description: 'Pairs of all four winds and all three dragons. No jokers. Closed.',
     variants() {
       return [[
@@ -449,7 +433,6 @@ export const WINNING_HANDS = [
     pattern: '11 33 55 77 99 11 33',
     points: 45,
     closed: true,
-    flowers: 0,
     description: 'Seven pairs, all odd numbers, any suits. No jokers. Closed.',
     variants() {
       return [[{ poolPairs: { pool: ODD_IDS, count: 7 } }]];
@@ -466,7 +449,6 @@ export const WINNING_HANDS = [
     pattern: '11 22 33 NN EE RR 99',
     points: 40,
     closed: true,
-    flowers: 0,
     description: 'Any seven pairs — numbers, winds, or dragons. No jokers. Closed.',
     variants() {
       return [[{ poolPairs: { pool: ALL_PAIRABLE_IDS, count: 7 } }]];
@@ -484,7 +466,6 @@ export const WINNING_HANDS = [
     pattern: '2026 2026 2026 RR',
     points: 50,
     closed: true,
-    flowers: 0,
     description: 'The year in every suit — 2, 0 (White "soap"), 2, 6 — plus a Red dragon pair. No jokers. Closed.',
     variants() {
       return [[
@@ -507,19 +488,18 @@ export const WINNING_HANDS = [
     id: 21,
     category: CATEGORIES.QUINTS,
     name: 'Bookends',
-    pattern: 'FF 11111 99999 5555',
+    pattern: 'FF 11111 99999 55',
     points: 50,
     closed: false,
-    flowers: 2,
-    description: 'Quints of 1 and 9 in one suit, plus a kong of 5 in any suit. Quints need jokers. Needs 2 flowers.',
+    description: 'Two flowers, quints of 1 and 9 in one suit, plus a pair of 5 in any suit. Quints need jokers.',
     variants() {
       const out = [];
       for (const s of NSUITS) for (const k of NSUITS) {
-        out.push([G(s, 1, 5), G(s, 9, 5), G(k, 5, 4)]);
+        out.push([FG(2), G(s, 1, 5), G(s, 9, 5), G(k, 5, 2)]);
       }
       return out;
     },
-    example: [G('bam', 1, 5), G('bam', 9, 5), G('dot', 5, 4)],
+    example: [FG(2), G('bam', 1, 5), G('bam', 9, 5), G('dot', 5, 2)],
   },
   {
     id: 22,
@@ -528,7 +508,6 @@ export const WINNING_HANDS = [
     pattern: 'NNNNN SSSSS EEEE',
     points: 55,
     closed: false,
-    flowers: 0,
     description: 'Quints of North and South winds plus a kong of East.',
     variants() {
       return [[
@@ -544,7 +523,6 @@ export const WINNING_HANDS = [
     pattern: '11111 22222 3333',
     points: 60,
     closed: false,
-    flowers: 0,
     description: 'Two consecutive quints plus a kong of the next number up, all one suit.',
     variants() {
       const out = [];
@@ -562,7 +540,6 @@ export const WINNING_HANDS = [
     pattern: 'RRRRR GGGGG 0000',
     points: 75,
     closed: true,
-    flowers: 0,
     description: 'Quints of Red and Green dragons plus a kong of White "soap". The crown jewel. Closed.',
     variants() {
       return [[

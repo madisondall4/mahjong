@@ -10,13 +10,6 @@ export function HandExample({ hand, tileSize = 'sm' }) {
   const groups = exampleTileGroups(hand);
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, rowGap: 6, alignItems: 'flex-end' }}>
-      {hand.flowers > 0 && (
-        <div style={{ display: 'flex', gap: 2, alignItems: 'flex-end' }}>
-          {Array.from({ length: hand.flowers }, (_, i) => (
-            <MahjongTile key={`f${i}`} tile={{ suit: 'flower', value: i + 1, uid: `exf-${hand.id}-${i}` }} size={tileSize}/>
-          ))}
-        </div>
-      )}
       {groups.map((group, gi) => (
         <div key={gi} style={{ display: 'flex', gap: 2, alignItems: 'flex-end' }}>
           {group.map(t => <MahjongTile key={t.uid} tile={t} size={tileSize}/>)}

@@ -191,7 +191,7 @@ export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo, onO
           {[
             { icon: '🎮', text: '1 vs 3 AI' },
             { icon: '🃏', text: '24 Hands' },
-            { icon: '🎰', text: '160 Tiles' },
+            { icon: '🎰', text: '152 Tiles' },
           ].map(({ icon, text }) => (
             <div key={text} style={{
               display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,

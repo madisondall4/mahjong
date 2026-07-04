@@ -1,7 +1,8 @@
-// Full 160-tile American Mahjong set
+// Full 152-tile American Mahjong set (standard NMJL-style count)
 // Bams 1-9 x4=36, Craks 1-9 x4=36, Dots 1-9 x4=36
 // Winds (E,W,N,S) x4=16, Dragons (Red,Green,White) x4=12
-// Flowers (1-4) x4=16, Jokers x8=8 → Total 160
+// Flowers (4 designs x2) = 8, Jokers x8 = 8 → Total 152
+// All flowers are interchangeable in play; the four designs are art only.
 
 export const SUITS = {
   BAM: 'bam',
@@ -67,14 +68,14 @@ export const TILE_DEFINITIONS = [
     color: d === 'Red' ? '#C5302B' : d === 'Green' ? '#2E7D43' : '#1E6FA8',
     count: 4,
   })),
-  // Flowers 1-4
+  // Flowers — 4 seasonal designs, 2 copies each (8 total, interchangeable)
   ...Array.from({ length: 4 }, (_, i) => ({
     id: tileId(SUITS.FLOWER, i + 1),
     suit: SUITS.FLOWER,
     value: i + 1,
     label: `F${i + 1}`,
     color: '#C95E83',
-    count: 4,
+    count: 2,
   })),
   // Jokers
   {

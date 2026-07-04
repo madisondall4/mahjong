@@ -13,7 +13,7 @@ export default function ScoringOverlay({ winResult, playerNames, onPlayAgain, vi
 
   if (!visible || !winResult) return null;
 
-  const { mode, winnerIdx, winnerName, hand, tiles, flowers, payments, scores, isSelfDraw, throwerId, isWallExhausted } = winResult;
+  const { mode, winnerIdx, winnerName, hand, tiles, payments, scores, isSelfDraw, throwerId, isWallExhausted } = winResult;
   const isPass = mode === 'pass';
   const humanWon = !isPass && winnerIdx === 0;
   const canShare = !isWallExhausted && tiles && tiles.length > 0 && (isPass ? winnerIdx !== null : winnerIdx === 0);
@@ -25,7 +25,6 @@ export default function ScoringOverlay({ winResult, playerNames, onPlayAgain, vi
       const { buildShareImage, shareOrDownload } = await import('../utils/shareCard.js');
       const blob = await buildShareImage({
         tiles,
-        flowers: flowers || [],
         handName: hand?.name || 'Mahjong!',
         points: hand?.points || 0,
       });

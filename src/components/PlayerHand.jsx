@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import MahjongTile from './MahjongTile';
 
-export default function PlayerHand({ tiles = [], selectedUids = new Set(), onTileClick, canDiscard = false, animateIn = false, flowers = [], exposures = [] }) {
+export default function PlayerHand({ tiles = [], selectedUids = new Set(), onTileClick, canDiscard = false, animateIn = false, exposures = [] }) {
   const scrollRef = useRef(null);
 
   return (
@@ -32,7 +32,7 @@ export default function PlayerHand({ tiles = [], selectedUids = new Set(), onTil
         </div>
       )}
 
-      {/* Hand row — flowers + tiles together */}
+      {/* Hand row */}
       <div
         ref={scrollRef}
         className="no-scrollbar"
@@ -49,31 +49,6 @@ export default function PlayerHand({ tiles = [], selectedUids = new Set(), onTil
           minHeight: 112,
         }}
       >
-        {/* Flowers shown inline at same size, not selectable */}
-        {flowers.map((f, idx) => (
-          <div key={f.uid} style={{ flexShrink: 0, opacity: 0.85 }}>
-            <MahjongTile
-              tile={f}
-              size="lg"
-              animateIn={animateIn}
-              animDelay={idx * 50}
-            />
-          </div>
-        ))}
-
-        {/* Divider between flowers and hand */}
-        {flowers.length > 0 && tiles.length > 0 && (
-          <div style={{
-            width: 2,
-            alignSelf: 'stretch',
-            marginTop: 8,
-            marginBottom: 8,
-            borderRadius: 1,
-            background: 'rgba(var(--rose-rgb),0.25)',
-            flexShrink: 0,
-          }}/>
-        )}
-
         {/* Hand tiles */}
         {tiles.map((tile, idx) => (
           <div
@@ -89,7 +64,7 @@ export default function PlayerHand({ tiles = [], selectedUids = new Set(), onTil
               selected={selectedUids.has(tile.uid)}
               onClick={canDiscard || onTileClick ? () => onTileClick?.(tile) : undefined}
               animateIn={animateIn}
-              animDelay={(flowers.length + idx) * 50}
+              animDelay={idx * 50}
             />
           </div>
         ))}

@@ -90,8 +90,8 @@ function AppInner() {
     for (let i = 1; i < 4; i++) {
       if (i === discarderIdx) continue;
       const aiP = st.players[i];
-      if (shouldCallMahjong(aiP.hand, st.lastDiscard, aiP.flowers.length, diff, aiP.exposures || [])) {
-        const winCheck = canWinWithTile(aiP.hand, st.lastDiscard, aiP.flowers.length, aiP.exposures || []);
+      if (shouldCallMahjong(aiP.hand, st.lastDiscard, diff, aiP.exposures || [])) {
+        const winCheck = canWinWithTile(aiP.hand, st.lastDiscard, aiP.exposures || []);
         if (winCheck.matched) {
           const claimed = {
             ...st,
@@ -109,7 +109,7 @@ function AppInner() {
       const i = (discarderIdx + k) % 4;
       if (i === 0 || i === discarderIdx) continue;
       const aiP = st.players[i];
-      const call = chooseExposure(aiP.hand, aiP.flowers, aiP.exposures || [], st.lastDiscard, diff);
+      const call = chooseExposure(aiP.hand, aiP.exposures || [], st.lastDiscard, diff);
       if (call) {
         const exposed = exposeFromDiscard(st, i, call.n, call.jokersUsed);
         setState({ ...exposed, thinkingPlayer: i, humanExposeOptions: null });
@@ -117,7 +117,7 @@ function AppInner() {
         if (aiTimerRef.current) clearTimeout(aiTimerRef.current);
         aiTimerRef.current = setTimeout(() => {
           const caller = exposed.players[i];
-          const uid = chooseTileToDiscard(caller.hand, caller.flowers, diff, exposed.discardPile, caller.exposures || []);
+          const uid = chooseTileToDiscard(caller.hand, diff, exposed.discardPile, caller.exposures || []);
           if (!uid) { setState({ ...exposed, thinkingPlayer: null }); return; }
           const afterDiscard = { ...discardTile(exposed, i, uid), thinkingPlayer: null };
           resolveAfterDiscardRef.current(afterDiscard, i);
@@ -134,7 +134,7 @@ function AppInner() {
     if (discarderIdx !== 0) {
       const human = afterDiscard.players[0];
       const mahjong = canWinWithTile(
-        human.hand, afterDiscard.lastDiscard, human.flowers.length, human.exposures || []
+        human.hand, afterDiscard.lastDiscard, human.exposures || []
       ).matched;
       const exposeOpts = legalExposures(human, afterDiscard.lastDiscard);
       if (mahjong || exposeOpts.length > 0) {
@@ -178,14 +178,14 @@ function AppInner() {
       const diff = gameState.difficulty || 'spicy';
 
       // Check self-declare
-      const winDef = canSelfDeclare(aiPlayer.hand, aiPlayer.flowers.length, diff, aiPlayer.exposures || []);
+      const winDef = canSelfDeclare(aiPlayer.hand, diff, aiPlayer.exposures || []);
       if (winDef) {
         declareWinner(afterDraw, playerIdx, winDef, null);
         return;
       }
 
       // Choose discard
-      const discardUid = chooseTileToDiscard(aiPlayer.hand, aiPlayer.flowers, diff, afterDraw.discardPile, aiPlayer.exposures || []);
+      const discardUid = chooseTileToDiscard(aiPlayer.hand, diff, afterDraw.discardPile, aiPlayer.exposures || []);
       if (!discardUid) {
         setState({ ...afterDraw, thinkingPlayer: null });
         return;
@@ -235,7 +235,7 @@ function AppInner() {
     // meld): no draw — discard next. A complete position must be declarable.
     if (effectiveHandCount(state.players[0]) >= 14) {
       const human = state.players[0];
-      const winDef = canSelfDeclare(human.hand, human.flowers.length, 'spicy', human.exposures || []);
+      const winDef = canSelfDeclare(human.hand, 'spicy', human.exposures || []);
       if (winDef) {
         setState({ ...state, humanCanDeclare: true, _selfDeclareHand: winDef });
       }
@@ -253,7 +253,7 @@ function AppInner() {
       return;
     }
     const human = newState.players[0];
-    const winDef = canSelfDeclare(human.hand, human.flowers.length, 'spicy', human.exposures || []);
+    const winDef = canSelfDeclare(human.hand, 'spicy', human.exposures || []);
     setState({ ...newState, humanCanDeclare: !!winDef, _selfDeclareHand: winDef || null });
     // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed by draw signature (wallIndex + discard count); guarded by lastHumanDrawKey
   }, [state.phase, state.mode, state.currentPlayer, state.wallIndex, state.discardPile.length, state.lastDrawnTile, state.humanCanDeclare, state.canHumanCallMahjong]);
@@ -281,10 +281,10 @@ function AppInner() {
     clearSavedGame();
     const players = mode === 'pass'
       ? (passNames || ['Player 1', 'Player 2', 'Player 3', 'Player 4']).map((name, id) => ({
-          id, name, isHuman: true, hand: [], flowers: [], exposures: [], score: 0,
+          id, name, isHuman: true, hand: [], exposures: [], score: 0,
         }))
       : ['You', 'South', 'West', 'North'].map((name, id) => ({
-          id, name, isHuman: id === 0, hand: [], flowers: [], exposures: [], score: 0,
+          id, name, isHuman: id === 0, hand: [], exposures: [], score: 0,
         }));
     const newState = dealTiles({ ...state, difficulty: getDifficulty(), mode, players });
     if (mode === 'pass') {
@@ -324,7 +324,7 @@ function AppInner() {
     // Full position already (East's opening 14, or just exposed a meld):
     // no draw — discard next.
     if (effectiveHandCount(player) >= 14) {
-      const win = checkWin(player.hand, player.flowers.length, true, player.exposures || []);
+      const win = checkWin(player.hand, true, player.exposures || []);
       setState({
         ...state,
         _passStage: 'act',
@@ -344,7 +344,7 @@ function AppInner() {
       return;
     }
     const drawn = newState.players[p];
-    const win = checkWin(drawn.hand, drawn.flowers.length, true, drawn.exposures || []);
+    const win = checkWin(drawn.hand, true, drawn.exposures || []);
     setState({
       ...newState,
       _passStage: 'act',
@@ -366,7 +366,7 @@ function AppInner() {
     const caller = state.players[callerIdx];
     const tile = state.lastDiscard;
     if (!tile) return false;
-    const result = canWinWithTile(caller.hand, tile, caller.flowers.length, caller.exposures || []);
+    const result = canWinWithTile(caller.hand, tile, caller.exposures || []);
     if (!result.matched) return false;
 
     const payments = calculatePayments(callerIdx, state.lastDiscardBy, result.handDef.points);
@@ -401,7 +401,7 @@ function AppInner() {
   function handlePassDeclare() {
     const p = state.currentPlayer;
     const player = state.players[p];
-    const winDef = state._selfDeclareHand || checkWin(player.hand, player.flowers.length, true, player.exposures || []).handDef;
+    const winDef = state._selfDeclareHand || checkWin(player.hand, true, player.exposures || []).handDef;
     if (!winDef) return;
     const payments = calculatePayments(p, null, winDef.points);
     const newScores = applyPayments(state.scores, payments);
@@ -432,7 +432,7 @@ function AppInner() {
       const allPasses = [humanUids];
       for (let i = 1; i < 4; i++) {
         const player = state.players[i];
-        const chosen = chooseTilesForCharleston(player.hand, player.flowers, diff);
+        const chosen = chooseTilesForCharleston(player.hand, diff);
         allPasses.push(chosen);
       }
       const newState = applyCharlestonPass(state, allPasses);
@@ -456,7 +456,7 @@ function AppInner() {
   function handleDeclareMahjong() {
     const human = state.players[0];
     const winDef = state._selfDeclareHand
-      || canSelfDeclare(human.hand, human.flowers.length, 'spicy', human.exposures || []);
+      || canSelfDeclare(human.hand, 'spicy', human.exposures || []);
     if (!winDef) return;
     declareWinner(state, 0, winDef, null);
   }
@@ -466,7 +466,7 @@ function AppInner() {
     const tile = state.lastDiscard;
     if (!tile) return;
 
-    const winCheck = canWinWithTile(human.hand, tile, human.flowers.length, human.exposures || []);
+    const winCheck = canWinWithTile(human.hand, tile, human.exposures || []);
     if (!winCheck.matched) return;
 
     const throwerId = state.lastDiscardBy !== undefined && state.lastDiscardBy !== 0 ? state.lastDiscardBy : null;
@@ -522,7 +522,6 @@ function AppInner() {
     tiles: winnerPlayer
       ? [...(winnerPlayer.exposures || []).flatMap(e => e.tiles), ...winnerPlayer.hand]
       : [],
-    flowers: winnerPlayer ? winnerPlayer.flowers : [],
     payments: state._payments || [],
     scores: state.scores,
     isSelfDraw: state._isSelfDraw,

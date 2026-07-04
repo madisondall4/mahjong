@@ -15,7 +15,6 @@ const STEP_LABELS = {
 /**
  * Charleston tile selection UI
  * @param {Object[]} hand - player's current hand
- * @param {Object[]} flowers - player's flowers
  * @param {Object[]} receivedTiles - tiles received in this pass (to show)
  * @param {number} charlestonRound - 1 or 2
  * @param {number} charlestonStep - 0, 1, or 2
@@ -25,7 +24,6 @@ const STEP_LABELS = {
  */
 export default function CharlestonUI({
   hand = [],
-  flowers = [],
   charlestonRound = 1,
   charlestonStep = 0,
   onPass,
@@ -100,24 +98,11 @@ export default function CharlestonUI({
         )}
       </div>
 
-      {/* Hand tiles + flowers together */}
+      {/* Hand tiles (flowers are ordinary tiles now — pass them if you like) */}
       <div style={{
         display: 'flex', flexWrap: 'wrap', gap: 6, justifyContent: 'center',
         padding: '8px 0', flex: 1, alignContent: 'flex-start',
       }}>
-        {flowers.map(f => (
-          <div key={f.uid} style={{ opacity: 0.85 }}>
-            <MahjongTile tile={f} size="md"/>
-          </div>
-        ))}
-        {flowers.length > 0 && hand.length > 0 && (
-          <div style={{
-            width: 2, alignSelf: 'stretch',
-            marginTop: 4, marginBottom: 4,
-            borderRadius: 1,
-            background: 'rgba(var(--rose-rgb),0.25)',
-          }}/>
-        )}
         {hand.map(tile => (
           <div
             key={tile.uid}

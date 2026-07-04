@@ -133,9 +133,6 @@ export default function OpponentSeat({ player, position = 'top', isThinking = fa
         fontFamily: 'Nunito',
       }}>
         <span>{tileCount} tiles</span>
-        {player.flowers.length > 0 && (
-          <span style={{ color: 'var(--rose)' }}>🌸×{player.flowers.length}</span>
-        )}
       </div>
     </div>
   );

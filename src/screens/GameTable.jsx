@@ -74,7 +74,7 @@ export default function GameTable({
         borderBottom: '1px solid rgba(var(--matcha-rgb),0.14)',
       }}>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <WallCounter remaining={wallRemaining} total={160}/>
+          <WallCounter remaining={wallRemaining} total={152}/>
           <div style={{
             fontSize: 11, color: isHumanTurn ? 'var(--matcha)' : 'rgba(var(--ink-rgb),0.5)',
             fontFamily: 'Nunito', fontWeight: 700,
@@ -211,7 +211,6 @@ export default function GameTable({
       }}>
         <PlayerHand
           tiles={humanPlayer.hand}
-          flowers={humanPlayer.flowers}
           exposures={humanPlayer.exposures || []}
           selectedUids={selectedUid !== null ? new Set([selectedUid]) : new Set()}
           onTileClick={handleTileClick}
@@ -230,7 +229,6 @@ export default function GameTable({
         isOpen={advisorOpen}
         onClose={() => setAdvisorOpen(false)}
         tiles={humanPlayer.hand}
-        flowerCount={humanPlayer.flowers.length}
         exposures={humanPlayer.exposures || []}
       />
     </div>

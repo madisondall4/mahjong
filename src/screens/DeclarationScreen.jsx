@@ -154,9 +154,6 @@ export default function DeclarationScreen({ gameState, onContinue }) {
               Winning Hand
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, justifyContent: 'center' }}>
-              {winnerPlayer.flowers.map(f => (
-                <MahjongTile key={f.uid} tile={f} size="md" winning/>
-              ))}
               {(winnerPlayer.exposures || []).flatMap(e => e.tiles).map(t => (
                 <MahjongTile key={t.uid} tile={t} size="md" winning/>
               ))}

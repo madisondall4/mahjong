@@ -11,8 +11,8 @@
  *       missing   — which tile ids are still needed (for the advisor UI)
  *
  * Joker rules (American): jokers substitute ONLY in groups of 3+ tiles
- * (pung/kong/quint). Never in pairs or singles. Flowers are held separately
- * and are a side requirement (`flowers: n` on the hand def).
+ * (pung/kong/quint). Never in pairs or singles. Flowers are ordinary in-hand
+ * tiles, all interchangeable, filling F groups inside the 14.
  */
 
 import WINNING_HANDS from '../data/card.js';
@@ -30,7 +30,11 @@ function getVariants(handDef) {
 
 function countTiles(tiles) {
   const map = {};
-  for (const t of tiles) map[t.id] = (map[t.id] || 0) + 1;
+  for (const t of tiles) {
+    // All flowers are interchangeable — pool them under one class key.
+    const key = t.suit === 'flower' ? 'flower' : t.id;
+    map[key] = (map[key] || 0) + 1;
+  }
   return map;
 }
 
@@ -62,7 +66,7 @@ function evaluateVariant(counts, jokers, variant) {
     const short = g.n - have;
     if (short) {
       noJokerShort += short;
-      missing.push({ suit: g.suit, value: g.value, id: g.id, short, jokerOk: false });
+      missing.push({ suit: g.suit, value: g.isFlower ? 1 : g.value, id: g.id, short, jokerOk: false });
     }
   }
 
@@ -117,7 +121,7 @@ function evaluateVariant(counts, jokers, variant) {
     const short = g.n - have;
     if (short) {
       jokerShort += short;
-      missing.push({ suit: g.suit, value: g.value, id: g.id, short, jokerOk: true });
+      missing.push({ suit: g.suit, value: g.isFlower ? 1 : g.value, id: g.id, short, jokerOk: true });
     }
   }
 
@@ -150,35 +154,33 @@ function assignExposures(variant, exposures) {
 }
 
 const IMPOSSIBLE = Object.freeze({
-  distance: Infinity, tileDistance: Infinity, flowersShort: 0, isWin: false, missing: [],
+  distance: Infinity, tileDistance: Infinity, isWin: false, missing: [],
 });
 
 /**
  * Evaluate one hand definition against a player's position. Returns the best
- * variant. `tiles` are CONCEALED tiles only; exposed melds are passed
- * separately and pin their matching groups.
+ * variant. `tiles` are CONCEALED tiles only (flowers included — they are
+ * ordinary tiles that fill F groups); exposed melds are passed separately
+ * and pin their matching groups.
  */
-export function evaluateHand(handDef, tiles, flowerCount, exposures = []) {
+export function evaluateHand(handDef, tiles, exposures = []) {
   // Exposing anything forfeits closed hands.
   if (handDef.closed && exposures && exposures.length > 0) return IMPOSSIBLE;
 
-  const nonFlower = tiles.filter(t => t.suit !== 'flower' && t.suit !== 'joker');
+  const nonJoker = tiles.filter(t => t.suit !== 'joker');
   const jokers = tiles.filter(t => t.suit === 'joker').length;
-  const counts = countTiles(nonFlower);
-  const flowersShort = Math.max(0, (handDef.flowers || 0) - flowerCount);
+  const counts = countTiles(nonJoker);
 
   let best = null;
   for (const variant of getVariants(handDef)) {
     const groups = assignExposures(variant, exposures);
     if (!groups) continue;
     const res = evaluateVariant(counts, jokers, groups);
-    const total = res.distance + flowersShort;
-    if (!best || total < best.distance || (total === best.distance && res.isWin)) {
+    if (!best || res.distance < best.distance || (res.distance === best.distance && res.isWin)) {
       best = {
-        distance: total,
+        distance: res.distance,
         tileDistance: res.distance,
-        flowersShort,
-        isWin: res.isWin && flowersShort === 0,
+        isWin: res.isWin,
         missing: res.missing,
       };
       if (best.isWin) break;
@@ -190,15 +192,15 @@ export function evaluateHand(handDef, tiles, flowerCount, exposures = []) {
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 /**
- * Check if a 14-tile hand (non-flower tiles; jokers included) wins.
+ * Check if a 14-tile hand (flowers and jokers included) wins.
  * Returns the highest-point matching hand.
  * @returns {{ matched: boolean, handDef: Object|null }}
  */
-export function checkWin(hand14, flowerCount, isSelfDraw = true, exposures = []) {
+export function checkWin(hand14, isSelfDraw = true, exposures = []) {
   let bestDef = null;
   for (const handDef of WINNING_HANDS) {
     if (handDef.closed && !isSelfDraw) continue;
-    const res = evaluateHand(handDef, hand14, flowerCount, exposures);
+    const res = evaluateHand(handDef, hand14, exposures);
     if (res && res.isWin) {
       if (!bestDef || handDef.points > bestDef.points) bestDef = handDef;
     }
@@ -209,8 +211,8 @@ export function checkWin(hand14, flowerCount, isSelfDraw = true, exposures = [])
 /**
  * Can a concealed hand + a discarded tile win? (Called wins can't use closed hands.)
  */
-export function canWinWithTile(hand13, tile, flowerCount, exposures = []) {
-  return checkWin([...hand13, tile], flowerCount, false, exposures);
+export function canWinWithTile(hand13, tile, exposures = []) {
+  return checkWin([...hand13, tile], false, exposures);
 }
 
 /**
@@ -222,13 +224,12 @@ export function canWinWithTile(hand13, tile, flowerCount, exposures = []) {
  * @param {Array} exposures - face-up melds
  * @returns {Array<{ hand, distance, flowersShort, missing, complete }>}
  */
-export function rankHands(tiles, flowerCount, exposures = []) {
+export function rankHands(tiles, exposures = []) {
   const results = WINNING_HANDS.map(handDef => {
-    const res = evaluateHand(handDef, tiles, flowerCount, exposures);
+    const res = evaluateHand(handDef, tiles, exposures);
     return {
       hand: handDef,
       distance: res.distance,
-      flowersShort: res.flowersShort,
       missing: res.missing,
       complete: res.isWin,
     };
@@ -244,9 +245,9 @@ export function rankHands(tiles, flowerCount, exposures = []) {
 export function exampleTileGroups(handDef) {
   let uid = 0;
   return handDef.example.map(g =>
-    Array.from({ length: g.n }, () => ({
+    Array.from({ length: g.n }, (_, i) => ({
       suit: g.suit,
-      value: g.value,
+      value: g.isFlower ? (i % 4) + 1 : g.value,
       id: g.id,
       uid: `ex-${handDef.id}-${uid++}`,
     }))

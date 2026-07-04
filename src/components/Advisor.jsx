@@ -13,16 +13,16 @@ const SHOW_COUNT = 6;
  * @param {Object[]} tiles - player's current hand (jokers included)
  * @param {number} flowerCount
  */
-export default function Advisor({ isOpen, onClose, tiles = [], flowerCount = 0, exposures = [] }) {
+export default function Advisor({ isOpen, onClose, tiles = [], exposures = [] }) {
   const [expanded, setExpanded] = useState(null);
 
   const ranked = useMemo(
     () => (isOpen
-      ? rankHands(tiles, flowerCount, exposures)
+      ? rankHands(tiles, exposures)
           .filter(r => Number.isFinite(r.distance)) // hands ruled out by exposures
           .slice(0, SHOW_COUNT)
       : []),
-    [isOpen, tiles, flowerCount, exposures]
+    [isOpen, tiles, exposures]
   );
   const jokersHeld = tiles.filter(t => t.suit === 'joker').length;
 
@@ -124,7 +124,7 @@ export default function Advisor({ isOpen, onClose, tiles = [], flowerCount = 0, 
                 </div>
 
                 {/* Missing tiles */}
-                {!r.complete && (r.missing.length > 0 || r.flowersShort > 0) && (
+                {!r.complete && r.missing.length > 0 && (
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, alignItems: 'center', paddingTop: 2 }}>
                     <span style={{ fontSize: 10, fontFamily: 'Nunito', fontWeight: 700, color: 'rgba(var(--ink-rgb),0.45)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                       Need:
@@ -133,11 +133,6 @@ export default function Advisor({ isOpen, onClose, tiles = [], flowerCount = 0, 
                     {r.missing.length > 8 && (
                       <span style={{ fontSize: 11, fontFamily: 'Nunito', color: 'rgba(var(--ink-rgb),0.5)' }}>
                         +{r.missing.length - 8} more
-                      </span>
-                    )}
-                    {r.flowersShort > 0 && (
-                      <span style={{ fontSize: 11, fontFamily: 'Nunito', fontWeight: 700, color: 'var(--rose)' }}>
-                        +{r.flowersShort} flower{r.flowersShort > 1 ? 's' : ''}
                       </span>
                     )}
                   </div>

@@ -83,25 +83,18 @@ function rowsLayout(tiles, topY) {
  * Build a shareable PNG of a winning hand.
  * @returns {Promise<Blob>}
  */
-export async function buildShareImage({ tiles = [], flowers = [], handName = 'Mahjong!', points = 0 }) {
+export async function buildShareImage({ tiles = [], handName = 'Mahjong!', points = 0 }) {
   const hand = sortTiles(tiles);
-  const flowerTiles = sortTiles(flowers);
 
   // Vertical flow
   const HAND_TOP = 156;
   const handRows = rowsLayout(hand, HAND_TOP);
-  let flowersBlock = { svg: '', bottom: handRows.bottom };
-  let flowersLabelY = 0;
-  if (flowerTiles.length > 0) {
-    flowersLabelY = handRows.bottom + 24;
-    flowersBlock = rowsLayout(flowerTiles, flowersLabelY + 8);
-  }
-  const taglineY = flowersBlock.bottom + 34;
+  const taglineY = handRows.bottom + 34;
   const H = taglineY + 22;
 
   const tilesSVG =
     `<svg xmlns="http://www.w3.org/2000/svg" width="${W * SCALE}" height="${H * SCALE}" viewBox="0 0 ${W} ${H}">` +
-    handRows.svg + flowersBlock.svg +
+    handRows.svg +
     `</svg>`;
 
   // Rasterize the tile art (transparent background)
@@ -155,13 +148,6 @@ export async function buildShareImage({ tiles = [], flowers = [], handName = 'Ma
 
   // Tiles
   ctx.drawImage(tileImg, 0, 0, W, H);
-
-  // Flowers label
-  if (flowerTiles.length > 0) {
-    ctx.fillStyle = 'rgba(51,48,42,0.45)';
-    ctx.font = '800 10px Nunito, sans-serif';
-    ctx.fillText('B O N U S   F L O W E R S', W / 2, flowersLabelY);
-  }
 
   // Tagline / branding
   ctx.fillStyle = INK;
