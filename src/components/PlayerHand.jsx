@@ -1,11 +1,37 @@
 import React, { useRef } from 'react';
 import MahjongTile from './MahjongTile';
 
-export default function PlayerHand({ tiles = [], selectedUids = new Set(), onTileClick, canDiscard = false, animateIn = false, flowers = [] }) {
+export default function PlayerHand({ tiles = [], selectedUids = new Set(), onTileClick, canDiscard = false, animateIn = false, flowers = [], exposures = [] }) {
   const scrollRef = useRef(null);
 
   return (
     <div className="relative">
+      {/* Exposed melds — face-up, locked */}
+      {exposures.length > 0 && (
+        <div className="no-scrollbar" style={{
+          display: 'flex', gap: 8, alignItems: 'center',
+          padding: '6px 12px 0', overflowX: 'auto',
+        }}>
+          <span style={{
+            fontSize: 9, fontFamily: 'Nunito', fontWeight: 800,
+            color: 'rgba(var(--ink-rgb),0.4)', textTransform: 'uppercase', letterSpacing: '0.07em',
+            flexShrink: 0,
+          }}>
+            Exposed
+          </span>
+          {exposures.map((meld, mi) => (
+            <div key={mi} style={{
+              display: 'flex', gap: 2, flexShrink: 0,
+              padding: 3, borderRadius: 7,
+              background: 'rgba(var(--sky-rgb),0.1)',
+              border: '1px solid rgba(var(--sky-rgb),0.3)',
+            }}>
+              {meld.tiles.map(t => <MahjongTile key={t.uid} tile={t} size="sm"/>)}
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Hand row — flowers + tiles together */}
       <div
         ref={scrollRef}

@@ -7,6 +7,7 @@ import CardReference from '../components/CardReference.jsx';
 import Advisor from '../components/Advisor.jsx';
 import CoachTips from '../components/CoachTips.jsx';
 import MahjongTile from '../components/MahjongTile.jsx';
+import { effectiveHandCount } from '../logic/gameEngine.js';
 
 /**
  * Main game table screen
@@ -16,6 +17,8 @@ export default function GameTable({
   onDiscard,
   onCallMahjong,
   onDeclareMahjong,
+  onExpose,
+  onPassCall,
   viewerIdx = 0,
 }) {
   const [cardOpen, setCardOpen] = useState(false);
@@ -30,6 +33,7 @@ export default function GameTable({
   const isHumanTurn = currentPlayer === viewerIdx;
   const wallRemaining = gameState.wall.length - gameState.wallIndex;
   const canCall = gameState.canHumanCallMahjong || false;
+  const exposeOptions = gameState.humanExposeOptions || [];
   const thinkingPlayer = gameState.thinkingPlayer;
   const showMahjongBtn = isHumanTurn && gameState.humanCanDeclare;
 
@@ -170,6 +174,9 @@ export default function GameTable({
             lastDiscard={gameState.lastDiscard}
             onCallMahjong={onCallMahjong}
             canCall={canCall}
+            exposeOptions={exposeOptions}
+            onExpose={onExpose}
+            onPassCall={onPassCall}
           />
         </div>
 
@@ -205,9 +212,10 @@ export default function GameTable({
         <PlayerHand
           tiles={humanPlayer.hand}
           flowers={humanPlayer.flowers}
+          exposures={humanPlayer.exposures || []}
           selectedUids={selectedUid !== null ? new Set([selectedUid]) : new Set()}
           onTileClick={handleTileClick}
-          canDiscard={isHumanTurn && humanPlayer.hand.length > 13}
+          canDiscard={isHumanTurn && effectiveHandCount(humanPlayer) > 13}
         />
         {selectedUid !== null && (
           <div style={{ textAlign: 'center', fontSize: 11, color: 'rgba(var(--ink-rgb),0.5)', fontFamily: 'Nunito', paddingBottom: 4 }}>
@@ -223,6 +231,7 @@ export default function GameTable({
         onClose={() => setAdvisorOpen(false)}
         tiles={humanPlayer.hand}
         flowerCount={humanPlayer.flowers.length}
+        exposures={humanPlayer.exposures || []}
       />
     </div>
   );

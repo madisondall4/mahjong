@@ -99,6 +99,31 @@ export default function OpponentSeat({ player, position = 'top', isThinking = fa
         )}
       </div>
 
+      {/* Exposed melds — public information, face-up */}
+      {(player.exposures || []).length > 0 && (
+        <div style={{
+          display: 'flex',
+          flexDirection: isVertical ? 'column' : 'row',
+          gap: 3,
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+          maxWidth: isVertical ? 40 : 200,
+        }}>
+          {player.exposures.map((meld, mi) => (
+            <div key={mi} style={{
+              display: 'flex',
+              flexDirection: isVertical ? 'column' : 'row',
+              gap: 1,
+              padding: 2, borderRadius: 5,
+              background: 'rgba(var(--sky-rgb),0.12)',
+              border: '1px solid rgba(var(--sky-rgb),0.3)',
+            }}>
+              {meld.tiles.map(t => <MahjongTile key={t.uid} tile={t} size="sm"/>)}
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Stats row */}
       <div style={{
         display: 'flex',

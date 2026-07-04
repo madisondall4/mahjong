@@ -9,6 +9,8 @@ import MahjongTile from '../components/MahjongTile.jsx';
  * mode="call":      Neutral post-discard window — shows the discard, lets any
  *                   other player claim Mahjong on it, or play continues.
  */
+const MELD_NAMES = { 3: 'Pung', 4: 'Kong', 5: 'Quint' };
+
 export default function PassHandoffScreen({
   mode = 'handoff',
   toName,
@@ -20,8 +22,11 @@ export default function PassHandoffScreen({
   onReveal,
   onContinue,
   onCallMahjong, // (callerIdx) => boolean — false = invalid call
+  getExposeOptions = () => [], // (callerIdx) => [{n, jokersUsed}]
+  onExpose, // (callerIdx, option) => boolean
 }) {
   const [choosing, setChoosing] = useState(false);
+  const [caller, setCaller] = useState(null); // selected caller idx
   const [invalidFor, setInvalidFor] = useState(null);
 
   return (
@@ -74,33 +79,82 @@ export default function PassHandoffScreen({
                 No one — continue → {toName}
               </button>
             </>
-          ) : (
+          ) : caller === null ? (
             <>
               <p style={{ margin: 0, fontSize: 14, color: 'rgba(var(--paper-rgb),0.8)', fontFamily: 'Nunito' }}>
-                Who is calling Mahjong?
+                Who is calling?
               </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%', maxWidth: 280 }}>
                 {players.map((p, i) => i === discarderIdx ? null : (
                   <button
                     key={p.id}
-                    onClick={() => {
-                      const ok = onCallMahjong(i);
-                      if (!ok) setInvalidFor(i);
-                    }}
+                    onClick={() => { setCaller(i); setInvalidFor(null); }}
                     style={{
                       padding: '12px 0', borderRadius: 12,
-                      border: invalidFor === i ? '1.5px solid #E88' : '1.5px solid rgba(var(--paper-rgb),0.35)',
+                      border: '1.5px solid rgba(var(--paper-rgb),0.35)',
                       background: 'rgba(var(--paper-rgb),0.08)',
-                      color: invalidFor === i ? '#F5B8B8' : 'var(--paper)',
+                      color: 'var(--paper)',
                       fontSize: 14, fontWeight: 700, fontFamily: 'Nunito', cursor: 'pointer',
                     }}
                   >
-                    {invalidFor === i ? `${p.name} — not a winning hand` : p.name}
+                    {p.name}
                   </button>
                 ))}
               </div>
               <button
                 onClick={() => { setChoosing(false); setInvalidFor(null); }}
+                style={{
+                  background: 'none', border: 'none', color: 'rgba(var(--paper-rgb),0.6)',
+                  fontSize: 13, fontFamily: 'Nunito', cursor: 'pointer', textDecoration: 'underline',
+                }}
+              >
+                Back
+              </button>
+            </>
+          ) : (
+            <>
+              <p style={{ margin: 0, fontSize: 14, color: 'rgba(var(--paper-rgb),0.8)', fontFamily: 'Nunito' }}>
+                {players[caller]?.name} calls the tile for…
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%', maxWidth: 280 }}>
+                <button
+                  onClick={() => {
+                    const ok = onCallMahjong(caller);
+                    if (!ok) setInvalidFor('mahjong');
+                  }}
+                  style={{
+                    padding: '12px 0', borderRadius: 12,
+                    border: invalidFor === 'mahjong' ? '1.5px solid #E88' : '1.5px solid rgba(var(--paper-rgb),0.5)',
+                    background: 'rgba(var(--paper-rgb),0.14)',
+                    color: invalidFor === 'mahjong' ? '#F5B8B8' : 'var(--paper)',
+                    fontSize: 14, fontWeight: 800, fontFamily: 'Playfair Display, serif', cursor: 'pointer',
+                  }}
+                >
+                  {invalidFor === 'mahjong' ? 'Not a winning hand' : '🏆 Mahjong!'}
+                </button>
+                {getExposeOptions(caller).map(opt => (
+                  <button
+                    key={opt.n}
+                    onClick={() => onExpose?.(caller, opt)}
+                    style={{
+                      padding: '11px 0', borderRadius: 12,
+                      border: '1.5px solid rgba(var(--paper-rgb),0.35)',
+                      background: 'rgba(var(--paper-rgb),0.08)',
+                      color: 'var(--paper)',
+                      fontSize: 13.5, fontWeight: 700, fontFamily: 'Nunito', cursor: 'pointer',
+                    }}
+                  >
+                    Expose {MELD_NAMES[opt.n]} ×{opt.n}{opt.jokersUsed > 0 ? ` (${opt.jokersUsed} joker${opt.jokersUsed > 1 ? 's' : ''})` : ''}
+                  </button>
+                ))}
+                {getExposeOptions(caller).length === 0 && (
+                  <p style={{ margin: 0, fontSize: 11.5, color: 'rgba(var(--paper-rgb),0.55)', fontFamily: 'Nunito' }}>
+                    No legal pung/kong/quint with this hand.
+                  </p>
+                )}
+              </div>
+              <button
+                onClick={() => { setCaller(null); setInvalidFor(null); }}
                 style={{
                   background: 'none', border: 'none', color: 'rgba(var(--paper-rgb),0.6)',
                   fontSize: 13, fontFamily: 'Nunito', cursor: 'pointer', textDecoration: 'underline',

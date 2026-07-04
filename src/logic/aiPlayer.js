@@ -12,13 +12,13 @@ import { checkWin, canWinWithTile, rankHands, evaluateHand } from './handMatcher
 const SUITS_NUMBERED = ['bam', 'crak', 'dot'];
 
 /**
- * Goal-directed evaluation: how close is this tile set to its best target
+ * Goal-directed evaluation: how close is this position to its best target
  * hands? Returns the minimum distance across the current top-K candidates.
  */
-function bestDistance(tiles, flowerCount, targets) {
+function bestDistance(tiles, flowerCount, targets, exposures = []) {
   let best = Infinity;
   for (const t of targets) {
-    const res = evaluateHand(t, tiles, flowerCount);
+    const res = evaluateHand(t, tiles, flowerCount, exposures);
     if (res.distance < best) best = res.distance;
     if (best === 0) break;
   }
@@ -30,9 +30,9 @@ function bestDistance(tiles, flowerCount, targets) {
  * best target hands. Ties break toward the generic heuristic (dumping
  * isolated tiles first). Jokers and near-target tiles are protected.
  */
-function chooseDiscardGoalDirected(hand, flowers, difficulty, discardPile, targetCount) {
+function chooseDiscardGoalDirected(hand, flowers, difficulty, discardPile, targetCount, exposures = []) {
   const flowerCount = flowers.length;
-  const targets = rankHands(hand, flowerCount).slice(0, targetCount).map(r => r.hand);
+  const targets = rankHands(hand, flowerCount, exposures).slice(0, targetCount).map(r => r.hand);
   let bestUid = null;
   let bestDist = Infinity;
   let bestHeuristic = Infinity;
@@ -42,7 +42,7 @@ function chooseDiscardGoalDirected(hand, flowers, difficulty, discardPile, targe
     if (seenIds.has(tile.id)) continue; // identical tiles are interchangeable
     seenIds.add(tile.id);
     const without = hand.filter(t => t.uid !== tile.uid);
-    const d = bestDistance(without, flowerCount, targets);
+    const d = bestDistance(without, flowerCount, targets, exposures);
     const h = scoreTile(tile, hand, difficulty, discardPile);
     if (d < bestDist || (d === bestDist && h < bestHeuristic)) {
       bestDist = d;
@@ -52,6 +52,47 @@ function chooseDiscardGoalDirected(hand, flowers, difficulty, discardPile, targe
   }
   // All tiles were jokers/degenerate — fall back to heuristic.
   return bestUid ?? null;
+}
+
+/**
+ * Should this AI claim the discard as an exposure — and at what meld size?
+ * Calls only when the meld strictly improves its best distance (accounting
+ * for the closed-hand forfeit that exposing implies).
+ * @returns {{n:number, jokersUsed:number}|null}
+ */
+export function chooseExposure(hand, flowers, exposures, tile, difficulty = 'spicy') {
+  if (difficulty === 'chill' && Math.random() < 0.7) return null; // chill rarely calls
+  if (!tile || tile.suit === 'joker' || tile.suit === 'flower') return null;
+
+  const flowerCount = flowers.length;
+  const targetCount = difficulty === 'ruthless' ? 5 : 3;
+  const targets = rankHands(hand, flowerCount, exposures).slice(0, targetCount).map(r => r.hand);
+  const d0 = bestDistance(hand, flowerCount, targets, exposures);
+
+  const real = hand.filter(t => t.id === tile.id);
+  const jokers = hand.filter(t => t.suit === 'joker');
+
+  let best = null;
+  for (const n of [3, 4, 5]) {
+    const need = n - 1;
+    const jokersUsed = Math.max(0, need - real.length);
+    if (jokersUsed > jokers.length) continue;
+    if (difficulty === 'chill' && (n !== 3 || jokersUsed > 0)) continue; // chill: obvious pungs only
+
+    const removeReal = new Set(real.slice(0, Math.min(real.length, need)).map(t => t.uid));
+    const removeJokers = new Set(jokers.slice(0, jokersUsed).map(t => t.uid));
+    const newHand = hand.filter(t => !removeReal.has(t.uid) && !removeJokers.has(t.uid));
+    const meld = { id: tile.id, tiles: [tile, ...real.slice(0, need - jokersUsed), ...jokers.slice(0, jokersUsed)] };
+    const newExposures = [...exposures, meld];
+
+    // Re-rank against the new position (closed hands now impossible).
+    const newTargets = rankHands(newHand, flowerCount, newExposures).slice(0, targetCount).map(r => r.hand);
+    const d1 = bestDistance(newHand, flowerCount, newTargets, newExposures);
+    if (d1 < d0 && (!best || d1 < best.d1)) {
+      best = { n, jokersUsed, d1 };
+    }
+  }
+  return best ? { n: best.n, jokersUsed: best.jokersUsed } : null;
 }
 
 function scoreTile(tile, hand, difficulty, discardPile) {
@@ -130,14 +171,14 @@ export function chooseTilesForCharleston(hand, flowers, difficulty = 'spicy') {
   return give;
 }
 
-export function chooseTileToDiscard(hand, flowers, difficulty = 'spicy', discardPile = []) {
+export function chooseTileToDiscard(hand, flowers, difficulty = 'spicy', discardPile = [], exposures = []) {
   if (hand.length === 0) return null;
 
   if (difficulty !== 'chill') {
     // Spicy targets its 3 closest hands; Ruthless searches 5 and also
     // weighs the discard pile via the heuristic tiebreak.
     const targetCount = difficulty === 'ruthless' ? 5 : 3;
-    const uid = chooseDiscardGoalDirected(hand, flowers, difficulty, discardPile, targetCount);
+    const uid = chooseDiscardGoalDirected(hand, flowers, difficulty, discardPile, targetCount, exposures);
     if (uid !== null) return uid;
   }
 
@@ -155,9 +196,9 @@ export function chooseTileToDiscard(hand, flowers, difficulty = 'spicy', discard
   return scored[0].tile.uid;
 }
 
-export function shouldCallMahjong(hand13, discard, flowerCount, difficulty = 'spicy') {
+export function shouldCallMahjong(hand13, discard, flowerCount, difficulty = 'spicy', exposures = []) {
   try {
-    const result = canWinWithTile(hand13, discard, flowerCount);
+    const result = canWinWithTile(hand13, discard, flowerCount, exposures);
     if (!result.matched) return false;
 
     if (difficulty === 'chill' && Math.random() < 0.4) return false;
@@ -168,9 +209,9 @@ export function shouldCallMahjong(hand13, discard, flowerCount, difficulty = 'sp
   }
 }
 
-export function canSelfDeclare(hand14, flowerCount, difficulty = 'spicy') {
+export function canSelfDeclare(hand14, flowerCount, difficulty = 'spicy', exposures = []) {
   try {
-    const result = checkWin(hand14, flowerCount, true);
+    const result = checkWin(hand14, flowerCount, true, exposures);
     if (!result.matched) return null;
 
     if (difficulty === 'chill' && Math.random() < 0.15) return null;

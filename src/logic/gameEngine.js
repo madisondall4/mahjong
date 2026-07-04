@@ -10,10 +10,10 @@ export function createInitialState() {
     wall: [],
     wallIndex: 0,
     players: [
-      { id: 0, name: 'You', isHuman: true, hand: [], flowers: [], score: 0 },
-      { id: 1, name: 'South', isHuman: false, hand: [], flowers: [], score: 0 },
-      { id: 2, name: 'West', isHuman: false, hand: [], flowers: [], score: 0 },
-      { id: 3, name: 'North', isHuman: false, hand: [], flowers: [], score: 0 },
+      { id: 0, name: 'You', isHuman: true, hand: [], flowers: [], exposures: [], score: 0 },
+      { id: 1, name: 'South', isHuman: false, hand: [], flowers: [], exposures: [], score: 0 },
+      { id: 2, name: 'West', isHuman: false, hand: [], flowers: [], exposures: [], score: 0 },
+      { id: 3, name: 'North', isHuman: false, hand: [], flowers: [], exposures: [], score: 0 },
     ],
     currentPlayer: 0,
     discardPile: [],
@@ -56,7 +56,7 @@ function drawRaw(wall, wallIndex) {
 export function dealTiles(state) {
   const wall = shuffle(buildWall());
   let wallIndex = 0;
-  const players = state.players.map(p => ({ ...p, hand: [], flowers: [] }));
+  const players = state.players.map(p => ({ ...p, hand: [], flowers: [], exposures: [] }));
 
   // Deal: players 1-3 get 13, player 0 (East) gets 14
   for (let i = 0; i < 4; i++) {
@@ -159,6 +159,84 @@ export function advanceTurn(state) {
   return {
     ...state,
     currentPlayer: next,
+    canHumanCallMahjong: false,
+    lastDrawnTile: null,
+  };
+}
+
+// ─── Exposures (calling a discard for pung/kong/quint) ──────────────────────
+
+/** Total tiles a player effectively holds: concealed + exposed. */
+export function exposedTileCount(player) {
+  return (player.exposures || []).reduce((a, e) => a + e.tiles.length, 0);
+}
+
+export function effectiveHandCount(player) {
+  return player.hand.length + exposedTileCount(player);
+}
+
+/**
+ * Which meld sizes could this player legally expose on the given discard?
+ * Jokers may fill any of the n-1 rack tiles; the minimum joker count is used.
+ * @returns {Array<{n:number, jokersUsed:number}>}
+ */
+export function legalExposures(player, tile) {
+  if (!tile || tile.suit === 'joker' || tile.suit === 'flower') return [];
+  const real = player.hand.filter(t => t.id === tile.id).length;
+  const jokers = player.hand.filter(t => t.suit === 'joker').length;
+  const out = [];
+  for (const n of [3, 4, 5]) {
+    const need = n - 1;
+    const jokersUsed = Math.max(0, need - real);
+    if (jokersUsed <= jokers) out.push({ n, jokersUsed });
+  }
+  return out;
+}
+
+/**
+ * Claim the last discard as an exposure for `callerIdx`.
+ * Removes the discard from the pile, moves n-1 rack tiles (jokers last) into
+ * the face-up meld, and makes the caller the current player. The caller does
+ * NOT draw — they must now discard.
+ */
+export function exposeFromDiscard(state, callerIdx, meldSize, jokersUsed = 0) {
+  const tile = state.lastDiscard;
+  if (!tile) return state;
+  const caller = state.players[callerIdx];
+  const realNeeded = meldSize - 1 - jokersUsed;
+
+  const meldTiles = [tile];
+  const remaining = [...caller.hand];
+  let realTaken = 0;
+  let jokersTaken = 0;
+  for (let i = remaining.length - 1; i >= 0; i--) {
+    const t = remaining[i];
+    if (realTaken < realNeeded && t.id === tile.id) {
+      meldTiles.push(t);
+      remaining.splice(i, 1);
+      realTaken++;
+    } else if (jokersTaken < jokersUsed && t.suit === 'joker') {
+      meldTiles.push(t);
+      remaining.splice(i, 1);
+      jokersTaken++;
+    }
+  }
+  if (realTaken !== realNeeded || jokersTaken !== jokersUsed) return state; // illegal claim
+
+  const exposure = { id: tile.id, tiles: meldTiles };
+  const newPlayers = state.players.map((p, i) =>
+    i === callerIdx
+      ? { ...p, hand: remaining, exposures: [...(p.exposures || []), exposure] }
+      : p
+  );
+
+  return {
+    ...state,
+    players: newPlayers,
+    discardPile: state.discardPile.filter(t => t.uid !== tile.uid),
+    lastDiscard: null,
+    calledDiscard: { tile, by: callerIdx, n: meldSize },
+    currentPlayer: callerIdx,
     canHumanCallMahjong: false,
     lastDrawnTile: null,
   };

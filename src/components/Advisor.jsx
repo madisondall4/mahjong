@@ -13,12 +13,16 @@ const SHOW_COUNT = 6;
  * @param {Object[]} tiles - player's current hand (jokers included)
  * @param {number} flowerCount
  */
-export default function Advisor({ isOpen, onClose, tiles = [], flowerCount = 0 }) {
+export default function Advisor({ isOpen, onClose, tiles = [], flowerCount = 0, exposures = [] }) {
   const [expanded, setExpanded] = useState(null);
 
   const ranked = useMemo(
-    () => (isOpen ? rankHands(tiles, flowerCount).slice(0, SHOW_COUNT) : []),
-    [isOpen, tiles, flowerCount]
+    () => (isOpen
+      ? rankHands(tiles, flowerCount, exposures)
+          .filter(r => Number.isFinite(r.distance)) // hands ruled out by exposures
+          .slice(0, SHOW_COUNT)
+      : []),
+    [isOpen, tiles, flowerCount, exposures]
   );
   const jokersHeld = tiles.filter(t => t.suit === 'joker').length;
 
@@ -56,6 +60,7 @@ export default function Advisor({ isOpen, onClose, tiles = [], flowerCount = 0 }
             </h2>
             <p style={{ margin: 0, fontSize: 11, color: 'rgba(var(--ink-rgb),0.5)', fontFamily: 'Nunito' }}>
               Your closest hands, ranked
+              {exposures.length > 0 && ' · limited by your exposed melds'}
               {jokersHeld > 0 && ` · ${jokersHeld} joker${jokersHeld > 1 ? 's' : ''} can fill dashed spots`}
             </p>
           </div>

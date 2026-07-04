@@ -39,6 +39,13 @@ const TIPS = [
     text: 'Tap 💡 Hands any time — it ranks all 24 winning hands by how many tiles away you are and shows exactly what you still need.',
   },
   {
+    id: 'expose',
+    when: s => s.phase === 'playing' && !s.canHumanCallMahjong && (s.humanExposeOptions?.length || 0) > 0,
+    icon: '📣',
+    title: 'You can call that discard!',
+    text: 'Claim it to complete a pung, kong, or quint — the meld goes face-up and you discard instead of drawing. Careful: exposing locks you out of CLOSED hands.',
+  },
+  {
     id: 'call',
     when: s => s.phase === 'playing' && s.canHumanCallMahjong,
     icon: '🎉',

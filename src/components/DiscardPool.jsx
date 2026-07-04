@@ -1,14 +1,23 @@
 import React from 'react';
 import MahjongTile from './MahjongTile';
 
+const MELD_NAMES = { 3: 'Pung', 4: 'Kong', 5: 'Quint' };
+
 /**
  * Center discard pool showing all discarded tiles
  * @param {Object[]} discards - array of discarded tiles
  * @param {Object} lastDiscard - most recent discard (highlighted)
  * @param {function} onCallMahjong - called when player taps to call mahjong on discard
- * @param {boolean} canCall - whether human can call this discard
+ * @param {boolean} canCall - whether human can call this discard for the win
+ * @param {Array<{n,jokersUsed}>} exposeOptions - legal exposure claims
+ * @param {function} onExpose - (option) => void
+ * @param {function} onPassCall - decline the call window
  */
-export default function DiscardPool({ discards = [], lastDiscard = null, onCallMahjong, canCall = false }) {
+export default function DiscardPool({
+  discards = [], lastDiscard = null, onCallMahjong, canCall = false,
+  exposeOptions = [], onExpose, onPassCall,
+}) {
+  const promptOpen = lastDiscard && (canCall || exposeOptions.length > 0);
   // Show last ~30 discards in a compact grid
   const toShow = discards.slice(-30);
 
@@ -67,27 +76,66 @@ export default function DiscardPool({ discards = [], lastDiscard = null, onCallM
         )}
       </div>
 
-      {/* Call Mahjong button */}
-      {canCall && lastDiscard && (
-        <button
-          onClick={onCallMahjong}
-          style={{
-            background: 'linear-gradient(135deg, var(--matcha), var(--rose))',
-            color: 'white',
-            border: 'none',
-            borderRadius: 20,
-            padding: '8px 20px',
-            fontSize: 13,
-            fontWeight: 800,
-            fontFamily: 'Playfair Display, serif',
-            cursor: 'pointer',
-            boxShadow: '0 4px 12px rgba(var(--matcha-rgb),0.4)',
-            animation: 'pulseGlow 1s ease-in-out infinite',
-            letterSpacing: '0.05em',
-          }}
-        >
-          🀄 Call Mahjong!
-        </button>
+      {/* Call window: mahjong / exposure claims / pass */}
+      {promptOpen && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, justifyContent: 'center', alignItems: 'center' }}>
+          {canCall && (
+            <button
+              onClick={onCallMahjong}
+              style={{
+                background: 'linear-gradient(135deg, var(--matcha), var(--rose))',
+                color: 'white',
+                border: 'none',
+                borderRadius: 20,
+                padding: '8px 18px',
+                fontSize: 13,
+                fontWeight: 800,
+                fontFamily: 'Playfair Display, serif',
+                cursor: 'pointer',
+                boxShadow: '0 4px 12px rgba(var(--matcha-rgb),0.4)',
+                animation: 'pulseGlow 1s ease-in-out infinite',
+                letterSpacing: '0.05em',
+              }}
+            >
+              🀄 Mahjong!
+            </button>
+          )}
+          {exposeOptions.map(opt => (
+            <button
+              key={opt.n}
+              onClick={() => onExpose?.(opt)}
+              style={{
+                background: 'rgba(var(--sky-rgb),0.14)',
+                color: 'var(--sky)',
+                border: '1.5px solid rgba(var(--sky-rgb),0.45)',
+                borderRadius: 20,
+                padding: '7px 14px',
+                fontSize: 12,
+                fontWeight: 800,
+                fontFamily: 'Nunito, sans-serif',
+                cursor: 'pointer',
+              }}
+            >
+              Call {MELD_NAMES[opt.n]} ×{opt.n}{opt.jokersUsed > 0 ? ` (${opt.jokersUsed}🃏)` : ''}
+            </button>
+          ))}
+          <button
+            onClick={onPassCall}
+            style={{
+              background: 'transparent',
+              color: 'rgba(var(--ink-rgb),0.55)',
+              border: '1px solid rgba(var(--ink-rgb),0.25)',
+              borderRadius: 20,
+              padding: '7px 14px',
+              fontSize: 12,
+              fontWeight: 700,
+              fontFamily: 'Nunito, sans-serif',
+              cursor: 'pointer',
+            }}
+          >
+            Pass
+          </button>
+        </div>
       )}
     </div>
   );

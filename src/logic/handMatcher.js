@@ -131,9 +131,37 @@ function evaluateVariant(counts, jokers, variant) {
 }
 
 /**
- * Evaluate one hand definition against tiles+flowers. Returns the best variant.
+ * Consume the variant groups that this player's exposures pin down.
+ * An exposed meld must EXACTLY match a group (same tile id, same size) —
+ * a pung exposure can never serve a kong requirement.
+ * @returns {Array|null} remaining groups, or null if any exposure doesn't fit
  */
-export function evaluateHand(handDef, tiles, flowerCount) {
+function assignExposures(variant, exposures) {
+  if (!exposures || exposures.length === 0) return variant;
+  const remaining = [...variant];
+  for (const exp of exposures) {
+    const idx = remaining.findIndex(g =>
+      !g.poolPairs && g.id === exp.id && g.n === exp.tiles.length
+    );
+    if (idx === -1) return null;
+    remaining.splice(idx, 1);
+  }
+  return remaining;
+}
+
+const IMPOSSIBLE = Object.freeze({
+  distance: Infinity, tileDistance: Infinity, flowersShort: 0, isWin: false, missing: [],
+});
+
+/**
+ * Evaluate one hand definition against a player's position. Returns the best
+ * variant. `tiles` are CONCEALED tiles only; exposed melds are passed
+ * separately and pin their matching groups.
+ */
+export function evaluateHand(handDef, tiles, flowerCount, exposures = []) {
+  // Exposing anything forfeits closed hands.
+  if (handDef.closed && exposures && exposures.length > 0) return IMPOSSIBLE;
+
   const nonFlower = tiles.filter(t => t.suit !== 'flower' && t.suit !== 'joker');
   const jokers = tiles.filter(t => t.suit === 'joker').length;
   const counts = countTiles(nonFlower);
@@ -141,7 +169,9 @@ export function evaluateHand(handDef, tiles, flowerCount) {
 
   let best = null;
   for (const variant of getVariants(handDef)) {
-    const res = evaluateVariant(counts, jokers, variant);
+    const groups = assignExposures(variant, exposures);
+    if (!groups) continue;
+    const res = evaluateVariant(counts, jokers, groups);
     const total = res.distance + flowersShort;
     if (!best || total < best.distance || (total === best.distance && res.isWin)) {
       best = {
@@ -154,7 +184,7 @@ export function evaluateHand(handDef, tiles, flowerCount) {
       if (best.isWin) break;
     }
   }
-  return best;
+  return best || IMPOSSIBLE;
 }
 
 // ─── Public API ───────────────────────────────────────────────────────────────
@@ -164,11 +194,11 @@ export function evaluateHand(handDef, tiles, flowerCount) {
  * Returns the highest-point matching hand.
  * @returns {{ matched: boolean, handDef: Object|null }}
  */
-export function checkWin(hand14, flowerCount, isSelfDraw = true) {
+export function checkWin(hand14, flowerCount, isSelfDraw = true, exposures = []) {
   let bestDef = null;
   for (const handDef of WINNING_HANDS) {
     if (handDef.closed && !isSelfDraw) continue;
-    const res = evaluateHand(handDef, hand14, flowerCount);
+    const res = evaluateHand(handDef, hand14, flowerCount, exposures);
     if (res && res.isWin) {
       if (!bestDef || handDef.points > bestDef.points) bestDef = handDef;
     }
@@ -177,22 +207,24 @@ export function checkWin(hand14, flowerCount, isSelfDraw = true) {
 }
 
 /**
- * Can a 13-tile hand + a discarded tile win? (Called wins can't use closed hands.)
+ * Can a concealed hand + a discarded tile win? (Called wins can't use closed hands.)
  */
-export function canWinWithTile(hand13, tile, flowerCount) {
-  return checkWin([...hand13, tile], flowerCount, false);
+export function canWinWithTile(hand13, tile, flowerCount, exposures = []) {
+  return checkWin([...hand13, tile], flowerCount, false, exposures);
 }
 
 /**
- * Rank all 24 hands by how close the given tiles are to completing them.
- * Powers the "What Can I Win?" advisor.
- * @param {Object[]} tiles - current hand (13 or 14 tiles, jokers included)
+ * Rank all 24 hands by how close the given position is to completing them.
+ * Powers the "What Can I Win?" advisor. Hands incompatible with the player's
+ * exposures rank last with Infinity distance (filter before display).
+ * @param {Object[]} tiles - concealed tiles (jokers included)
  * @param {number} flowerCount
+ * @param {Array} exposures - face-up melds
  * @returns {Array<{ hand, distance, flowersShort, missing, complete }>}
  */
-export function rankHands(tiles, flowerCount) {
+export function rankHands(tiles, flowerCount, exposures = []) {
   const results = WINNING_HANDS.map(handDef => {
-    const res = evaluateHand(handDef, tiles, flowerCount);
+    const res = evaluateHand(handDef, tiles, flowerCount, exposures);
     return {
       hand: handDef,
       distance: res.distance,
