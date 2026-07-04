@@ -4,6 +4,7 @@ import { getDifficulty, setDifficulty, DIFFICULTIES } from '../utils/persistence
 import { getDailyChallenge, getStats } from '../utils/stats.js';
 import { setCoachEnabled, isCoachEnabled } from '../utils/coach.js';
 import { THEME_PRESETS, TILE_BACKS, applyTheme, getSavedTheme, getSavedTileBack, setTileBack } from '../theme/presets.js';
+import { isSoundOn, setSoundOn } from '../utils/sound.js';
 
 const DEMO_TILES = [
   { suit: SUITS.BAM, value: 1, color: 'var(--matcha)' },
@@ -100,6 +101,8 @@ export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo, onO
   const [mode, setMode] = useState('solo');
   const [theme, setTheme] = useState(getSavedTheme);
   const [tileBack, setTb] = useState(() => getSavedTileBack() || THEME_PRESETS[getSavedTheme()].tileBack);
+  const [soundOn, setSound] = useState(isSoundOn);
+  const [passNames, setPassNames] = useState(['', '', '', '']);
   const daily = getDailyChallenge();
   const stats = getStats();
 
@@ -235,9 +238,34 @@ export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo, onO
             })}
           </div>
           {mode === 'pass' && (
-            <div style={{ fontSize: 10, color: 'rgba(var(--deep-rgb),0.45)', fontFamily: 'Nunito', textAlign: 'center', marginTop: 4 }}>
-              4 players share this device — hands stay private between turns
-            </div>
+            <>
+              <div style={{ fontSize: 10, color: 'rgba(var(--deep-rgb),0.45)', fontFamily: 'Nunito', textAlign: 'center', marginTop: 4 }}>
+                4 players share this device — hands stay private between turns
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginTop: 8 }}>
+                {passNames.map((name, i) => (
+                  <input
+                    key={i}
+                    value={name}
+                    maxLength={12}
+                    placeholder={`Player ${i + 1}`}
+                    onChange={e => {
+                      const next = [...passNames];
+                      next[i] = e.target.value;
+                      setPassNames(next);
+                    }}
+                    style={{
+                      padding: '8px 10px', borderRadius: 8,
+                      border: '1px solid rgba(var(--matcha-rgb),0.3)',
+                      background: 'rgba(var(--paper-rgb),0.8)',
+                      color: 'var(--ink)', fontSize: 12.5,
+                      fontFamily: 'Nunito, sans-serif', fontWeight: 600,
+                      outline: 'none', minWidth: 0,
+                    }}
+                  />
+                ))}
+              </div>
+            </>
           )}
         </div>
 
@@ -400,7 +428,7 @@ export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo, onO
 
         {/* New Game button */}
         <button
-          onClick={() => onNewGame(mode)}
+          onClick={() => onNewGame(mode, passNames.map((n, i) => n.trim() || `Player ${i + 1}`))}
           style={{
             width: '100%', maxWidth: 280,
             padding: onResumeGame ? '12px 0' : '16px 0',
@@ -476,6 +504,22 @@ export default function HomeScreen({ onNewGame, onResumeGame, savedGameInfo, onO
           </div>
         )}
       </div>
+
+      {/* Sound toggle */}
+      <button
+        onClick={() => { setSoundOn(!soundOn); setSound(!soundOn); }}
+        aria-label={soundOn ? 'Mute sounds' : 'Unmute sounds'}
+        style={{
+          position: 'absolute', top: 24, right: 24, zIndex: 2,
+          width: 38, height: 38, borderRadius: 999,
+          background: 'rgba(var(--deep-rgb),0.06)',
+          border: '1px solid rgba(var(--matcha-rgb),0.25)',
+          fontSize: 16, cursor: 'pointer',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}
+      >
+        {soundOn ? '🔊' : '🔇'}
+      </button>
 
       {/* Version */}
       <div style={{

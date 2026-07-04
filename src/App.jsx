@@ -32,6 +32,24 @@ import {
 } from './logic/aiPlayer.js';
 import { checkWin, canWinWithTile } from './logic/handMatcher.js';
 import { calculatePayments, applyPayments } from './logic/scoring.js';
+import { playClack, playDraw, playCallAlert, playSwoosh, playFanfare } from './utils/sound.js';
+
+/** Game audio + haptics keyed off state transitions — one hook covers every mode. */
+function useSoundEffects(state) {
+  const prev = useRef({ discardUid: null, drawnUid: null, callOpen: false, phase: null, incoming: null });
+  useEffect(() => {
+    const p = prev.current;
+    const discardUid = state.lastDiscard?.uid ?? null;
+    const drawnUid = state.lastDrawnTile?.uid ?? null;
+    const callOpen = !!(state.canHumanCallMahjong || (state.humanExposeOptions?.length > 0));
+    if (state.phase === 'playing' && discardUid !== null && discardUid !== p.discardUid) playClack();
+    if (state.phase === 'playing' && drawnUid !== null && drawnUid !== p.drawnUid && state.currentPlayer === 0 && state.mode !== 'pass') playDraw();
+    if (callOpen && !p.callOpen) playCallAlert();
+    if (state.phase === 'declaration' && p.phase !== 'declaration' && state.winner !== null) playFanfare();
+    if (state.phase === 'charleston' && state.lastIncomingTiles && state.lastIncomingTiles !== p.incoming) playSwoosh();
+    prev.current = { discardUid, drawnUid, callOpen, phase: state.phase, incoming: state.lastIncomingTiles };
+  }, [state]);
+}
 
 function AppInner() {
   const { state, setState, patchState, reset } = useGame();
@@ -39,6 +57,7 @@ function AppInner() {
   const aiTimerRef = useRef(null);
   const lastAiKey = useRef(null);
   const lastHumanDrawKey = useRef(null);
+  useSoundEffects(state);
 
   // ── Solo-mode turn resolution ─────────────────────────────────────────────
   //
@@ -255,17 +274,17 @@ function AppInner() {
 
   // ── Handlers ──────────────────────────────────────────────────────────────
 
-  function handleNewGame(mode = 'solo') {
+  function handleNewGame(mode = 'solo', passNames = null) {
     if (aiTimerRef.current) clearTimeout(aiTimerRef.current);
     lastAiKey.current = null;
     lastHumanDrawKey.current = null;
     clearSavedGame();
     const players = mode === 'pass'
-      ? ['Player 1', 'Player 2', 'Player 3', 'Player 4'].map((name, id) => ({
-          id, name, isHuman: true, hand: [], flowers: [], score: 0,
+      ? (passNames || ['Player 1', 'Player 2', 'Player 3', 'Player 4']).map((name, id) => ({
+          id, name, isHuman: true, hand: [], flowers: [], exposures: [], score: 0,
         }))
       : ['You', 'South', 'West', 'North'].map((name, id) => ({
-          id, name, isHuman: id === 0, hand: [], flowers: [], score: 0,
+          id, name, isHuman: id === 0, hand: [], flowers: [], exposures: [], score: 0,
         }));
     const newState = dealTiles({ ...state, difficulty: getDifficulty(), mode, players });
     if (mode === 'pass') {

@@ -40,7 +40,7 @@ Status legend: 🔲 Not started · 🟡 In progress · ✅ Done
 
 ### Social
 - ✅ **Pass-and-play multiplayer** — 4 humans, one device, privacy handoff
-  screens, per-seat Charleston, post-discard call window.
+  screens, per-seat Charleston, post-discard call window, custom player names.
 
 ### Aesthetics
 - ✅ **Runtime theme switcher** — Matcha Garden, Midnight Bloom (dark),
@@ -48,8 +48,19 @@ Status legend: 🔲 Not started · 🟡 In progress · ✅ Done
   authentic across themes.
 - ✅ **Tile back designs** — four selectable patterns with per-theme defaults.
 
+### Gameplay
+- ✅ **Exposures** — call any discard for a pung/kong/quint (jokers may fill).
+  Melds render face-up on every seat; exposing forfeits closed hands; the
+  matcher pins exposed melds to card groups by exact tile and size. Cut
+  competitive draw rates from ~63% to ~35% (real-table territory) — most
+  wins now use at least one exposure.
+- ✅ **Sound & haptics** — synthesized Web Audio (tile clacks, call alerts,
+  win fanfare — zero assets, offline-safe) plus vibration; mute persists.
+
 ### Platform
 - ✅ **Installable PWA** — manifest, icons, offline service worker, iOS meta.
+- ✅ **Self-hosted fonts** — Playfair Display + Nunito latin variable fonts
+  bundled (124KB); zero third-party requests, honest "no data collected".
 - ✅ **App Store path** — see `APP_STORE.md` (PWA today, Bubblewrap for Play,
   Capacitor for iOS).
 - ✅ **Seasonal card structure** — the 2026 Garden Card lives in
@@ -59,22 +70,17 @@ Status legend: 🔲 Not started · 🟡 In progress · ✅ Done
 
 ## Next up (priority order)
 
-- 🔲 **Exposures (calling pung/kong/quint)** — the single biggest gameplay
-  gap. Without exposures every hand must be assembled from solo draws;
-  simulation shows ~63–65% of Spicy/Ruthless games end in wall draws (real
-  American mahjong tables see far fewer because calls feed hands). Needs:
-  call-window priority (mahjong > exposure), exposed-meld rendering on all
-  seats, matcher support (exposed groups pin variant groups), closed-hand
-  restrictions, joker-exchange rule, AI call judgment.
-- 🔲 **Player-named seats in pass-and-play** — quick name entry before deal.
+- 🔲 **Joker exchange** — on your turn, swap the matching real tile for a
+  joker in ANY exposed meld (yours or an opponent's). The classic American
+  mahjong joker economy; the exposure engine already models melds, so this
+  is an engine helper + a turn action + AI judgment.
 - 🔲 **Online multiplayer** — needs a realtime backend (rooms, matchmaking,
   reconnect). Pass-and-play ships as the stepping stone.
-- 🔲 **Seasonal NMJL-style card updates** — ship a 2027 card next year (never
+- 🔲 **Seasonal card updates** — ship a 2027 Garden Card next year (never
   copy the NMJL card itself; it's copyrighted).
-- 🔲 **Sound & haptics** — tile clacks, win fanfare (add via Capacitor for
-  native builds).
-- 🔲 **Bundle Google Fonts locally** — removes the last runtime third-party
-  request (also required for an honest "no data collected" store label).
+- 🔲 **Ruthless AI tuning** — spicy currently completes more games than
+  ruthless (35% vs 53% draws in sims); ruthless's wider 5-target search
+  thrashes. Consider target commitment once distance ≤ 3.
 
 ---
 
@@ -90,8 +96,17 @@ Status legend: 🔲 Not started · 🟡 In progress · ✅ Done
   sims with tile-conservation invariants.
 - **AI**: `src/logic/aiPlayer.js`. Spicy/Ruthless pick discards by minimizing
   tiles-to-completion across their top 3/5 ranked hands (~20–45ms per
-  decision, hidden inside the thinking delay); Chill uses loose heuristics
-  plus randomness and skips 40% of winning calls.
+  decision, hidden inside the thinking delay); they call exposures only when
+  the meld strictly improves that distance (accounting for the closed-hand
+  forfeit). Chill uses loose heuristics, rarely calls, and skips 40% of
+  winning mahjong calls — by design it almost never wins.
+- **Exposures**: melds live on `player.exposures`; `exposeFromDiscard`,
+  `legalExposures`, `effectiveHandCount` in gameEngine. App.jsx's
+  `resolveAfterDiscard` chain: human call window (with Pass) → AI mahjong →
+  AI exposures (next-in-turn) → advance. Turn-guard keys include meld count
+  because exposure chains consume no wall tiles.
+- **Audio**: `src/utils/sound.js` — synthesized Web Audio, lazy context,
+  `useSoundEffects` hook in App keys sounds off state transitions.
 - **Theming**: tokens in `src/styles/globals.css`, presets + `applyTheme()` in
   `src/theme/presets.js` (auto-computes rgb triplets, syncs `theme-color`).
   Tile faces/artwork are deliberately un-themed.
