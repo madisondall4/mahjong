@@ -7,7 +7,7 @@ import CardReference from '../components/CardReference.jsx';
 import Advisor from '../components/Advisor.jsx';
 import CoachTips from '../components/CoachTips.jsx';
 import MahjongTile from '../components/MahjongTile.jsx';
-import { effectiveHandCount } from '../logic/gameEngine.js';
+import { effectiveHandCount, listJokerExchanges } from '../logic/gameEngine.js';
 
 /**
  * Main game table screen
@@ -19,6 +19,7 @@ export default function GameTable({
   onDeclareMahjong,
   onExpose,
   onPassCall,
+  onJokerExchange,
   viewerIdx = 0,
 }) {
   const [cardOpen, setCardOpen] = useState(false);
@@ -36,6 +37,10 @@ export default function GameTable({
   const exposeOptions = gameState.humanExposeOptions || [];
   const thinkingPlayer = gameState.thinkingPlayer;
   const showMahjongBtn = isHumanTurn && gameState.humanCanDeclare;
+  // Joker exchange window: your turn, full rack, a redeemable joker on the table
+  const jokerSwaps = isHumanTurn && effectiveHandCount(humanPlayer) >= 14 && onJokerExchange
+    ? listJokerExchanges(gameState, viewerIdx)
+    : [];
 
   function handleTileClick(tile) {
     if (!isHumanTurn) return;
@@ -190,6 +195,34 @@ export default function GameTable({
           />
         </div>
       </div>
+
+      {/* Joker exchange bar */}
+      {jokerSwaps.length > 0 && (
+        <div className="no-scrollbar" style={{
+          display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 6,
+          padding: '4px 10px', zIndex: 2, flexShrink: 0, overflowX: 'auto',
+        }}>
+          <span style={{ fontSize: 10, fontFamily: 'Nunito', fontWeight: 800, color: 'rgba(var(--ink-rgb),0.5)', textTransform: 'uppercase', letterSpacing: '0.05em', flexShrink: 0 }}>
+            Swap for joker:
+          </span>
+          {jokerSwaps.map((opt, i) => (
+            <button
+              key={i}
+              onClick={() => onJokerExchange(opt)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0,
+                background: 'rgba(217,138,61,0.12)', border: '1.5px dashed rgba(217,138,61,0.6)',
+                borderRadius: 9, padding: '3px 8px 3px 4px', cursor: 'pointer',
+              }}
+            >
+              <MahjongTile tile={opt.tile} size="sm"/>
+              <span style={{ fontSize: 11, fontFamily: 'Nunito', fontWeight: 800, color: '#B5651D' }}>
+                ⇄ 🃏 {gameState.players[opt.ownerIdx]?.name}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Last drawn tile indicator */}
       {isHumanTurn && gameState.lastDrawnTile && (

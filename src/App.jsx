@@ -20,6 +20,8 @@ import {
   legalExposures,
   exposeFromDiscard,
   effectiveHandCount,
+  listJokerExchanges,
+  exchangeJoker,
 } from './logic/gameEngine.js';
 import { loadGame, clearSavedGame, getSavedGameInfo, getDifficulty } from './utils/persistence.js';
 import { recordGameEnd } from './utils/stats.js';
@@ -118,10 +120,19 @@ function AppInner() {
         // The caller now discards (no draw) after a thinking beat.
         if (aiTimerRef.current) clearTimeout(aiTimerRef.current);
         aiTimerRef.current = setTimeout(() => {
-          const caller = exposed.players[i];
-          const uid = chooseTileToDiscard(caller.hand, diff, exposed.discardPile, caller.exposures || []);
-          if (!uid) { setState({ ...exposed, thinkingPlayer: null }); return; }
-          const afterDiscard = { ...discardTile(exposed, i, uid), thinkingPlayer: null };
+          let working = exposed;
+          if (diff !== 'chill') {
+            let guard = 0;
+            let ex = listJokerExchanges(working, i);
+            while (ex.length > 0 && guard++ < 8) {
+              working = exchangeJoker(working, i, ex[0].ownerIdx, ex[0].meldIdx);
+              ex = listJokerExchanges(working, i);
+            }
+          }
+          const caller = working.players[i];
+          const uid = chooseTileToDiscard(caller.hand, diff, working.discardPile, caller.exposures || []);
+          if (!uid) { setState({ ...working, thinkingPlayer: null }); return; }
+          const afterDiscard = { ...discardTile(working, i, uid), thinkingPlayer: null };
           resolveAfterDiscardRef.current(afterDiscard, i);
         }, getThinkingDelay(diff));
         return;
@@ -176,24 +187,36 @@ function AppInner() {
         return;
       }
 
-      const aiPlayer = afterDraw.players[playerIdx];
       const diff = gameState.difficulty || 'spicy';
+
+      // Redeem jokers from exposed melds — a free agent beats any single
+      // tile whose copies are already locked face-up. Chill can't be bothered.
+      let working = afterDraw;
+      if (diff !== 'chill' || Math.random() < 0.3) {
+        let guard = 0;
+        let ex = listJokerExchanges(working, playerIdx);
+        while (ex.length > 0 && guard++ < 8) {
+          working = exchangeJoker(working, playerIdx, ex[0].ownerIdx, ex[0].meldIdx);
+          ex = listJokerExchanges(working, playerIdx);
+        }
+      }
+      const aiPlayer = working.players[playerIdx];
 
       // Check self-declare
       const winDef = canSelfDeclare(aiPlayer.hand, diff, aiPlayer.exposures || []);
       if (winDef) {
-        declareWinner(afterDraw, playerIdx, winDef, null);
+        declareWinner(working, playerIdx, winDef, null);
         return;
       }
 
       // Choose discard
-      const discardUid = chooseTileToDiscard(aiPlayer.hand, diff, afterDraw.discardPile, aiPlayer.exposures || []);
+      const discardUid = chooseTileToDiscard(aiPlayer.hand, diff, working.discardPile, aiPlayer.exposures || []);
       if (!discardUid) {
-        setState({ ...afterDraw, thinkingPlayer: null });
+        setState({ ...working, thinkingPlayer: null });
         return;
       }
 
-      const afterDiscard = { ...discardTile(afterDraw, playerIdx, discardUid), thinkingPlayer: null };
+      const afterDiscard = { ...discardTile(working, playerIdx, discardUid), thinkingPlayer: null };
       resolveAfterDiscard(afterDiscard, playerIdx);
     }, getThinkingDelay(gameState.difficulty));
   }, [setState, declareWinner, resolveAfterDiscard]);
@@ -491,6 +514,18 @@ function AppInner() {
     setState({ ...exposed, humanExposeOptions: null, canHumanCallMahjong: false });
   }
 
+  // Swap a rack tile for a joker in an exposed meld (your turn only).
+  // Works for solo (actor 0) and pass-and-play (actor = current player).
+  function handleJokerExchange(option) {
+    const actor = state.currentPlayer;
+    const next = exchangeJoker(state, actor, option.ownerIdx, option.meldIdx);
+    if (next === state) return;
+    const player = next.players[actor];
+    // A redeemed joker can complete the hand — recheck the declare button.
+    const winDef = canSelfDeclare(player.hand, 'spicy', player.exposures || []);
+    setState({ ...next, humanCanDeclare: !!winDef, _selfDeclareHand: winDef || null });
+  }
+
   // Human declines the call window — AI claims resolve, then play continues.
   function handlePassCallWindow() {
     continueAfterHumanPass(
@@ -620,6 +655,7 @@ function AppInner() {
           onDiscard={handlePassDiscard}
           onCallMahjong={() => {}}
           onDeclareMahjong={handlePassDeclare}
+          onJokerExchange={handleJokerExchange}
         />
       );
     }
@@ -631,6 +667,7 @@ function AppInner() {
         onDeclareMahjong={handleDeclareMahjong}
         onExpose={handleHumanExpose}
         onPassCall={handlePassCallWindow}
+        onJokerExchange={handleJokerExchange}
       />
     );
   }

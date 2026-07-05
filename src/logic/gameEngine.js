@@ -234,6 +234,62 @@ export function exposeFromDiscard(state, callerIdx, meldSize, jokersUsed = 0) {
   };
 }
 
+// ─── Joker exchange ──────────────────────────────────────────────────────────
+// On your turn (holding a full position, before discarding) you may swap a
+// real tile from your rack for a joker sitting in ANY exposed meld — yours or
+// an opponent's. The classic American mahjong joker economy.
+
+/**
+ * Every legal exchange available to `playerIdx` right now.
+ * @returns {Array<{ownerIdx, meldIdx, tile}>} tile = the rack tile to give up
+ */
+export function listJokerExchanges(state, playerIdx) {
+  const player = state.players[playerIdx];
+  const out = [];
+  state.players.forEach((owner, ownerIdx) => {
+    (owner.exposures || []).forEach((meld, meldIdx) => {
+      if (!meld.tiles.some(t => t.suit === 'joker')) return;
+      const matchTile = meld.id === 'flower'
+        ? player.hand.find(t => t.suit === 'flower')
+        : player.hand.find(t => t.id === meld.id);
+      if (matchTile) out.push({ ownerIdx, meldIdx, tile: matchTile });
+    });
+  });
+  return out;
+}
+
+/**
+ * Swap the player's matching real tile for the first joker in the target
+ * meld. Hand size is unchanged; the joker becomes a free agent in hand.
+ * Returns the same state if the exchange is illegal.
+ */
+export function exchangeJoker(state, playerIdx, ownerIdx, meldIdx) {
+  const player = state.players[playerIdx];
+  const owner = state.players[ownerIdx];
+  const meld = owner?.exposures?.[meldIdx];
+  if (!meld) return state;
+  const jokerIdx = meld.tiles.findIndex(t => t.suit === 'joker');
+  if (jokerIdx === -1) return state;
+  const give = meld.id === 'flower'
+    ? player.hand.find(t => t.suit === 'flower')
+    : player.hand.find(t => t.id === meld.id);
+  if (!give) return state;
+
+  const joker = meld.tiles[jokerIdx];
+  const newMeld = { ...meld, tiles: meld.tiles.map((t, i) => i === jokerIdx ? give : t) };
+  const newPlayers = state.players.map((p, i) => {
+    let next = p;
+    if (i === ownerIdx) {
+      next = { ...next, exposures: next.exposures.map((m, j) => j === meldIdx ? newMeld : m) };
+    }
+    if (i === playerIdx) {
+      next = { ...next, hand: [...next.hand.filter(t => t.uid !== give.uid), joker] };
+    }
+    return next;
+  });
+  return { ...state, players: newPlayers };
+}
+
 /**
  * Apply charleston pass
  * direction: 'right'(→), 'across', 'left'(←)

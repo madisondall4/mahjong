@@ -56,6 +56,11 @@ Status legend: 🔲 Not started · 🟡 In progress · ✅ Done
   wins now use at least one exposure.
 - ✅ **Sound & haptics** — synthesized Web Audio (tile clacks, call alerts,
   win fanfare — zero assets, offline-safe) plus vibration; mute persists.
+- ✅ **Joker exchange** — on your turn, swap the matching real tile for a
+  joker in ANY exposed meld (flower melds accept any flower). Swap bar on
+  the rack in solo and pass-and-play; AIs redeem automatically (Chill
+  usually can't be bothered); a redeemed joker can light up Mahjong!
+  immediately. The full classic joker economy is now in the game.
 
 ### Real-card support (see LEGAL_CARDS.md)
 - ✅ **Flowers in hand** — flowers are ordinary tiles inside the 14 (152-tile
@@ -81,10 +86,6 @@ Status legend: 🔲 Not started · 🟡 In progress · ✅ Done
 
 ## Next up (priority order)
 
-- 🔲 **Joker exchange** — on your turn, swap the matching real tile for a
-  joker in ANY exposed meld (yours or an opponent's). The classic American
-  mahjong joker economy; the exposure engine already models melds, so this
-  is an engine helper + a turn action + AI judgment.
 - 🔲 **NMJL license** — the business path to shipping official card content
   in-app; until signed, the Garden Card + "My Card" lanes only (see
   LEGAL_CARDS.md).

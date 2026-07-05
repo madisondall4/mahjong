@@ -53,6 +53,21 @@ const TIPS = [
     text: 'That discarded tile completes one of your hands. Tap the glowing Mahjong button to claim it — or pass and keep building.',
   },
   {
+    id: 'jokerswap',
+    when: s => {
+      if (s.phase !== 'playing' || s.currentPlayer !== 0) return false;
+      const me = s.players?.[0];
+      if (!me) return false;
+      return s.players.some(p => (p.exposures || []).some(m =>
+        m.tiles.some(t => t.suit === 'joker') &&
+        (m.id === 'flower' ? me.hand.some(h => h.suit === 'flower') : me.hand.some(h => h.id === m.id))
+      ));
+    },
+    icon: '🃏',
+    title: 'Free joker on the table!',
+    text: 'An exposed meld holds a joker and you have its real tile. Swap them — the joker becomes yours to use anywhere (groups of 3+).',
+  },
+  {
     id: 'declare',
     when: s => s.phase === 'playing' && s.humanCanDeclare,
     icon: '🏆',
