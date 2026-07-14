@@ -118,6 +118,17 @@ html, body {
   50% { box-shadow: 0 8px 22px rgba(var(--matcha-rgb),0.45), 0 0 0 3px rgba(var(--matcha-rgb),1); }
 }
 
+/* Soft attention pulses (referenced by turn dots, Mahjong button, drawn-tile marker) */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { filter: brightness(1); transform: scale(1); }
+  50% { filter: brightness(1.12); transform: scale(1.03); }
+}
+
 /* Scrollbar hide */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

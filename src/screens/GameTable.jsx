@@ -21,6 +21,9 @@ export default function GameTable({
   onPassCall,
   onJokerExchange,
   onReorder,
+  onSort,
+  sortAuto = false,
+  onToggleAuto,
   viewerIdx = 0,
 }) {
   const [cardOpen, setCardOpen] = useState(false);
@@ -188,6 +191,7 @@ export default function GameTable({
           <DiscardPool
             discards={gameState.discardPile}
             lastDiscard={gameState.lastDiscard}
+            lastDiscardByName={gameState.lastDiscardBy !== undefined ? gameState.players[gameState.lastDiscardBy]?.name : null}
             onCallMahjong={onCallMahjong}
             canCall={canCall}
             exposeOptions={exposeOptions}
@@ -259,6 +263,10 @@ export default function GameTable({
           selectedUids={selectedUid !== null ? new Set([selectedUid]) : new Set()}
           onTileClick={handleTileClick}
           onReorder={onReorder}
+          onSort={onSort}
+          sortAuto={sortAuto}
+          onToggleAuto={onToggleAuto}
+          highlightUid={isHumanTurn ? gameState.lastDrawnTile?.uid ?? null : null}
           canDiscard={canDiscardNow}
         />
         {selectedUid !== null && (

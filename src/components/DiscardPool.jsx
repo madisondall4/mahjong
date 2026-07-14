@@ -14,7 +14,8 @@ const MELD_NAMES = { 3: 'Pung', 4: 'Kong', 5: 'Quint' };
  * @param {function} onPassCall - decline the call window
  */
 export default function DiscardPool({
-  discards = [], lastDiscard = null, onCallMahjong, canCall = false,
+  discards = [], lastDiscard = null, lastDiscardByName = null,
+  onCallMahjong, canCall = false,
   exposeOptions = [], onExpose, onPassCall,
 }) {
   const promptOpen = lastDiscard && (canCall || exposeOptions.length > 0);
@@ -75,6 +76,16 @@ export default function DiscardPool({
           </div>
         )}
       </div>
+
+      {/* Who threw the last tile */}
+      {lastDiscard && lastDiscardByName && !promptOpen && (
+        <div style={{
+          fontSize: 10.5, fontFamily: 'Nunito', fontWeight: 700,
+          color: 'rgba(var(--ink-rgb),0.45)',
+        }}>
+          ↑ {lastDiscardByName}&apos;s discard
+        </div>
+      )}
 
       {/* Call window: mahjong / exposure claims / pass */}
       {promptOpen && (

@@ -62,6 +62,19 @@ Status legend: 🔲 Not started · 🟡 In progress · ✅ Done
   usually can't be bothered); a redeemed joker can light up Mahjong!
   immediately. The full classic joker economy is now in the game.
 
+### Rack & table UX
+- ✅ **Drag-and-drop rack** — drag tiles along the rack to arrange your hand;
+  drag one up (past the drop zone) to discard. Tap-tap discard still works.
+  Home screen rebuilt around a scroll-safe layout after a multi-viewport
+  audit (iPhone SE upward).
+- ✅ **Sort & auto-sort** — ⇅ Sort arranges the rack bams → craks → dots →
+  winds → dragons → flowers → jokers, in-game and during the Charleston.
+  AUTO keeps the rack sorted after every draw/deal/pass; preference persists.
+- ✅ **Drawn-tile highlight** — the tile you just drew gets a pulsing marker
+  and ring so it never gets lost in the rack (pairs with auto-sort).
+- ✅ **Discarder label** — the pool captions the newest tile with who threw
+  it ("↑ South's discard"), so you always know whose discard you're reading.
+
 ### Real-card support (see LEGAL_CARDS.md)
 - ✅ **Flowers in hand** — flowers are ordinary tiles inside the 14 (152-tile
   standard set), passable, callable, discardable — real-card semantics.

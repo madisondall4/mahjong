@@ -11,6 +11,7 @@ export default function CharlestonScreen({
   gameState,
   onPass,
   onSkipSecondCharleston,
+  onSort,
   viewerIdx = 0,
   viewerLabel = null,
 }) {
@@ -135,6 +136,7 @@ export default function CharlestonScreen({
           charlestonRound={charleston.round}
           charlestonStep={charleston.step}
           onPass={onPass}
+          onSort={onSort}
           waitingForAI={gameState.waitingForAI}
           incomingTiles={showIncoming ? incomingTiles : null}
         />

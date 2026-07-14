@@ -36,6 +36,20 @@ import {
 import { checkWin, canWinWithTile } from './logic/handMatcher.js';
 import { calculatePayments, applyPayments } from './logic/scoring.js';
 import { playClack, playDraw, playCallAlert, playSwoosh, playFanfare } from './utils/sound.js';
+import { sortHand, isAutoSort, setAutoSort } from './utils/sortTiles.js';
+
+// Sort one player's rack in place (used by the Sort button and auto-sort).
+function withSortedHand(st, idx) {
+  return {
+    ...st,
+    players: st.players.map((p, i) => i === idx ? { ...p, hand: sortHand(p.hand) } : p),
+  };
+}
+
+// Apply the auto-sort preference after a draw/deal/pass.
+function maybeAutoSort(st, idx) {
+  return isAutoSort() ? withSortedHand(st, idx) : st;
+}
 
 /** Game audio + haptics keyed off state transitions — one hook covers every mode. */
 function useSoundEffects(state) {
@@ -58,6 +72,7 @@ function AppInner() {
   const { state, setState, patchState, reset } = useGame();
   const [journalOpen, setJournalOpen] = useState(false);
   const [builderOpen, setBuilderOpen] = useState(false);
+  const [autoSortOn, setAutoSortOn] = useState(isAutoSort);
   const aiTimerRef = useRef(null);
   const lastAiKey = useRef(null);
   const lastHumanDrawKey = useRef(null);
@@ -279,7 +294,7 @@ function AppInner() {
     }
     const human = newState.players[0];
     const winDef = canSelfDeclare(human.hand, 'spicy', human.exposures || []);
-    setState({ ...newState, humanCanDeclare: !!winDef, _selfDeclareHand: winDef || null });
+    setState({ ...maybeAutoSort(newState, 0), humanCanDeclare: !!winDef, _selfDeclareHand: winDef || null });
     // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed by draw signature (wallIndex + discard count); guarded by lastHumanDrawKey
   }, [state.phase, state.mode, state.currentPlayer, state.wallIndex, state.discardPile.length, state.lastDrawnTile, state.humanCanDeclare, state.canHumanCallMahjong]);
 
@@ -311,7 +326,10 @@ function AppInner() {
       : ['You', 'South', 'West', 'North'].map((name, id) => ({
           id, name, isHuman: id === 0, hand: [], exposures: [], score: 0,
         }));
-    const newState = dealTiles({ ...state, difficulty: getDifficulty(), mode, players });
+    let newState = dealTiles({ ...state, difficulty: getDifficulty(), mode, players });
+    if (isAutoSort()) {
+      for (let i = 0; i < 4; i++) newState = withSortedHand(newState, i);
+    }
     if (mode === 'pass') {
       newState._passStage = 'handoff';
       newState._passPicker = 0;
@@ -329,7 +347,10 @@ function AppInner() {
       setState({ ...state, _passPicks: picks, _passPicker: state._passPicker + 1, _passStage: 'handoff' });
       return;
     }
-    const afterPass = applyCharlestonPass(state, picks);
+    let afterPass = applyCharlestonPass(state, picks);
+    if (isAutoSort()) {
+      for (let i = 0; i < 4; i++) afterPass = withSortedHand(afterPass, i);
+    }
     setState({
       ...afterPass,
       _passPicks: [null, null, null, null],
@@ -371,7 +392,7 @@ function AppInner() {
     const drawn = newState.players[p];
     const win = checkWin(drawn.hand, true, drawn.exposures || []);
     setState({
-      ...newState,
+      ...maybeAutoSort(newState, p),
       _passStage: 'act',
       humanCanDeclare: win.matched,
       _selfDeclareHand: win.matched ? win.handDef : null,
@@ -461,7 +482,7 @@ function AppInner() {
         allPasses.push(chosen);
       }
       const newState = applyCharlestonPass(state, allPasses);
-      setState({ ...newState, waitingForAI: false });
+      setState({ ...maybeAutoSort(newState, 0), waitingForAI: false });
     }, 700);
   }
 
@@ -512,6 +533,22 @@ function AppInner() {
     const exposed = exposeFromDiscard(state, 0, option.n, option.jokersUsed);
     lastHumanDrawKey.current = null;
     setState({ ...exposed, humanExposeOptions: null, canHumanCallMahjong: false });
+  }
+
+  // One-tap rack sort; in pass-and-play it sorts whoever holds the device.
+  function sortHandFor(idx) {
+    playDraw();
+    setState(withSortedHand(state, idx));
+  }
+
+  function handleToggleAutoSort() {
+    const next = !isAutoSort();
+    setAutoSort(next);
+    setAutoSortOn(next);
+    if (next) {
+      const idx = state.mode === 'pass' ? state.currentPlayer : 0;
+      setState(withSortedHand(state, idx));
+    }
   }
 
   // Rearrange the viewer's rack — purely cosmetic, hand order is theirs.
@@ -618,6 +655,7 @@ function AppInner() {
           viewerLabel={state.players[picker].name}
           onPass={handlePassCharlestonPick}
           onSkipSecondCharleston={picker === 0 ? handlePassSkipSecond : null}
+          onSort={() => sortHandFor(picker)}
         />
       );
     }
@@ -626,6 +664,7 @@ function AppInner() {
         gameState={state}
         onPass={handleCharlestonPass}
         onSkipSecondCharleston={handleSkipSecondCharleston}
+        onSort={() => sortHandFor(0)}
       />
     );
   }
@@ -670,6 +709,9 @@ function AppInner() {
           onDeclareMahjong={handlePassDeclare}
           onJokerExchange={handleJokerExchange}
           onReorder={handleReorderHand}
+          onSort={() => sortHandFor(state.currentPlayer)}
+          sortAuto={autoSortOn}
+          onToggleAuto={handleToggleAutoSort}
         />
       );
     }
@@ -683,6 +725,9 @@ function AppInner() {
         onPassCall={handlePassCallWindow}
         onJokerExchange={handleJokerExchange}
         onReorder={handleReorderHand}
+        onSort={() => sortHandFor(0)}
+        sortAuto={autoSortOn}
+        onToggleAuto={handleToggleAutoSort}
       />
     );
   }

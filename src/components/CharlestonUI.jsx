@@ -27,6 +27,7 @@ export default function CharlestonUI({
   charlestonRound = 1,
   charlestonStep = 0,
   onPass,
+  onSort,
   waitingForAI = false,
   incomingTiles = null,
 }) {
@@ -88,13 +89,29 @@ export default function CharlestonUI({
         </div>
       )}
 
-      {/* Selection counter */}
-      <div style={{ textAlign: 'center', fontSize: 13, fontFamily: 'Nunito', color: selected.size === 3 ? 'var(--matcha)' : 'rgba(var(--ink-rgb),0.6)' }}>
-        Selected: <strong>{selected.size}</strong>/3
-        {canBlindPass && (
-          <span style={{ color: 'rgba(var(--ink-rgb),0.4)', marginLeft: 8, fontSize: 11 }}>
-            (blind pass allowed)
-          </span>
+      {/* Selection counter + sort */}
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 10 }}>
+        <div style={{ fontSize: 13, fontFamily: 'Nunito', color: selected.size === 3 ? 'var(--matcha)' : 'rgba(var(--ink-rgb),0.6)' }}>
+          Selected: <strong>{selected.size}</strong>/3
+          {canBlindPass && (
+            <span style={{ color: 'rgba(var(--ink-rgb),0.4)', marginLeft: 8, fontSize: 11 }}>
+              (blind pass allowed)
+            </span>
+          )}
+        </div>
+        {onSort && (
+          <button
+            onClick={onSort}
+            aria-label="Sort hand"
+            style={{
+              background: 'rgba(var(--matcha-rgb),0.12)', border: '1px solid rgba(var(--matcha-rgb),0.35)',
+              borderRadius: 999, padding: '3px 10px',
+              color: 'var(--matcha)', fontSize: 11, fontFamily: 'Nunito', fontWeight: 800,
+              cursor: 'pointer',
+            }}
+          >
+            ⇅ Sort
+          </button>
         )}
       </div>
 

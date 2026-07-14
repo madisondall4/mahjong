@@ -22,6 +22,10 @@ export default function PlayerHand({
   selectedUids = new Set(),
   onTileClick,
   onReorder,
+  onSort,
+  sortAuto = false,
+  onToggleAuto,
+  highlightUid = null,
   canDiscard = false,
   animateIn = false,
   exposures = [],
@@ -177,6 +181,49 @@ export default function PlayerHand({
         </div>
       )}
 
+      {/* Rack controls */}
+      {onSort && tiles.length > 1 && (
+        <div style={{
+          position: 'absolute', right: 10, top: exposures.length > 0 ? 44 : 0, zIndex: 30,
+          display: 'flex', gap: 5, alignItems: 'center',
+          transform: 'translateY(-50%)',
+        }}>
+          <button
+            onClick={onSort}
+            aria-label="Sort tiles"
+            style={{
+              display: 'flex', alignItems: 'center', gap: 4,
+              background: 'rgba(var(--paper-rgb),0.95)',
+              border: '1px solid rgba(var(--matcha-rgb),0.4)',
+              borderRadius: 999, padding: '5px 12px',
+              color: 'var(--matcha)', fontSize: 11.5,
+              fontFamily: 'Nunito', fontWeight: 800, cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(var(--shadow-rgb),0.15)',
+            }}
+          >
+            ⇅ Sort
+          </button>
+          {onToggleAuto && (
+            <button
+              onClick={onToggleAuto}
+              aria-label={sortAuto ? 'Auto-sort on' : 'Auto-sort off'}
+              title="Keep the rack sorted after every draw"
+              style={{
+                background: sortAuto ? 'var(--matcha)' : 'rgba(var(--paper-rgb),0.95)',
+                border: `1px solid ${sortAuto ? 'var(--matcha)' : 'rgba(var(--ink-rgb),0.25)'}`,
+                borderRadius: 999, padding: '5px 9px',
+                color: sortAuto ? 'white' : 'rgba(var(--ink-rgb),0.45)',
+                fontSize: 9.5, fontFamily: 'Nunito', fontWeight: 800,
+                letterSpacing: '0.06em', cursor: 'pointer',
+                boxShadow: '0 2px 8px rgba(var(--shadow-rgb),0.12)',
+              }}
+            >
+              AUTO
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Discard drop hint while a tile is lifted */}
       {draggingUid !== null && canDiscard && (
         <div style={{
@@ -233,14 +280,27 @@ export default function PlayerHand({
                 touchAction: 'pan-x', // horizontal = scroll, vertical = drag
               }}
             >
-              <MahjongTile
-                tile={tile}
-                size="lg"
-                selected={selectedUids.has(tile.uid)}
-                onClick={canDiscard || onTileClick ? () => onTileClick?.(tile) : undefined}
-                animateIn={animateIn}
-                animDelay={idx * 50}
-              />
+              <div style={{ position: 'relative' }}>
+                {highlightUid === tile.uid && (
+                  <div aria-label="Just drawn" style={{
+                    position: 'absolute', top: -9, left: '50%', transform: 'translateX(-50%)',
+                    width: 7, height: 7, borderRadius: 999,
+                    background: 'var(--rose)',
+                    boxShadow: '0 0 6px rgba(var(--rose-rgb),0.8)',
+                    zIndex: 5,
+                    animation: 'pulse 1.2s ease-in-out infinite',
+                  }}/>
+                )}
+                <MahjongTile
+                  tile={tile}
+                  size="lg"
+                  selected={selectedUids.has(tile.uid)}
+                  onClick={canDiscard || onTileClick ? () => onTileClick?.(tile) : undefined}
+                  animateIn={animateIn}
+                  animDelay={idx * 50}
+                  style={highlightUid === tile.uid ? { boxShadow: '0 4px 10px rgba(var(--shadow-rgb),0.16), 0 0 0 2px rgba(var(--rose-rgb),0.55)' } : undefined}
+                />
+              </div>
             </div>
           </React.Fragment>
         ))}
