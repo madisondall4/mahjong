@@ -29,7 +29,7 @@ const TIPS = [
     when: s => s.phase === 'playing' && s.currentPlayer === 0 && (s.players?.[0]?.hand?.length || 0) === 14 && !s.humanCanDeclare,
     icon: '🀄',
     title: 'Your turn: draw, then discard',
-    text: 'You drew a tile automatically. Now tap a tile to select it, and tap it again to discard. Build toward one of the 24 hands on the card.',
+    text: 'You drew a tile automatically. Drag a tile up to discard it — or tap it twice. Drag tiles along the rack to arrange your hand.',
   },
   {
     id: 'advisor',

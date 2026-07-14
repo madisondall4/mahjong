@@ -20,6 +20,7 @@ export default function GameTable({
   onExpose,
   onPassCall,
   onJokerExchange,
+  onReorder,
   viewerIdx = 0,
 }) {
   const [cardOpen, setCardOpen] = useState(false);
@@ -42,8 +43,18 @@ export default function GameTable({
     ? listJokerExchanges(gameState, viewerIdx)
     : [];
 
-  function handleTileClick(tile) {
+  const canDiscardNow = isHumanTurn && effectiveHandCount(humanPlayer) > 13;
+
+  function handleTileClick(tile, opts) {
     if (!isHumanTurn) return;
+    // Drag-up gesture discards immediately.
+    if (opts?.forceDiscard) {
+      if (canDiscardNow) {
+        onDiscard(tile.uid);
+        setSelectedUid(null);
+      }
+      return;
+    }
     if (selectedUid === tile.uid) {
       onDiscard(tile.uid);
       setSelectedUid(null);
@@ -247,7 +258,8 @@ export default function GameTable({
           exposures={humanPlayer.exposures || []}
           selectedUids={selectedUid !== null ? new Set([selectedUid]) : new Set()}
           onTileClick={handleTileClick}
-          canDiscard={isHumanTurn && effectiveHandCount(humanPlayer) > 13}
+          onReorder={onReorder}
+          canDiscard={canDiscardNow}
         />
         {selectedUid !== null && (
           <div style={{ textAlign: 'center', fontSize: 11, color: 'rgba(var(--ink-rgb),0.5)', fontFamily: 'Nunito', paddingBottom: 4 }}>

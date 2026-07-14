@@ -514,6 +514,19 @@ function AppInner() {
     setState({ ...exposed, humanExposeOptions: null, canHumanCallMahjong: false });
   }
 
+  // Rearrange the viewer's rack — purely cosmetic, hand order is theirs.
+  function handleReorderHand(newOrderUids) {
+    const idx = state.mode === 'pass' ? state.currentPlayer : 0;
+    const player = state.players[idx];
+    const byUid = new Map(player.hand.map(t => [t.uid, t]));
+    const reordered = newOrderUids.map(uid => byUid.get(uid)).filter(Boolean);
+    if (reordered.length !== player.hand.length) return; // stale drag — ignore
+    setState({
+      ...state,
+      players: state.players.map((p, i) => i === idx ? { ...p, hand: reordered } : p),
+    });
+  }
+
   // Swap a rack tile for a joker in an exposed meld (your turn only).
   // Works for solo (actor 0) and pass-and-play (actor = current player).
   function handleJokerExchange(option) {
@@ -656,6 +669,7 @@ function AppInner() {
           onCallMahjong={() => {}}
           onDeclareMahjong={handlePassDeclare}
           onJokerExchange={handleJokerExchange}
+          onReorder={handleReorderHand}
         />
       );
     }
@@ -668,6 +682,7 @@ function AppInner() {
         onExpose={handleHumanExpose}
         onPassCall={handlePassCallWindow}
         onJokerExchange={handleJokerExchange}
+        onReorder={handleReorderHand}
       />
     );
   }
